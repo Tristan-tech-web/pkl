@@ -25,8 +25,8 @@ export function tutorSystemPrompt(lesson: { title: string; subject: string; body
   ].join("\n\n");
 }
 
-async function post(url: string, headers: Record<string, string>, body: unknown): Promise<{ ok: boolean; status: number; json: unknown }> {
-  const res = await fetch(url, { method: "POST", headers: { "content-type": "application/json", ...headers }, body: JSON.stringify(body), signal: AbortSignal.timeout(25000) });
+async function post(url: string, headers: Record<string, string>, body: unknown, timeoutMs = 25000): Promise<{ ok: boolean; status: number; json: unknown }> {
+  const res = await fetch(url, { method: "POST", headers: { "content-type": "application/json", ...headers }, body: JSON.stringify(body), signal: AbortSignal.timeout(timeoutMs) });
   return { ok: res.ok, status: res.status, json: await res.json().catch(() => null) };
 }
 
@@ -85,6 +85,7 @@ export type InlineFile = { mime: string; base64: string };
 export async function generateJsonText(args: { provider: Provider; model: string; apiKey: string; system: string; user: string; file?: InlineFile; maxTokens?: number }): Promise<string> {
   const { provider, model, apiKey, system, user, file } = args;
   const maxTokens = Math.min(Math.max(args.maxTokens ?? 4096, 256), 32000);
+  const timeoutMs = maxTokens > 8000 ? 100_000 : 25_000;
   if (provider === "gemini") {
     const parts: unknown[] = [{ text: user }];
     if (file) parts.push({ inlineData: { mimeType: file.mime, data: file.base64 } });
@@ -92,6 +93,7 @@ export async function generateJsonText(args: { provider: Provider; model: string
       `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
       { "x-goog-api-key": apiKey },
       { systemInstruction: { parts: [{ text: system }] }, contents: [{ role: "user", parts }], generationConfig: { responseMimeType: "application/json", temperature: 0.1, maxOutputTokens: maxTokens } },
+      timeoutMs,
     );
     if (!r.ok) throw new Error(`gemini ${r.status}`);
     const text = (r.json as GeminiOut).candidates?.[0]?.content?.parts?.map((p) => p.text ?? "").join("").trim();
@@ -101,7 +103,7 @@ export async function generateJsonText(args: { provider: Provider; model: string
   const blocks: unknown[] = [];
   if (file) blocks.push(file.mime === "application/pdf" ? { type: "document", source: { type: "base64", media_type: file.mime, data: file.base64 } } : { type: "image", source: { type: "base64", media_type: file.mime, data: file.base64 } });
   blocks.push({ type: "text", text: `${user}\n\nBalas HANYA dengan satu objek JSON valid, tanpa teks lain.` });
-  const r = await post("https://api.anthropic.com/v1/messages", { "x-api-key": apiKey, "anthropic-version": "2023-06-01" }, { model, max_tokens: maxTokens, temperature: 0.1, system, messages: [{ role: "user", content: blocks }] });
+  const r = await post("https://api.anthropic.com/v1/messages", { "x-api-key": apiKey, "anthropic-version": "2023-06-01" }, { model, max_tokens: maxTokens, temperature: 0.1, system, messages: [{ role: "user", content: blocks }] }, timeoutMs);
   if (!r.ok) throw new Error(`anthropic ${r.status}`);
   const text = (r.json as AnthropicOut).content?.filter((c) => c.type === "text").map((c) => c.text ?? "").join("").trim();
   if (!text) throw new Error("anthropic kosong");
