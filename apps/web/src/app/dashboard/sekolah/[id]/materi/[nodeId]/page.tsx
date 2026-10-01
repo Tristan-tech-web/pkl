@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { Button, ErrorNote, InfoNote, Input, Label, Select, Textarea } from "@/components/ui";
 import { getSchoolContext } from "@/lib/school";
+import { NODE_KINDS } from "@/lib/learning";
 import { addQuestion, deleteQuestion, saveNode } from "../actions";
 
 export const metadata = { title: "Sunting materi · EduSmart" };
@@ -10,18 +11,25 @@ export default async function EditNodePage({ params, searchParams }: { params: P
   const { error, info } = await searchParams;
   const { supabase, me } = await getSchoolContext(id);
   if (!["owner", "admin", "curriculum_lead", "teacher"].includes(me.roleCode)) notFound();
-  const [node, lesson, questions, keys, others, reqs] = await Promise.all([
-    supabase.from("competency_nodes").select("id,code,title,summary,status,xp_reward,estimated_minutes,subject_id").eq("id", nodeId).eq("school_id", id).maybeSingle(),
+  const [node, lesson, questions, keys, others, reqs, unitsQ, classesQ, schedQ] = await Promise.all([
+    supabase.from("competency_nodes").select("id,code,title,summary,status,xp_reward,estimated_minutes,subject_id,kind,unit_id").eq("id", nodeId).eq("school_id", id).maybeSingle(),
     supabase.from("lessons").select("body_md,objectives,visual_module").eq("node_id", nodeId).maybeSingle(),
     supabase.from("quiz_questions").select("id,kind,prompt,options,position").eq("node_id", nodeId).order("position"),
     supabase.from("quiz_answer_keys").select("question_id,answer,explanation").eq("school_id", id),
     supabase.from("competency_nodes").select("id,code,title,subject_id").eq("school_id", id).neq("id", nodeId).order("position"),
     supabase.from("competency_prerequisites").select("requires_id").eq("node_id", nodeId),
+    supabase.from("path_units").select("id,title,subject_id").eq("school_id", id).order("position"),
+    supabase.from("class_groups").select("id,name").eq("school_id", id).order("name"),
+    supabase.from("node_schedule").select("class_group_id,unlock_at").eq("node_id", nodeId),
   ]);
   if (!node.data) notFound();
   const n = node.data;
   const keyBy = new Map((keys.data ?? []).map((k) => [k.question_id as string, k]));
   const chosen = new Set((reqs.data ?? []).map((r) => r.requires_id as string));
+  const units = (unitsQ.data ?? []).filter((u) => u.subject_id === n.subject_id);
+  const schedBy = new Map((schedQ.data ?? []).map((r) => [r.class_group_id as string, r.unlock_at as string]));
+  // nilai datetime-local dalam WIB
+  const toWib = (iso: string) => new Date(new Date(iso).getTime() + 7 * 3600e3).toISOString().slice(0, 16);
   const sameSubject = (others.data ?? []).filter((o) => o.subject_id === n.subject_id);
 
   return (
@@ -47,6 +55,22 @@ export default async function EditNodePage({ params, searchParams }: { params: P
             <Textarea name="objectives" rows={3} defaultValue={((lesson.data?.objectives as string[] | undefined) ?? []).join("\n")} /></label>
           <label className="block"><Label>Visual</Label>
             <Select name="visual_module" defaultValue={(lesson.data?.visual_module as string | null) ?? ""}><option value="">Tanpa visual</option><option value="parabola">Grafik fungsi kuadrat</option></Select></label>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <label><Label>Jenis simpul</Label>
+              <Select name="kind" defaultValue={n.kind as string}>{NODE_KINDS.map((k) => <option key={k} value={k}>{({ materi: "Materi", persiapan: "Persiapan (sebelum pelajaran)", latihan: "Latihan", ulang: "Ulang berjarak", checkpoint: "Checkpoint", boss: "Tantangan (boss)", proyek: "Proyek", cerita: "Cerita" } as Record<string, string>)[k]}</option>)}</Select></label>
+            <label><Label>Unit (bab)</Label>
+              <Select name="unit_id" defaultValue={(n.unit_id as string | null) ?? ""}><option value="">Tanpa unit</option>{units.map((u) => <option key={u.id as string} value={u.id as string}>{u.title as string}</option>)}</Select></label>
+            <label className="sm:col-span-2"><Label hint="atau buat unit baru">Nama unit baru</Label><Input name="new_unit" maxLength={120} placeholder="mis. Bab 3 Fungsi Kuadrat" /></label>
+          </div>
+          <fieldset className="surface p-3">
+            <legend className="px-1 text-sm font-semibold">Jadwal buka per rombel <span className="font-normal text-ink-soft">(WIB; kosong = langsung terbuka)</span></legend>
+            <p className="mb-2 text-sm text-ink-soft">Disarankan sore hari sebelum pelajaran (mis. pukul 15.00): persiapan malam sebelum kelas membuat belajar lebih menempel.</p>
+            <div className="grid gap-2 sm:grid-cols-2">
+              {(classesQ.data ?? []).map((c) => (
+                <label key={c.id as string}><Label>{c.name as string}</Label><Input type="datetime-local" name={`sched_${c.id as string}`} defaultValue={schedBy.has(c.id as string) ? toWib(schedBy.get(c.id as string)!) : ""} /></label>
+              ))}
+            </div>
+          </fieldset>
           <fieldset>
             <legend className="mb-1 text-sm font-semibold">Prasyarat <span className="font-normal text-ink-soft">(harus lulus dulu)</span></legend>
             {sameSubject.length === 0 ? <p className="text-ink-soft">Belum ada materi lain.</p> : sameSubject.map((o) => (

@@ -94,6 +94,45 @@ html[data-experience="seru"] body {
   background-attachment: fixed;
 }
 
+/* ===== Jalur belajar (gaya Duolingo) ===== */
+.path-banner { background: var(--pen); color: var(--on-pen); border-radius: var(--r-box); padding: 0.9rem 1.1rem; box-shadow: var(--shadow-card); }
+.path-node {
+  --size: 4.5rem;
+  display: grid; place-items: center; width: var(--size); height: var(--size);
+  border-radius: 50%; border: var(--bw) solid var(--pen-strong);
+  background: var(--pen); color: var(--on-pen); font-size: 1.7rem; position: relative;
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+.path-node-big { --size: 5.5rem; border-radius: 30%; }
+.path-node-face { filter: drop-shadow(0 1px 0 rgb(0 0 0 / 0.25)); }
+.path-node.is-done { background: var(--ok); border-color: color-mix(in oklab, var(--ok) 70%, black); color: #fff; font-weight: 800; }
+.path-node.is-locked { background: var(--line); border-color: var(--line); color: var(--ink-soft); }
+a:hover > .path-node.is-open { transform: scale(1.06); }
+a:active > .path-node.is-open { transform: scale(0.97); }
+.path-node.is-current { box-shadow: 0 0 0 6px color-mix(in oklab, var(--pen) 25%, transparent); }
+.path-here {
+  position: absolute; top: -1.9rem; left: 50%; translate: -50% 0; white-space: nowrap;
+  background: var(--card); color: var(--pen); border: var(--bw) solid var(--pen); border-radius: var(--r-btn);
+  padding: 0.1rem 0.7rem; font-weight: 800; font-size: 0.8rem; letter-spacing: 0.06em;
+}
+.path-here::after { content: ""; position: absolute; left: 50%; bottom: -6px; translate: -50% 0; width: 10px; height: 10px; rotate: 45deg; background: var(--card); border-right: var(--bw) solid var(--pen); border-bottom: var(--bw) solid var(--pen); }
+/* Ceria: simpul 'permen' timbul */
+html[data-experience="ceria"] .path-node { box-shadow: 0 7px 0 0 var(--pen-strong), inset 0 8px 0 0 rgb(255 255 255 / 0.28); }
+html[data-experience="ceria"] .path-node.is-done { box-shadow: 0 7px 0 0 color-mix(in oklab, var(--ok) 65%, black), inset 0 8px 0 0 rgb(255 255 255 / 0.28); }
+html[data-experience="ceria"] .path-node.is-locked { box-shadow: 0 7px 0 0 color-mix(in oklab, var(--line) 70%, black); }
+html[data-experience="ceria"] a:active > .path-node.is-open { transform: translateY(6px); box-shadow: 0 1px 0 0 var(--pen-strong); }
+/* Seru: simpul heksagon bercahaya */
+html[data-experience="seru"] .path-node { border-radius: 28%; box-shadow: 0 0 24px -4px var(--pen); }
+html[data-experience="seru"] .path-node.is-locked, html[data-experience="seru"] .path-node.is-done { box-shadow: none; }
+/* Ringkas: lingkaran datar */
+html[data-experience="ringkas"] .path-node { box-shadow: none; --size: 4rem; }
+@media (prefers-reduced-motion: no-preference) {
+  .path-node.is-current { animation: node-pulse 1.8s var(--ease-out) infinite; }
+  .path-here { animation: here-bob 1.2s ease-in-out infinite; }
+}
+@keyframes node-pulse { 0%, 100% { box-shadow: 0 0 0 4px color-mix(in oklab, var(--pen) 28%, transparent); } 50% { box-shadow: 0 0 0 12px color-mix(in oklab, var(--pen) 6%, transparent); } }
+@keyframes here-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+
 /* Gerak dikurangi atas pilihan pengguna (selain pengaturan sistem): animasi dimatikan, transisi warna tetap. */
 html[data-motion="kurangi"] *, html[data-motion="kurangi"] *::before, html[data-motion="kurangi"] *::after {
   animation-duration: 0.001ms !important;

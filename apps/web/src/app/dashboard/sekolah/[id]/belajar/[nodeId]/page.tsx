@@ -14,7 +14,7 @@ export const metadata = { title: "Pelajaran · EduSmart" };
 export default async function LessonPage({ params }: { params: Promise<{ id: string; nodeId: string }> }) {
   const { id, nodeId } = await params;
   const { supabase, me } = await getSchoolContext(id);
-  const [map, mods] = await Promise.all([loadMap(supabase, id, me.memberId), enabledModuleCodes(supabase, id)]);
+  const [map, mods] = await Promise.all([loadMap(supabase, id, me.memberId, { ignoreSchedule: me.roleCode !== "student" }), enabledModuleCodes(supabase, id)]);
   const node = map.find((n) => n.id === nodeId);
   if (!node) notFound();
   const [{ data: lesson }, { count }] = await Promise.all([
@@ -22,7 +22,7 @@ export default async function LessonPage({ params }: { params: Promise<{ id: str
     supabase.from("quiz_questions").select("id", { count: "exact", head: true }).eq("node_id", nodeId),
   ]);
   const back = `/dashboard/sekolah/${id}/belajar`;
-  const locked = node.state === "terkunci";
+  const locked = node.state === "terkunci" || node.state === "dijadwalkan";
   const objectives = (lesson?.objectives as string[] | undefined) ?? [];
 
   return (
@@ -41,7 +41,9 @@ export default async function LessonPage({ params }: { params: Promise<{ id: str
       </header>
       {locked ? (
         <p className="rounded-box border border-dashed border-line p-6 text-ink-soft">
-          Materi ini masih terkunci. Selesaikan prasyaratnya di peta belajar dulu.
+          {node.state === "dijadwalkan" && node.opensAt ? (
+            <>Materi ini terbuka <span className="font-semibold text-ink">{new Intl.DateTimeFormat("id-ID", { timeZone: "Asia/Jakarta", weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" }).format(new Date(node.opensAt))} WIB</span>, supaya kamu belajarnya pas sebelum pelajaran di kelas.</>
+          ) : "Materi ini masih terkunci. Selesaikan prasyaratnya di peta belajar dulu."}
         </p>
       ) : (
         <div className="grid gap-8 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">

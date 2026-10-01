@@ -8,10 +8,10 @@ export const metadata = { title: "Kuis · EduSmart" };
 export default async function QuizPage({ params }: { params: Promise<{ id: string; nodeId: string }> }) {
   const { id, nodeId } = await params;
   const { supabase, me } = await getSchoolContext(id);
-  const map = await loadMap(supabase, id, me.memberId);
+  const map = await loadMap(supabase, id, me.memberId, { ignoreSchedule: me.roleCode !== "student" });
   const node = map.find((n) => n.id === nodeId);
   if (!node) notFound();
-  if (node.state === "terkunci") redirect(`/dashboard/sekolah/${id}/belajar`);
+  if (node.state === "terkunci" || node.state === "dijadwalkan") redirect(`/dashboard/sekolah/${id}/belajar`);
   const { data } = await supabase
     .from("quiz_questions")
     .select("id,kind,prompt,options,position")

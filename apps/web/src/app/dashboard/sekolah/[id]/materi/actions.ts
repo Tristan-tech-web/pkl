@@ -42,10 +42,29 @@ export async function saveNode(schoolId: string, nodeId: string, formData: FormD
     const { count } = await supabase.from("quiz_questions").select("id", { count: "exact", head: true }).eq("node_id", nodeId);
     if (!count) go(page, "error", "Tambahkan minimal satu soal sebelum menerbitkan.");
   }
+  const kinds = ["materi", "persiapan", "latihan", "ulang", "checkpoint", "boss", "proyek", "cerita"];
+  const kind = kinds.includes(str(formData, "kind")) ? str(formData, "kind") : "materi";
+  let unitId: string | null = str(formData, "unit_id") || null;
+  const newUnit = str(formData, "new_unit");
+  if (newUnit.length >= 2) {
+    const { data: nd } = await supabase.from("competency_nodes").select("subject_id").eq("id", nodeId).maybeSingle();
+    const { data: last } = await supabase.from("path_units").select("position").eq("school_id", schoolId).eq("subject_id", nd?.subject_id as string).order("position", { ascending: false }).limit(1).maybeSingle();
+    const { data: u } = await supabase.from("path_units").insert({ school_id: schoolId, subject_id: nd?.subject_id, title: newUnit.slice(0, 120), position: ((last?.position as number | undefined) ?? 0) + 1 }).select("id").single();
+    if (u) unitId = u.id as string;
+  }
   const { error } = await supabase.from("competency_nodes")
-    .update({ title, summary: str(formData, "summary") || null, status, xp_reward: xp, estimated_minutes: minutes })
+    .update({ title, summary: str(formData, "summary") || null, status, xp_reward: xp, estimated_minutes: minutes, kind, unit_id: unitId })
     .eq("id", nodeId).eq("school_id", schoolId);
   if (error) go(page, "error", "Perubahan belum bisa disimpan.");
+  // jadwal buka per rombel (WIB → UTC); kosong = hapus
+  for (const [k, v] of formData.entries()) {
+    if (!k.startsWith("sched_")) continue;
+    const classId = k.slice(6), val = String(v).trim();
+    if (!val) { await supabase.from("node_schedule").delete().eq("node_id", nodeId).eq("class_group_id", classId); continue; }
+    const d = new Date(`${val}:00+07:00`);
+    if (Number.isNaN(d.getTime())) continue;
+    await supabase.from("node_schedule").upsert({ school_id: schoolId, node_id: nodeId, class_group_id: classId, unlock_at: d.toISOString() });
+  }
   const objectives = str(formData, "objectives").split("\n").map((s) => s.trim()).filter(Boolean).slice(0, 8);
   const visual = str(formData, "visual_module") === "parabola" ? "parabola" : null;
   await supabase.from("lessons").upsert({
