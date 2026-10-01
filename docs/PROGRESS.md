@@ -30,6 +30,8 @@ Cara melanjutkan di sesi baru: baca `CLAUDE.md`, berkas ini, lalu kerjakan "Beri
 - Token: `--ease-out`, `--ease-spring`, `--dur-fast/base/slow` di `globals.css`.
 - Diuji Chromium: 26 animasi berjalan saat dimuat, selesai < 3 detik, konten penuh setelah digulir, 0 animasi di mode kurangi gerakan.
 - Skill pihak ketiga untuk motion (mis. "Design Motion Principles", "Impeccable animate") ditemukan di riset tetapi tidak dipasang; prinsipnya diterapkan langsung.
+- Lapis 2 (koreografi kode, GSAP, grid 60 fps; spesifikasi di `docs/design/motion-spec.md`): kata judul mendarat berurutan dengan antisipasi dan overshoot, stabilo menyapu setelah kata terakhir, pena menulis kurva parabola dengan blur sebanding kecepatan, penanda squash/stretch + riak, slider `a` menyapu sebagai petunjuk, dan panggung scroll "Satu kurva, tiga mata pelajaran" (`story-stage.tsx`, di-scrub ScrollTrigger; label jujur bahwa baru Matematika yang berjalan).
+- Diuji lewat "playblast" (`NEXT_PUBLIC_MOTION_DEBUG=1` membuka `window.__gsap`; timeline dijeda lalu di-seek per bingkai, contact sheet ditinjau). Temuan: properti CSS `transform` awal bentrok dengan `yPercent` GSAP (kata tertahan turun); diganti properti `translate`. Mode kurangi gerak: panggung statis, 0 animasi; HP 390px: tanpa scroll horizontal, simbol dekoratif disembunyikan.
 
 ## Berikutnya
 0. Prioritas langsung: M2 (graf kompetensi, skill tree dengan prasyarat, kuis dinilai di server, XP/streak/level di server dengan satu konfigurasi, dashboard guru dengan intervensi).

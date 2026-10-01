@@ -173,9 +173,6 @@ h1, h2, h3 {
     animation: pop var(--dur-base) var(--ease-spring) both;
     animation-delay: var(--d, 0ms);
   }
-  .highlight {
-    animation: sweep 700ms var(--ease-out) 450ms both;
-  }
   .draw-in {
     stroke-dasharray: 1;
     animation: draw 900ms var(--ease-out) 250ms both;
@@ -242,3 +239,49 @@ h1, h2, h3 {
     animation: none !important;
   }
 }
+
+/* ===== Koreografi hero (ditangani GSAP; CSS memberi keadaan awal + jaring pengaman) ===== */
+.hero-item { opacity: 0; animation: failsafe-show 0.01s 3.2s forwards; }
+.w { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: 0.16em; margin-bottom: -0.16em; }
+.wi { display: inline-block; translate: 0 115%; animation: failsafe-rise 0.01s 3.2s forwards; will-change: transform, translate; }
+.highlight { background-size: 0% 100%; animation: failsafe-sweep 0.01s 3.4s forwards; }
+@keyframes failsafe-show { to { opacity: 1; } }
+@keyframes failsafe-rise { to { translate: none; } }
+@keyframes failsafe-sweep { to { background-size: 100% 100%; } }
+
+@property --reveal { syntax: "<percentage>"; inherits: false; initial-value: 0%; }
+@keyframes grid-ignite { from { --reveal: 0%; } to { --reveal: 150%; } }
+.grid-ignite {
+  -webkit-mask-image: radial-gradient(circle at 72% 46%, #000 var(--reveal), transparent calc(var(--reveal) + 14%));
+  mask-image: radial-gradient(circle at 72% 46%, #000 var(--reveal), transparent calc(var(--reveal) + 14%));
+  animation: grid-ignite 1.5s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+}
+
+@keyframes drift { 0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); } 50% { transform: translate3d(6px, -12px, 0) rotate(3deg); } }
+.glyph-drift { display: inline-block; animation: drift 12s ease-in-out infinite; }
+
+/* Adegan scroll */
+.story { height: 340vh; position: relative; }
+.story-stick { position: sticky; top: 0; height: 100vh; min-height: 560px; display: flex; align-items: center; }
+.story.is-static { height: auto; }
+.story.is-static .story-stick { position: static; height: auto; min-height: 0; padding-block: 4rem; }
+.story-cap { transition: none; }
+.story.is-static .story-caps { display: grid; gap: 1.25rem; }
+.story.is-static .story-cap { position: static !important; opacity: 1 !important; transform: none !important; }
+.subject-tab::after {
+  content: ""; display: block; height: 3px; margin-top: 6px; background: var(--pen);
+  transform: scaleX(0); transform-origin: left; transition: transform 380ms var(--ease-out);
+}
+.subject-tab[data-active="true"] { color: var(--ink); }
+.subject-tab[data-active="true"]::after { transform: scaleX(1); }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-item { opacity: 1; animation: none; }
+  .wi { translate: none; animation: none; }
+  .highlight { background-size: 100% 100%; animation: none; }
+  .grid-ignite { -webkit-mask-image: none; mask-image: none; animation: none; }
+  .glyph-drift { animation: none; }
+}
+
+.marker-hidden { opacity: 0; }
+@media (prefers-reduced-motion: reduce) { .marker-hidden { opacity: 1; } }

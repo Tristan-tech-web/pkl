@@ -1,4 +1,8 @@
 import { SiteHeader } from "@/components/site-header";
+import { HeroMotion } from "@/components/motion/hero-motion";
+import { MathGlyphs } from "@/components/motion/math-glyphs";
+import { StoryStage } from "@/components/motion/story-stage";
+import { Words } from "@/components/motion/words";
 import { ParabolaDemo } from "@/components/parabola-demo";
 import { Button, Card, Input, InfoNote, ErrorNote, Label, LinkButton, Textarea } from "@/components/ui";
 import { submitLead } from "@/app/leads-actions";
@@ -67,26 +71,31 @@ export default async function Home({
     <>
       <SiteHeader />
       <main className="flex-1">
-        <section className="bg-grid border-b border-line">
-          <div className="mx-auto grid w-full max-w-6xl items-center gap-10 px-4 py-14 lg:grid-cols-[1.05fr_1fr] lg:py-20">
+        <section className="relative overflow-hidden border-b border-line">
+          <div className="bg-grid grid-ignite absolute inset-0" aria-hidden="true" />
+          <MathGlyphs />
+          <HeroMotion className="relative mx-auto grid w-full max-w-6xl items-center gap-10 px-4 py-10 lg:grid-cols-[1.05fr_1fr] lg:py-14">
             <div>
-              <p className="anim-rise text-sm font-semibold uppercase tracking-[0.08em] text-ink-soft" style={{ "--d": "0ms" } as React.CSSProperties}>
+              <p data-hero="eyebrow" className="hero-item text-sm font-semibold uppercase tracking-[0.08em] text-ink-soft">
                 Untuk sekolah, madrasah, SLB, dan pesantren
               </p>
-              <h1 className="anim-rise mt-4 font-display text-4xl font-extrabold leading-[1.08] tracking-tight sm:text-6xl lg:text-[4.25rem]" style={{ "--d": "80ms" } as React.CSSProperties}>
-                Satu platform untuk <span className="highlight">semua jenis sekolah</span>
+              <h1 className="mt-4 font-display text-4xl font-extrabold leading-[1.08] tracking-tight sm:text-6xl lg:text-[4.25rem]">
+                <Words text="Satu platform untuk" />{" "}
+                <span className="highlight">
+                  <Words text="semua jenis sekolah" />
+                </span>
               </h1>
-              <p className="anim-rise mt-5 max-w-xl text-lg text-ink-soft" style={{ "--d": "160ms" } as React.CSSProperties}>
+              <p data-hero="lede" className="hero-item mt-5 max-w-xl text-lg text-ink-soft">
                 Atur kurikulum, mata pelajaran, dan struktur sekolah Anda sendiri. Guru mengajar dan siswa belajar
                 di tempat yang sama, dengan alat visual yang cocok untuk pelajarannya.
               </p>
-              <div className="anim-rise mt-8 flex flex-wrap gap-3" style={{ "--d": "240ms" } as React.CSSProperties}>
+              <div data-hero="cta" className="hero-item mt-8 flex flex-wrap gap-3">
                 <LinkButton href="/daftar">Buat akun sekolah</LinkButton>
                 <LinkButton href="#paket" variant="ghost">
                   Lihat paket
                 </LinkButton>
               </div>
-              <ul className="stagger mt-10 flex max-w-xl flex-wrap gap-2" aria-label="Bentuk pendidikan yang didukung">
+              <ul className="mt-10 flex max-w-xl flex-wrap gap-2" aria-label="Bentuk pendidikan yang didukung">
                 {FORMS.map((f) => (
                   <li
                     key={f}
@@ -101,8 +110,10 @@ export default async function Home({
               </ul>
             </div>
             <ParabolaDemo />
-          </div>
+          </HeroMotion>
         </section>
+
+        <StoryStage />
 
         <section className="reveal mx-auto w-full max-w-6xl px-4 py-16">
           <h2 className="font-display text-3xl font-bold tracking-tight">Apa yang bisa dilakukan</h2>

@@ -1,6 +1,7 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
+import { f, gsap, NO_REDUCE, useGSAP } from "@/lib/motion";
 import { equation, formatNumber, roots, vertex } from "@/lib/math";
 
 const X_MIN = -6;
@@ -62,6 +63,108 @@ export function ParabolaDemo() {
   const [b, setB] = useState(-2);
   const [c, setC] = useState(-3);
   const q = { a, b, c };
+  const figure = useRef<HTMLElement>(null);
+  const pathEl = useRef<SVGPathElement>(null);
+  const pen = useRef<SVGGElement>(null);
+  const penBlur = useRef<SVGFEGaussianBlurElement>(null);
+  const [intro, setIntro] = useState(true);
+  const tweenRef = useRef<gsap.core.Tween | null>(null);
+  const pointRefs = useRef<SVGGElement[]>([]);
+
+  // Koreografi pena (shot 4-5, 8). Hanya berjalan sekali saat dimuat.
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia();
+      mm.add(NO_REDUCE, () => {
+        const path = pathEl.current;
+        const nib = pen.current;
+        if (!path || !nib) return;
+        const len = path.getTotalLength();
+        const dash = { p: 0 };
+        let last = { x: 0, y: 0 };
+        gsap.set(path, { strokeDasharray: 1, strokeDashoffset: 1 });
+        gsap.set(nib, { opacity: 0 });
+        const inPlot = (x: number, y: number) => x >= PAD.l && x <= W - PAD.r && y >= PAD.t && y <= H - PAD.b;
+
+        const tl = gsap.timeline({ delay: f(48) });
+        tl.to(dash, {
+          p: 1,
+          duration: f(92),
+          ease: "power3.inOut",
+          onUpdate() {
+            const pt = path.getPointAtLength(dash.p * len);
+            const speed = Math.hypot(pt.x - last.x, pt.y - last.y);
+            const wobble = Math.sin(dash.p * 38) * 1.1;
+            gsap.set(path, { strokeDashoffset: 1 - dash.p });
+            gsap.set(nib, { x: pt.x, y: pt.y, rotation: -8 + wobble, opacity: inPlot(pt.x, pt.y) ? 1 : 0 });
+            // Kabur gerak: sudut rana 180 derajat, sebanding kecepatan.
+            penBlur.current?.setAttribute("stdDeviation", `${Math.min(3.2, speed * 0.28).toFixed(2)} 0`);
+            last = { x: pt.x, y: pt.y };
+          },
+        });
+        // Keluar lewat busur dengan overshoot (follow-through).
+        const end = path.getPointAtLength(len);
+        tl.to(nib, { x: end.x + 26, y: end.y - 54, rotation: 12, duration: f(22), ease: "power2.out" }, ">")
+          .to(nib, { x: end.x + 36, y: end.y - 70, rotation: 6, opacity: 0, duration: f(16), ease: "power2.in" }, ">-0.02");
+
+        // Penanda muncul dengan squash/stretch + riak; dipicu saat pena selesai menulis.
+        tl.add(() => {
+          pointRefs.current.forEach((g, i) => {
+            if (!g) return;
+            const marker = g.querySelector("[data-marker]");
+            const ring = g.querySelector("[data-ring]");
+            if (marker) {
+              gsap.fromTo(marker, { scaleX: 0, scaleY: 0, transformOrigin: "50% 50%" }, { keyframes: [
+                { scaleX: 1.4, scaleY: 0.65, duration: f(5), ease: "power2.out" },
+                { scaleX: 0.88, scaleY: 1.2, duration: f(6), ease: "sine.inOut" },
+                { scaleX: 1, scaleY: 1, duration: f(8), ease: "sine.out" },
+              ], delay: i * f(5) });
+            }
+            if (ring) {
+              gsap.fromTo(ring, { scale: 0.4, opacity: 0.7, transformOrigin: "50% 50%" }, { scale: 2.6, opacity: 0, duration: f(34), ease: "expo.out", delay: i * f(5) });
+            }
+          });
+          setIntro(false);
+        }, f(92) + f(8));
+
+        // Shot 8: ajakan. Slider a bergerak sendiri sekali; berhenti saat pengguna menyentuh.
+        const hint = { v: 1 };
+        const stop = () => {
+          tweenRef.current?.kill();
+          tweenRef.current = null;
+        };
+        const fig = figure.current;
+        fig?.addEventListener("pointerdown", stop, { once: true });
+        fig?.addEventListener("keydown", stop, { once: true });
+        tweenRef.current = gsap.to(hint, {
+          v: 1.9,
+          duration: f(48),
+          ease: "sine.inOut",
+          yoyo: true,
+          repeat: 1,
+          delay: f(48 + 92 + 90),
+          onUpdate: () => setA(Math.round(hint.v * 20) / 20),
+        });
+        return () => {
+          stop();
+          fig?.removeEventListener("pointerdown", stop);
+          fig?.removeEventListener("keydown", stop);
+        };
+      });
+      mm.add("(prefers-reduced-motion: reduce)", () => {
+        setIntro(false);
+      });
+      return () => mm.revert();
+    },
+    { scope: figure },
+  );
+
+  useEffect(
+    () => () => {
+      tweenRef.current?.kill();
+    },
+    [],
+  );
 
   const pts: string[] = [];
   for (let x = X_MIN; x <= X_MAX + 1e-9; x += 0.1) {
@@ -81,7 +184,7 @@ export function ParabolaDemo() {
         : `akar x = ${formatNumber(r[0])} dan ${formatNumber(r[1])}`;
 
   return (
-    <figure className="anim-rise rounded-[6px] border border-line bg-card" style={{ "--d": "200ms" } as React.CSSProperties}>
+    <figure ref={figure} data-hero="card" className="hero-item rounded-[6px] border border-line bg-card">
       <figcaption className="border-b border-line px-4 py-3">
         <p className="text-xs font-semibold uppercase tracking-[0.08em] text-ink-soft">
           Contoh modul visual · Matematika, fungsi kuadrat
@@ -121,16 +224,36 @@ export function ParabolaDemo() {
         <line x1={sx(0)} x2={sx(0)} y1={PAD.t} y2={H - PAD.b} stroke="var(--ink)" strokeWidth="1.5" />
         <line x1={PAD.l} x2={W - PAD.r} y1={sy(0)} y2={sy(0)} stroke="var(--ink)" strokeWidth="1.5" />
 
-        <path d={pts.join(" ")} pathLength={1} className="draw-in morph-path" clipPath={`url(#${uid}-clip)`} fill="none" stroke="var(--pen)" strokeWidth="3" strokeLinejoin="round" />
+        <path ref={pathEl} d={pts.join(" ")} pathLength={1} className="morph-path" clipPath={`url(#${uid}-clip)`} fill="none" stroke="var(--pen)" strokeWidth="3" strokeLinejoin="round" />
 
-        {r.filter((x) => inView(x, 0)).map((x) => (
-          <circle key={`r${x}`} className="anim-pop" style={{ "--d": "1000ms", transformOrigin: `${sx(x)}px ${sy(0)}px` } as React.CSSProperties} cx={sx(x)} cy={sy(0)} r="5.5" fill="var(--hi)" stroke="var(--ink)" strokeWidth="1.5" />
-        ))}
+        <defs>
+          <filter id={`${uid}-blur`} x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur ref={penBlur} stdDeviation="0 0" />
+          </filter>
+        </defs>
+        {[0, 1].map((i) => {
+          const x = r[i];
+          const show = x !== undefined && inView(x, 0);
+          return (
+            <g key={`r${i}`} ref={(el) => { if (el) pointRefs.current[i] = el; }} style={{ display: show ? undefined : "none" }}>
+              <circle data-ring cx={show ? sx(x) : 0} cy={sy(0)} r="9" fill="none" stroke="var(--hi)" strokeWidth="2" opacity="0" />
+              <circle data-marker cx={show ? sx(x) : 0} cy={sy(0)} r="5.5" fill="var(--hi)" stroke="var(--ink)" strokeWidth="1.5" className={intro ? "marker-hidden" : ""} />
+            </g>
+          );
+        })}
         {v && inView(v.x, v.y) ? (
-          <g>
-            <circle className="anim-pop" style={{ "--d": "1100ms", transformOrigin: `${sx(v.x)}px ${sy(v.y)}px` } as React.CSSProperties} cx={sx(v.x)} cy={sy(v.y)} r="6" fill="var(--margin)" stroke="var(--card)" strokeWidth="2" />
+          <g ref={(el) => { if (el) pointRefs.current[2] = el; }}>
+            <circle data-ring cx={sx(v.x)} cy={sy(v.y)} r="10" fill="none" stroke="var(--margin)" strokeWidth="2" opacity="0" />
+            <circle data-marker cx={sx(v.x)} cy={sy(v.y)} r="6" fill="var(--margin)" stroke="var(--card)" strokeWidth="2" className={intro ? "marker-hidden" : ""} />
           </g>
         ) : null}
+        <g ref={pen} style={{ pointerEvents: "none" }}>
+          <g filter={`url(#${uid}-blur)`}>
+            <path d="M0 0 L5 -9 L19 -26 L26 -20 L10 -5 Z" fill="var(--ink)" />
+            <path d="M0 0 L5 -9 L10 -5 Z" fill="var(--pen)" />
+            <path d="M19 -26 L26 -20 L29 -25 L23 -31 Z" fill="var(--margin)" />
+          </g>
+        </g>
       </svg>
 
       <div className="flex flex-col gap-1 px-4 pt-3">
