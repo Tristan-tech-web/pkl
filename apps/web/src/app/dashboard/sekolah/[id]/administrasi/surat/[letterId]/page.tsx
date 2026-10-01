@@ -34,7 +34,7 @@ export default async function LetterPage({ params }: { params: Promise<{ id: str
           {where ? <p className="text-sm text-ink-soft">{where}</p> : null}
         </header>
         <div className="mt-6 text-center">
-          <p className="font-display text-xl font-bold underline">{(l.title as string).toUpperCase()}</p>
+          <h1 className="font-display text-xl font-bold underline">{(l.title as string).toUpperCase()}</h1>
           <p className="num text-sm text-ink-soft">Nomor: {l.number as string}</p>
         </div>
         <p className="mt-6 whitespace-pre-wrap leading-relaxed">{l.body as string}</p>

@@ -160,7 +160,7 @@ export default async function Home({
           <div className="reveal mx-auto w-full max-w-6xl px-4 py-16">
             <h2 className="font-display text-3xl font-bold tracking-tight">Paket</h2>
             <p className="mt-2 text-ink-soft">Nama dan batas paket masih sementara. Harga menyusul.</p>
-            <div className="mt-8 overflow-x-auto">
+            <div className="mt-8 overflow-x-auto" tabIndex={0} role="region" aria-label="Perbandingan paket">
               <table className="w-full min-w-[34rem] border-collapse text-left">
                 <thead>
                   <tr className="border-b-2 border-ink">

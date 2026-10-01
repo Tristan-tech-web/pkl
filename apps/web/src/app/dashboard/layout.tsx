@@ -5,6 +5,7 @@ import { Button, Wordmark } from "@/components/ui";
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
+      <a href="#isi" className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50 focus:rounded-[6px] focus:bg-card focus:px-3 focus:py-2 focus:font-semibold">Lompat ke isi</a>
       <header className="site-header border-b border-line bg-paper">
         <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4">
           <Link href="/dashboard" aria-label="EduSmart, ke dashboard">
@@ -17,7 +18,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </form>
         </div>
       </header>
-      <div className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">{children}</div>
+      <main id="isi" className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">{children}</main>
     </>
   );
 }

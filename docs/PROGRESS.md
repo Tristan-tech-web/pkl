@@ -60,6 +60,7 @@ Permintaan pemilik: situs harus lengkap untuk siswa, guru, dan sekolah; modul (r
 - CI database (`database.yml` + `scripts/run-sql-tests.sh`) memuat semua `supabase/tests/*.test.sql` lewat glob, termasuk tes baru.
 - Navigasi pengelola dikelompokkan (Sekolah, Belajar, Administrasi, Komunikasi) tanpa gulir samping; ringkasan keuangan tidak lagi bertabrakan di HP.
 - Impor CSV (`/anggota/impor`): nama[,peran[,kelas]] dengan pemisah koma/titik koma/tab, satu baris salah membatalkan semua, satu kode undangan sekali pakai per baris (nama dan rombel terisi dari label sekolah), kartu kode cetak dan salin sebagai CSV. Tes SQL 6/6, Vitest csv 6, Playwright 3/3.
+- Aksesibilitas: 88 halaman diperiksa dengan axe-core (WCAG 2 A/AA + best-practice) di HP terang dan desktop gelap untuk 4 peran + halaman publik: 0 pelanggaran setelah perbaikan (landmark `<main>`, tautan lompat ke isi, h1 pada rapor/surat, tabel yang bisa digulir fokusable). Temuan kontras di landing hanya terjadi saat animasi reveal berjalan; dengan kurangi-gerak bersih.
 - Data demo ekosistem: `supabase/seed/demo_ecosystem.sql` (jadwal, absensi, nilai, pengumuman, data induk, tagihan untuk Ayu Lestari).
 
 ## Berikutnya

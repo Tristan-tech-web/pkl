@@ -119,7 +119,7 @@ export default async function AbsensiPage({ params, searchParams }: { params: Pr
           {recap.length > 0 ? (
             <section className="mt-10">
               <h2 className="font-display text-2xl font-bold tracking-tight">Rekap bulan {date.slice(0, 7)}</h2>
-              <div className="mt-3 overflow-x-auto">
+              <div className="mt-3 overflow-x-auto" tabIndex={0} role="region" aria-label="Rekap absensi bulanan">
                 <table className="w-full min-w-[32rem] text-left">
                   <thead><tr className="border-b-2 border-ink text-sm"><th className="py-2 pr-3">Siswa</th>{STATUS.map((s) => <th key={s.code} className="num px-2 py-2 text-right">{s.label}</th>)}<th className="num px-2 py-2 text-right">% hadir</th></tr></thead>
                   <tbody>

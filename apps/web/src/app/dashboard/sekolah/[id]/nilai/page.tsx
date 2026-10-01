@@ -113,7 +113,7 @@ export default async function NilaiPage({ params, searchParams }: { params: Prom
           {students.length > 0 && assessments.length > 0 ? (
             <section className="mt-10">
               <h2 className="font-display text-2xl font-bold tracking-tight">Nilai akhir sementara</h2>
-              <div className="mt-3 overflow-x-auto">
+              <div className="mt-3 overflow-x-auto" tabIndex={0} role="region" aria-label="Nilai akhir sementara">
                 <table className="w-full min-w-[28rem] text-left">
                   <thead><tr className="border-b-2 border-ink text-sm"><th className="py-2 pr-3">Siswa</th><th className="num px-2 text-right">Terisi</th><th className="num px-2 text-right">Nilai akhir</th><th className="px-2 text-right">Predikat</th></tr></thead>
                   <tbody>

@@ -80,7 +80,7 @@ export default async function ReportCard({ params, searchParams }: { params: Pro
         <header className="border-b-2 border-ink pb-3 text-center">
           <p className="font-display text-2xl font-bold">{school?.name as string}</p>
           {where ? <p className="text-sm text-ink-soft">{where}</p> : null}
-          <p className="mt-2 font-display text-xl font-bold tracking-wide">LAPORAN HASIL BELAJAR (RAPOR)</p>
+          <h1 className="mt-2 font-display text-xl font-bold tracking-wide">LAPORAN HASIL BELAJAR (RAPOR)</h1>
         </header>
         <dl className="mt-4 grid gap-x-8 gap-y-1 sm:grid-cols-2">
           <div className="flex gap-2"><dt className="w-28 text-ink-soft">Nama</dt><dd className="font-semibold">{member.display_name as string}</dd></div>
