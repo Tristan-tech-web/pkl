@@ -120,6 +120,8 @@ Permintaan pemilik: situs harus lengkap untuk siswa, guru, dan sekolah; modul (r
 
 - Aplikasi ujian: cangkang Android (APK 0,8 MB terkompilasi), Windows (terkompilasi, belum dijalankan), iOS (belum terkompilasi) di `apps/exam-*`; build, penguncian per platform, dan daftar uji perangkat di `docs/exam-apps.md`. CI `exam-apps.yml`.
 
-## Redesign (dimulai)
+## Redesign (selesai tahap B–E; lihat redesign-plan.md §8–14)
 - Riset selesai: `docs/research/R2-learning-science.md` (spacing, retrieval, pretes, tidur, jarak optimal), `R3-gamification-integrity.md` (gamifikasi, anti-farming, deteksi kecurangan berlapis, keadilan, UU PDP ⚠), `R4-design-and-3d.md` (tiga pengalaman Ceria/Seru/Ringkas, personalisasi berlapis, 3D prosedural dengan gerbang kemampuan).
 - Analisis kebutuhan dan rencana kerja bertahap: `docs/design/redesign-plan.md` (B1 tema → B2 komponen → B3 3D → C1 jalur → C2 AI skill tree → C3 bank soal → C4 integritas → D halaman → E verifikasi).
+
+- Status redesign: B1–B3 tema/komponen/3D, C1 jalur terjadwal, C2 skill tree semester AI, C3 bank soal + Latihan, C4 integritas (kamera opsional di perangkat), D1–D3 halaman murid/guru/pemilik/landing/orang tua, E pemindaian aksesibilitas — semua selesai dan terdorong. Sisa: integritas untuk kuis dan ujian, kedaluwarsa otomatis kasus ditahan, telaah hukum kamera (UU PDP), uji perangkat nyata, uji skala ribuan soal dengan kunci AI berbayar, tagihan siswa belum bergabung, Integrasi (Dapodik/SSO), attestation ujian.

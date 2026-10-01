@@ -67,10 +67,10 @@ Sinyal perilaku (selalu), kamera di perangkat (opsional), skor risiko, tahan/bat
 | C2 ☑ | AI penyusun skill tree semester + editor + pratinjau murid | uji dengan buku 70 ribu karakter + jadwal nyata → pohon bertanggal valid, tanggal di hari pelajaran |
 | C3 ☑ | Bank soal AI + tinjau + mode Latihan + penjadwal ulang + kalibrasi | ≥ 300 butir terverifikasi dari buku uji; tingkat butir yang gagal verifikasi dilaporkan; sesi latihan berjalan |
 | C4 ☑ | Integritas: sinyal, skor, buku besar XP, kamera on-device, antrean guru, banding | tes SQL; uji skenario (cepat-asal, salin, tab keluar, tanpa wajah/dua wajah dengan video uji); tidak ada gambar terkirim (periksa lalu lintas) |
-| D1 | Redesign murid | semua halaman murid di 3 pengalaman × (HP, desktop) ditinjau tangkapan layar |
-| D2 | Redesign guru dan kepala sekolah | uji "tugas utama dalam ≤ 3 klik"; teks 150% tanpa patah |
-| D3 | Landing, masuk, orang tua | tangkapan layar ditinjau |
-| E | Regresi lintas peran, performa, aksesibilitas, dokumentasi | lint/typecheck/tes hijau; PROGRESS diperbarui |
+| D1 ☑ | Redesign murid | semua halaman murid di 3 pengalaman × (HP, desktop) ditinjau tangkapan layar |
+| D2 ☑ | Redesign guru dan kepala sekolah | uji "tugas utama dalam ≤ 3 klik"; teks 150% tanpa patah |
+| D3 ☑ | Landing, masuk, orang tua | tangkapan layar ditinjau |
+| E ☑ | Regresi lintas peran, performa, aksesibilitas, dokumentasi | lint/typecheck/tes hijau; PROGRESS diperbarui |
 
 Urutan: B1 → B2 → B3 → C1 → C2 → C3 → C4 → D1 → D2 → D3 → E. B1–B3 lebih dulu karena semua halaman bergantung pada sistem tema.
 
@@ -113,3 +113,10 @@ Urutan: B1 → B2 → B3 → C1 → C2 → C3 → C4 → D1 → D2 → D3 → E.
 - Aplikasi: murid melihat pesan netral + form banding di akhir sesi; guru: `/integritas` (antrean dengan sinyal dan alasan banding, bebaskan/kukuhkan, kebijakan, pengecualian); kamera opsional `components/face-guard.tsx` (MediaPipe Face Landmarker, WASM dan model dilayani dari domain sendiri di `public/mediapipe`, tidak ada gambar yang keluar dari perangkat; hanya hitungan wajah-hilang dan banyak-wajah). Murid selalu boleh memilih "Tanpa kamera".
 - Uji Playwright nyata: sesi mencurigakan → XP dibatalkan → banding → guru membebaskan; kebijakan kamera oleh pemilik; kamera (perangkat palsu) memuat model dan jawaban tetap terkirim.
 - Belum: kuis di jalur belajar dan ujian belum memakai mesin ini (hanya Latihan); kasus 'ditahan' belum kedaluwarsa otomatis (usul: kembalikan XP bila guru tak memutuskan dalam 7 hari); audit bias per kelas; uji false-positive kamera dengan data beragam (⚠ target <2%); telaah hukum UU PDP sebelum kamera dipakai di sekolah sungguhan; notifikasi guru.
+
+## 14. Catatan implementasi D1–E
+- **D1 murid**: kerangka `StudentShell` (bilah atas ringkas: level, streak, XP, lonceng; navigasi bawah 5 tab di HP, rel kiri di layar lebar; header umum disembunyikan lewat `data-shell`). Beranda `StudentHome`: kartu "lanjut belajar" besar + maskot (atau hitung mundur simpul berikutnya), tiga misi harian (1 simpul, 10 soal latihan, jaga streak; hanya penanda, tidak menambah XP), peringkat liga, kartu mapel berwarna dengan kemajuan, pelajaran hari ini. Halaman `/profil` (tampilan, tutor, jadwal, ujian, nilai, rapor, tagihan, keluar). Latihan: keadaan kosong bermaskot.
+- **D2 guru/pemilik**: `StaffHome` — sapaan menurut jam (WIB), "Perlu perhatian" (kasus integritas, soal perlu ditinjau/draf), pelajaran hari ini dengan tombol Absen, ubin tugas utama besar (guru: absensi, nilai, skill tree, bank soal, pantau, ujian; pemilik: anggota, rombel, berkas, tampilan, keuangan, rapor, integritas, paket). Menu pengelolaan menjadi satu tombol "☰ Menu" di HP; menu akun ringkas di HP; menu lengkap disembunyikan di `<details>`.
+- **D3**: landing baru (hero "Belajar jadi permainan. Sekolah jadi mudah." dengan jalur belajar tiruan + maskot 3D, tiga pengalaman, ilmu ingatan, AI untuk guru, pilihan 10 tema, tabel paket dan kontak tetap), masuk/daftar bermaskot (`AuthShell`), tampilan orang tua dengan kartu ikon dan batang nilai.
+- **E**: pemindaian axe-core (serius/kritis) di 400 px dan 1280 px untuk halaman publik, murid, guru, pemilik, dan orang tua: bersih setelah memperbaiki `reveal` (kontras) dan `tablist` palsu di bank soal. vitest 141 lulus, lint dan typecheck bersih. Tes SQL: question_bank 21, integrity 22, learning_path, dll. lulus.
+- Belum diukur otomatis: "tugas utama ≤ 3 klik" dan teks 150% tanpa patah (ditinjau lewat tangkapan layar saja); tema selain bawaan belum dipindai kontrasnya per halaman; uji perangkat nyata (HP Android lemah) belum ada.

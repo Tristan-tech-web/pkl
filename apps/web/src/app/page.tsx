@@ -179,7 +179,7 @@ export default async function Home({
         </section>
 
         <section id="paket" className="border-y border-line bg-card">
-          <div className="reveal mx-auto w-full max-w-6xl px-4 py-16">
+          <div className="mx-auto w-full max-w-6xl px-4 py-16">
             <h2 className="font-display text-3xl font-bold tracking-tight">Paket</h2>
             <p className="mt-2 text-ink-soft">Nama dan batas paket masih sementara. Harga menyusul.</p>
             <div className="mt-8 overflow-x-auto" tabIndex={0} role="region" aria-label="Perbandingan paket">
@@ -247,7 +247,7 @@ export default async function Home({
           </div>
         </section>
 
-        <section id="kontak" className="reveal mx-auto grid w-full max-w-6xl gap-10 px-4 py-16 lg:grid-cols-[1fr_1.1fr]">
+        <section id="kontak" className="mx-auto grid w-full max-w-6xl gap-10 px-4 py-16 lg:grid-cols-[1fr_1.1fr]">
           <div>
             <h2 className="font-display text-3xl font-bold tracking-tight">Butuh konfigurasi khusus?</h2>
             <p className="mt-3 max-w-md text-ink-soft">

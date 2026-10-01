@@ -54,12 +54,12 @@ export default async function BankPage({ params, searchParams }: { params: Promi
 
       <section className="mt-8" aria-label="Tinjau">
         <div className="flex flex-wrap items-end justify-between gap-3">
-          <div className="flex flex-wrap gap-2" role="tablist">
+          <nav aria-label="Status butir" className="flex flex-wrap gap-2">
             {Object.entries(STATUS).map(([k, label]) => (
               <a key={k} href={`/dashboard/sekolah/${id}/bank?s=${k}${sp.mapel ? `&mapel=${sp.mapel}` : ""}`} aria-current={k === status ? "page" : undefined}
                 className={`inline-flex min-h-11 items-center rounded-box border px-3 text-sm font-semibold ${k === status ? "border-pen bg-pen text-on-pen" : "border-line"}`}>{label} <span className="num ml-1.5">{tally.get(k) ?? 0}</span></a>
             ))}
-          </div>
+          </nav>
           {status === "draf" ? <form action={approvePassing.bind(null, id, sp.mapel ?? "")}><input type="hidden" name="back" value={here} /><Button type="submit">Setujui semua yang lolos pemeriksaan</Button></form> : null}
         </div>
         <form method="get" className="mt-3 flex items-end gap-2"><input type="hidden" name="s" value={status} />
