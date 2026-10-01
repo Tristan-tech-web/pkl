@@ -11,6 +11,8 @@ const ITEMS: { slug: string; label: string; module?: string }[] = [
   { slug: "materi", label: "Materi", module: "learning" },
   { slug: "pantau", label: "Pantau belajar", module: "learning" },
   { slug: "absensi", label: "Absensi", module: "attendance" },
+  { slug: "nilai", label: "Nilai", module: "gradebook" },
+  { slug: "rapor", label: "Rapor", module: "gradebook" },
   { slug: "ai", label: "Tutor AI", module: "ai_tutor" },
   { slug: "paket", label: "Paket dan modul" },
 ];

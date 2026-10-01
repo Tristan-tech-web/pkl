@@ -134,6 +134,16 @@ export async function TeacherView({ supabase, schoolId, me }: { supabase: Supa; 
             Absensi harian
           </Link>
         ) : null}
+        {mods.has("gradebook") ? (
+          <>
+            <Link href={`/dashboard/sekolah/${schoolId}/nilai`} className="inline-flex min-h-11 items-center font-semibold text-pen underline">
+              Nilai
+            </Link>
+            <Link href={`/dashboard/sekolah/${schoolId}/rapor`} className="inline-flex min-h-11 items-center font-semibold text-pen underline">
+              Rapor
+            </Link>
+          </>
+        ) : null}
       </p>
       {byClass.size === 0 ? (
         <div className="mt-6">
@@ -246,11 +256,23 @@ async function LearnPanel({ supabase, schoolId, memberId }: { supabase: Supa; sc
           <span aria-hidden="true" className="text-2xl text-pen">→</span>
         </Link>
       )}
-      {mods.has("attendance") ? (
-        <Link href={`/dashboard/sekolah/${schoolId}/absensi`} className="inline-flex min-h-11 items-center font-semibold text-pen underline">
-          Lihat kehadiranku
-        </Link>
-      ) : null}
+      <p className="flex flex-wrap gap-x-6">
+        {mods.has("attendance") ? (
+          <Link href={`/dashboard/sekolah/${schoolId}/absensi`} className="inline-flex min-h-11 items-center font-semibold text-pen underline">
+            Kehadiranku
+          </Link>
+        ) : null}
+        {mods.has("gradebook") ? (
+          <>
+            <Link href={`/dashboard/sekolah/${schoolId}/nilai`} className="inline-flex min-h-11 items-center font-semibold text-pen underline">
+              Nilaiku
+            </Link>
+            <Link href={`/dashboard/sekolah/${schoolId}/rapor`} className="inline-flex min-h-11 items-center font-semibold text-pen underline">
+              Rapor
+            </Link>
+          </>
+        ) : null}
+      </p>
     </div>
   );
 }

@@ -288,3 +288,10 @@ h1, h2, h3 {
 
 .marker-hidden { opacity: 0; }
 @media (prefers-reduced-motion: reduce) { .marker-hidden { opacity: 1; } }
+
+/* Cetak: rapor tampil bersih tanpa navigasi. */
+@media print {
+  .no-print, header.site-header, [data-print-hide] { display: none !important; }
+  body { background: #fff !important; }
+  .report > div { border: 0 !important; padding: 0 !important; }
+}
