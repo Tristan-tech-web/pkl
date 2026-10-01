@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { decodeAvatar } from "@/lib/avatar";
 import { detectCapability } from "./capability";
 
 /** Maskot 3D "Pena". Bila 3D tidak tersedia, tampil versi SVG sederhana (gambar yang sama, tanpa gerak). */
@@ -10,16 +11,16 @@ export function Mascot({ size = 180, className = "" }: { size?: number; classNam
   useEffect(() => {
     const cap = detectCapability();
     if (!cap.ok) { queueMicrotask(() => setMode("svg")); return; }
-    let m: { dispose: () => void; jump: () => void; setPalette: (p: import("./kit").Palette) => void } | null = null;
+    let m: { dispose: () => void; jump: () => void; setPalette: (p: import("./kit").Palette) => void; setAvatar: (a: import("@/lib/avatar").Avatar) => void } | null = null;
     let obs: MutationObserver | null = null;
     let dead = false;
     const onReward = () => m?.jump();
     Promise.all([import("./kit"), import("./pena")]).then(([k, pena]) => {
       if (dead || !ref.current) return;
-      m = pena.createPena(ref.current, { still: cap.still, quality: cap.quality === 2 ? 2 : 1, palette: k.readPalette() });
+      m = pena.createPena(ref.current, { still: cap.still, quality: cap.quality === 2 ? 2 : 1, palette: k.readPalette(), avatar: decodeAvatar(document.documentElement.dataset.avatar) });
       setMode("3d");
-      obs = new MutationObserver(() => m?.setPalette(k.readPalette()));
-      obs.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme", "style"] });
+      obs = new MutationObserver(() => { m?.setPalette(k.readPalette()); m?.setAvatar(decodeAvatar(document.documentElement.dataset.avatar)); });
+      obs.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme", "style", "data-avatar"] });
       window.addEventListener("edusmart:reward", onReward);
     }).catch(() => setMode("svg"));
     return () => { dead = true; obs?.disconnect(); window.removeEventListener("edusmart:reward", onReward); m?.dispose(); };

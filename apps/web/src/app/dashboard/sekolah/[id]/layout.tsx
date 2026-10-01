@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { AppearanceApply } from "@/components/appearance-apply";
+import { AvatarApply } from "@/components/avatar-apply";
 import { StudentShell } from "@/components/student-shell";
+import { sanitizeAvatar } from "@/lib/avatar";
 import { loadStats } from "@/lib/learning";
 import { lookFor } from "@/lib/look";
 import { createClient } from "@/lib/supabase/server";
@@ -13,6 +15,8 @@ export default async function SchoolLayout({ children, params }: { children: Rea
   const n = count ?? 0;
   const { data: { user } } = await supabase.auth.getUser();
   const ctx = user ? await lookFor(supabase, user.id, id) : null;
+  const { data: avRow } = user ? await supabase.from("user_preferences").select("avatar").eq("user_id", user.id).maybeSingle() : { data: null };
+  const avatar = sanitizeAvatar(avRow?.avatar);
   const { data: mine } = user ? await supabase.from("school_members").select("id,roles(code),schools(name)").eq("school_id", id).eq("user_id", user.id).maybeSingle() : { data: null };
   const role = Array.isArray(mine?.roles) ? mine?.roles[0] : mine?.roles;
   if (mine && (role as { code?: string } | null)?.code === "student") {
@@ -21,6 +25,7 @@ export default async function SchoolLayout({ children, params }: { children: Rea
     return (
       <>
         {ctx ? <AppearanceApply look={ctx.look} /> : null}
+        <AvatarApply avatar={avatar} />
         <StudentShell schoolId={id} schoolName={(sc as { name?: string } | null)?.name ?? ""} stats={stats} unread={n}>{children}</StudentShell>
       </>
     );
@@ -28,6 +33,7 @@ export default async function SchoolLayout({ children, params }: { children: Rea
   return (
     <>
       {ctx ? <AppearanceApply look={ctx.look} /> : null}
+      <AvatarApply avatar={avatar} />
       <div className="no-print -mt-2 mb-2 flex justify-end">
         <Link
           href={`/dashboard/sekolah/${id}/notifikasi`}

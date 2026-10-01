@@ -1,10 +1,11 @@
 import * as THREE from "three";
+import { COLOR_HEX, DEFAULT_AVATAR, type Avatar } from "@/lib/avatar";
 import type { Palette } from "./kit";
 
 // Maskot "Pena": burung hantu bulat berkacamata bulat dan topi toga, gaya kartun bergaris tepi (cel-shading + outline).
 // Seluruhnya prosedural (tanpa aset), ≈ 9 ribu segitiga. Mata mengikuti kursor/jari, berkedip, bernapas, melambai, dan melompat
 // dengan peregangan-pemipihan saat ada hadiah atau saat diketuk.
-export type Mascot = { dispose: () => void; jump: () => void; setPalette: (p: Palette) => void };
+export type Mascot = { dispose: () => void; jump: () => void; setPalette: (p: Palette) => void; setAvatar: (a: Avatar) => void };
 
 const CREAM = 0xfff1db, CREAM_DARK = 0xf0d9b8, INK = 0x1b1a3a;
 
@@ -20,7 +21,7 @@ function shadowTexture(): THREE.CanvasTexture {
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
 }
 
-export function createPena(canvas: HTMLCanvasElement, opts: { still: boolean; quality: 1 | 2; palette: Palette }): Mascot {
+export function createPena(canvas: HTMLCanvasElement, opts: { still: boolean; quality: 1 | 2; palette: Palette; avatar?: Avatar }): Mascot {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: "low-power" });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, opts.quality === 2 ? 2 : 1.5));
   const cam = new THREE.PerspectiveCamera(30, 1, 0.1, 40); cam.position.set(0, 0.2, 7.3); cam.lookAt(0, 0.3, 0);
@@ -66,17 +67,17 @@ export function createPena(canvas: HTMLCanvasElement, opts: { still: boolean; qu
 
   // --- wajah: cakram krem + mata besar mengkilap
   const faceDisc = mesh(new THREE.SphereGeometry(1, 36, 24), cream, rig); faceDisc.position.set(0, 0.33, 0.58); faceDisc.scale.set(0.9, 0.5, 0.34);
-  const eyes: THREE.Group[] = [], irises: THREE.Group[] = [];
+  const eyes: THREE.Group[] = [], irises: THREE.Group[] = [], glassParts: THREE.Object3D[] = [];
   for (const sx of [-1, 1]) {
     const eye = new THREE.Group(); eye.position.set(sx * 0.4, 0.37, 0.82); eye.rotation.y = sx * 0.2; rig.add(eye); eyes.push(eye);
-    const ring = mesh(new THREE.SphereGeometry(0.34, 30, 20), mats.hi, eye, 0.07); ring.scale.set(1, 1, 0.5);       // bingkai kacamata
+    const ring = mesh(new THREE.SphereGeometry(0.34, 30, 20), mats.hi, eye, 0.07); ring.scale.set(1, 1, 0.5); glassParts.push(ring);       // bingkai kacamata
     const sclera = mesh(new THREE.SphereGeometry(0.28, 30, 20), white, eye); sclera.scale.set(1, 1, 0.5); sclera.position.z = 0.06;
     const iris = new THREE.Group(); iris.position.z = 0.15; eye.add(iris); irises.push(iris);
     const ir = mesh(new THREE.SphereGeometry(0.19, 24, 16), ink, iris); ir.scale.set(1, 1, 0.45);
     const hl = mesh(new THREE.SphereGeometry(0.065, 12, 8), flat, iris); hl.position.set(-0.06, 0.07, 0.1);
     const hl2 = mesh(new THREE.SphereGeometry(0.03, 10, 8), flat, iris); hl2.position.set(0.07, -0.06, 0.1);
   }
-  const bridge = mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.14, 8), mats.hi, rig); bridge.position.set(0, 0.37, 0.9); bridge.rotation.z = Math.PI / 2; // jembatan kacamata
+  const bridge = mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.14, 8), mats.hi, rig); bridge.position.set(0, 0.37, 0.9); bridge.rotation.z = Math.PI / 2; glassParts.push(bridge); // jembatan kacamata
 
   // --- paruh kecil + pipi merona
   const beak = mesh(new THREE.ConeGeometry(0.12, 0.26, 20), mats.hi, rig, 0.1); beak.position.set(0, 0.12, 0.965); beak.rotation.x = Math.PI / 2 + 0.3; beak.scale.set(1.25, 1, 0.9);
@@ -107,6 +108,16 @@ export function createPena(canvas: HTMLCanvasElement, opts: { still: boolean; qu
   const cord = mesh(new THREE.CylinderGeometry(0.014, 0.014, 0.34, 6), mats.hi, tassel); cord.position.y = -0.17;
   const knot = mesh(new THREE.SphereGeometry(0.065, 12, 8), mats.hi, tassel, 0.14); knot.position.y = -0.37;
   const fringe = mesh(new THREE.ConeGeometry(0.075, 0.22, 12), mats.hi, tassel, 0.12); fringe.position.y = -0.52; fringe.rotation.x = Math.PI;
+
+  // topi alternatif: kupluk berumbai dan mahkota emas
+  const beanie = new THREE.Group(); beanie.position.set(0, 0.86, 0.02); rig.add(beanie);
+  const dome = mesh(new THREE.SphereGeometry(0.66, 32, 18, 0, Math.PI * 2, 0, Math.PI / 2), mats.accent, beanie, 0.05); dome.scale.set(1, 0.95, 1); dome.position.y = 0.05;
+  const band = mesh(new THREE.TorusGeometry(0.64, 0.11, 12, 36), mats.hi, beanie, 0.08); band.rotation.x = Math.PI / 2; band.position.y = 0.06;
+  mesh(new THREE.SphereGeometry(0.15, 16, 12), mats.hi, beanie, 0.1).position.y = 0.72;
+  const gold = toon(0xffc928);
+  const crown = new THREE.Group(); crown.position.set(0, 0.96, 0.02); rig.add(crown);
+  mesh(new THREE.CylinderGeometry(0.46, 0.52, 0.2, 24, 1, false), gold, crown, 0.06);
+  for (let i = 0; i < 5; i++) { const a = (i / 5) * Math.PI * 2; const sp = mesh(new THREE.ConeGeometry(0.1, 0.3, 4), gold, crown, 0.1); sp.position.set(Math.sin(a) * 0.45, 0.24, Math.cos(a) * 0.45); const jw = mesh(new THREE.SphereGeometry(0.05, 10, 8), mats.accent, crown); jw.position.set(Math.sin(a) * 0.45, 0.42, Math.cos(a) * 0.45); }
 
   // --- bayangan lembut di tanah
   const shTex = shadowTexture();
@@ -157,12 +168,23 @@ export function createPena(canvas: HTMLCanvasElement, opts: { still: boolean; qu
   const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; }, { threshold: 0.01 }); io.observe(canvas);
   if (opts.still) draw(0.7); else raf = requestAnimationFrame(loop);
 
-  const setPalette = (n: Palette) => { mats.body.color.copy(n.pen); mats.wing.color.copy(n.pen).multiplyScalar(0.78); mats.scale.color.copy(n.pen).multiplyScalar(0.72); mats.accent.color.copy(n.accent); mats.hi.color.copy(n.hi); blush.color.copy(n.accent); mats.cap.color.copy(n.pen).multiplyScalar(0.28); if (opts.still) draw(0.7); };
-  setPalette(opts.palette);
+  let curPalette = opts.palette, avatar: Avatar = opts.avatar ?? DEFAULT_AVATAR;
+  const apply = () => {
+    const n = curPalette;
+    const bodyCol = avatar.color === "tema" ? n.pen : new THREE.Color(COLOR_HEX[avatar.color]);
+    mats.body.color.copy(bodyCol); mats.wing.color.copy(bodyCol).multiplyScalar(0.78); mats.scale.color.copy(bodyCol).multiplyScalar(0.72);
+    mats.accent.color.copy(n.accent); mats.hi.color.copy(n.hi); blush.color.copy(n.accent); mats.cap.color.copy(bodyCol).multiplyScalar(0.28);
+    cap.visible = tassel.visible = avatar.hat === "toga"; beanie.visible = avatar.hat === "kupluk"; crown.visible = avatar.hat === "mahkota";
+    for (const g of glassParts) g.visible = avatar.glasses;
+    if (opts.still) draw(0.7);
+  };
+  const setPalette = (n: Palette) => { curPalette = n; apply(); };
+  const setAvatar = (a: Avatar) => { avatar = a; apply(); };
+  apply();
   const dispose = () => {
     if (disposed) return; disposed = true; cancelAnimationFrame(raf); window.removeEventListener("pointermove", onMove); canvas.removeEventListener("pointerdown", onTap);
     ro.disconnect(); io.disconnect(); geos.forEach((g) => g.dispose()); [grad, shTex].forEach((t) => t.dispose());
     [...Object.values(mats), cream, creamDark, white, ink, flat, blush, outlineMat, shadow.material as THREE.Material].forEach((m) => m.dispose()); renderer.dispose();
   };
-  return { dispose, jump, setPalette };
+  return { dispose, jump, setPalette, setAvatar };
 }

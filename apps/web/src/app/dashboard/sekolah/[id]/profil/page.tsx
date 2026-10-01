@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { signOut } from "@/app/auth-actions";
+import { AvatarPicker } from "@/components/avatar-picker";
 import { Mascot } from "@/components/three/mascot";
+import { sanitizeAvatar } from "@/lib/avatar";
 import { Button } from "@/components/ui";
 import { enabledModuleCodes } from "@/lib/modules";
 import { getSchoolContext } from "@/lib/school";
@@ -11,10 +13,10 @@ export default async function ProfilePage({ params }: { params: Promise<{ id: st
   const { id } = await params;
   const { supabase, me, school } = await getSchoolContext(id);
   const on = await enabledModuleCodes(supabase, id);
+  const { data: avRow } = await supabase.from("user_preferences").select("avatar").eq("user_id", (await supabase.auth.getUser()).data.user?.id ?? "").maybeSingle();
   const base = `/dashboard/sekolah/${id}`;
   const items: { href: string; icon: string; title: string; hint: string; show: boolean }[] = [
     { href: "/dashboard/tampilan", icon: "🎨", title: "Tampilan", hint: "Pilih tema, ukuran huruf, dan gaya yang kamu suka", show: true },
-    { href: `${base}/ai`, icon: "🤖", title: "Tutor AI", hint: "Tanya apa saja soal pelajaran", show: on.has("ai_tutor") },
     { href: `${base}/jadwal`, icon: "🗓️", title: "Jadwal pelajaran", hint: "Pelajaran minggu ini", show: on.has("schedule") },
     { href: `${base}/ujian`, icon: "📝", title: "Ujian", hint: "Jadwal dan aplikasi ujian", show: on.has("exams") },
     { href: `${base}/nilai`, icon: "📊", title: "Nilaiku", hint: "Hasil belajarmu", show: on.has("gradebook") },
@@ -35,6 +37,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ id: st
           <p className="text-sm text-ink-soft">{me.roleName} · {school.name}</p>
         </div>
       </section>
+      <div className="mt-4"><AvatarPicker schoolId={id} initial={sanitizeAvatar(avRow?.avatar)} /></div>
       <ul className="mt-4 grid gap-2">
         {items.filter((i) => i.show).map((i) => (
           <li key={i.href}>
