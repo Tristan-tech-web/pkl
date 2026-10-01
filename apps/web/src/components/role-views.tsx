@@ -235,10 +235,6 @@ async function LearnPanel({ supabase, schoolId, memberId }: { supabase: Supa; sc
   );
 }
 
-export function ParentView() {
-  return <Empty title="Halaman orang tua" body="Ringkasan perkembangan anak akan tampil di sini." />;
-}
-
 export function BackLink() {
   return (
     <Link href="/dashboard" className="text-sm font-semibold text-pen underline">

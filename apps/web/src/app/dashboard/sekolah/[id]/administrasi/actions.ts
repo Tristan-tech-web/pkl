@@ -65,3 +65,23 @@ export async function deleteLetter(schoolId: string, letterId: string) {
   revalidatePath(`/dashboard/sekolah/${schoolId}/administrasi/surat`);
   redirect(`/dashboard/sekolah/${schoolId}/administrasi/surat?info=${q("Surat dihapus dari arsip.")}`);
 }
+
+export async function linkGuardian(schoolId: string, studentId: string, formData: FormData) {
+  const { supabase } = await getSchoolContext(schoolId, { management: true });
+  await requireModule(supabase, schoolId, "parent_portal");
+  const page = `/dashboard/sekolah/${schoolId}/administrasi/${studentId}`;
+  const parentId = str(formData, "parent_id");
+  const relation = str(formData, "relation");
+  if (!parentId || !["ayah", "ibu", "wali"].includes(relation)) redirect(`${page}?error=${q("Pilih akun orang tua dan hubungan.")}`);
+  const { error } = await supabase.from("guardianships").upsert({ school_id: schoolId, parent_member_id: parentId, student_member_id: studentId, relation });
+  if (error) redirect(`${page}?error=${q("Belum bisa menghubungkan.")}`);
+  revalidatePath(page);
+  redirect(`${page}?info=${q("Orang tua terhubung.")}`);
+}
+
+export async function unlinkGuardian(schoolId: string, studentId: string, parentId: string) {
+  const { supabase } = await getSchoolContext(schoolId, { management: true });
+  await supabase.from("guardianships").delete().eq("parent_member_id", parentId).eq("student_member_id", studentId).eq("school_id", schoolId);
+  revalidatePath(`/dashboard/sekolah/${schoolId}/administrasi/${studentId}`);
+  redirect(`/dashboard/sekolah/${schoolId}/administrasi/${studentId}?info=${q("Hubungan dilepas.")}`);
+}

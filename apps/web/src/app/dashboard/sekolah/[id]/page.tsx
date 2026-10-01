@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
-import { BackLink, OwnerView, ParentView, StudentView, TeacherView, type Membership } from "@/components/role-views";
+import { BackLink, OwnerView, StudentView, TeacherView, type Membership } from "@/components/role-views";
+import { ParentView } from "@/components/parent-view";
 import { LatestAnnouncements, ModuleLinks } from "@/components/module-links";
 import { authorityLabel } from "@/lib/format";
 import { createClient } from "@/lib/supabase/server";
@@ -46,10 +47,10 @@ export default async function SchoolPage({ params }: { params: Promise<{ id: str
       <header className="mt-3 mb-8">
         <p className="text-sm font-semibold uppercase tracking-[0.08em] text-ink-soft">{me.roleName}</p>
         <h1 className="mt-1 font-display text-4xl font-bold tracking-tight">
-          {me.roleCode === "student" ? `Halo, ${first}` : school.name}
+          {me.roleCode === "student" || me.roleCode === "parent" ? `Halo, ${first}` : school.name}
         </h1>
         <p className="mt-1 text-ink-soft">
-          {me.roleCode === "student" ? school.name : `${where ? `${where} · ` : ""}${authorityLabel(school.authority)} · ${school.ownership === "negeri" ? "Negeri" : "Swasta"}`}
+          {me.roleCode === "student" || me.roleCode === "parent" ? school.name : `${where ? `${where} · ` : ""}${authorityLabel(school.authority)} · ${school.ownership === "negeri" ? "Negeri" : "Swasta"}`}
         </p>
       </header>
       {MANAGEMENT.has(me.roleCode) ? (
@@ -70,7 +71,7 @@ export default async function SchoolPage({ params }: { params: Promise<{ id: str
           <LatestAnnouncements schoolId={id} />
         </>
       ) : (
-        <ParentView />
+        <ParentView schoolId={id} />
       )}
     </>
   );
