@@ -7,6 +7,7 @@ const ITEMS = [
   { slug: "mapel", label: "Mata pelajaran" },
   { slug: "materi", label: "Materi" },
   { slug: "pantau", label: "Pantau belajar" },
+  { slug: "ai", label: "Tutor AI" },
 ];
 
 export function SchoolNav({ schoolId, active }: { schoolId: string; active: string }) {

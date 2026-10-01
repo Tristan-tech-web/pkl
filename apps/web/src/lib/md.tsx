@@ -83,3 +83,10 @@ export function Markdown({ source }: { source: string }) {
   flushList();
   return <div className="space-y-4 text-lg leading-relaxed [&_p]:max-w-prose">{blocks}</div>;
 }
+
+// Format satu baris/paragraf saja (tebal dan kode), untuk balasan tutor.
+export function InlineMd({ text }: { text: string }) {
+  return <>{text.split("\n").map((line, i) => (
+    <span key={i} className="block min-h-[1.25em]">{inline(line, `i${i}`)}</span>
+  ))}</>;
+}

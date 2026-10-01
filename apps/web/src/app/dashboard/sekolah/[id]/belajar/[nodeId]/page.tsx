@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { BackLink } from "@/components/role-views";
 import { LinkButton } from "@/components/ui";
 import { ParabolaDemo } from "@/components/parabola-demo";
+import { TutorChat } from "@/components/tutor-chat";
 import { Stars } from "@/components/stars";
 import { loadMap } from "@/lib/learning";
 import { Markdown } from "@/lib/md";
@@ -56,7 +57,10 @@ export default async function LessonPage({ params }: { params: Promise<{ id: str
             ) : null}
             <Markdown source={(lesson?.body_md as string | undefined) ?? "Guru belum menulis materi."} />
           </div>
-          <div className="lg:sticky lg:top-6 lg:self-start">{lesson?.visual_module === "parabola" ? <ParabolaDemo hero={false} /> : null}</div>
+          <div className="space-y-6 lg:sticky lg:top-6 lg:self-start">
+            {lesson?.visual_module === "parabola" ? <ParabolaDemo hero={false} /> : null}
+            {me.roleCode === "student" ? <TutorChat schoolId={id} nodeId={nodeId} /> : null}
+          </div>
         </div>
       )}
       {!locked ? (

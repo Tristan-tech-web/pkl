@@ -39,7 +39,8 @@ Cara melanjutkan di sesi baru: baca `CLAUDE.md`, berkas ini, lalu kerjakan "Beri
 - Guru/manajemen: `/pantau` dengan progres per siswa, tanda risiko (belum mulai, tidak aktif 7 hari, materi belum lulus, rata-rata < 60), pembuatan dan pembaruan tindak lanjut.
 - Diuji Playwright (siswa desktop+HP, guru): 14 pemeriksaan lulus; siswa tidak bisa membuka `/pantau` (404); ulang kuis tidak memberi XP ganda.
 - Authoring guru (`/materi`): buat draf materi, tulis pelajaran (markdown mini), prasyarat, tambah/hapus soal (pilihan ganda & isian singkat) dengan kunci terpisah; terbit ditolak bila belum ada soal. Diuji Playwright (7 pemeriksaan; siswa 404 di /materi, materi terbit langsung muncul di peta siswa).
-- Belum: tutor AI (BYOK), analitik, ringkasan orang tua, liga/pencapaian.
+- Tutor AI (BYOK): `school_ai_settings` (kunci terenkripsi AES-256-GCM di aplikasi, rahasia `AI_KEY_ENCRYPTION_SECRET` sudah di Vercel sensitive), `ai_usage`, RPC `reserve_ai_call` (keanggotaan + jatah harian di server, mode school/platform/limit/none). Sekolah demo (`schools.is_demo`) boleh memakai kunci platform (data sintetis); sekolah lain wajib kunci sendiri. Halaman `/ai` untuk pemilik (uji kunci sebelum simpan, kunci tak pernah ditampilkan), chat tutor Sokratik di halaman pelajaran siswa. Tes SQL 11/11, Vitest crypto 6, Playwright 5.
+- Belum: analitik (BYOK), analitik, ringkasan orang tua, liga/pencapaian.
 
 ## Berikutnya
 0. Prioritas langsung: M2 (graf kompetensi, skill tree dengan prasyarat, kuis dinilai di server, XP/streak/level di server dengan satu konfigurasi, dashboard guru dengan intervensi).
