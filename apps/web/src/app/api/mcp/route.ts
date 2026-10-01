@@ -1,20 +1,24 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { readPublicEnv } from "@/lib/env";
+import { originOf } from "@/lib/origin";
 import { handleMessage } from "@/lib/mcp/server";
 
 export const maxDuration = 60;
 export const dynamic = "force-dynamic";
 
 const noStore = { "Cache-Control": "no-store" };
-const unauthorized = () =>
-  NextResponse.json({ jsonrpc: "2.0", id: null, error: { code: -32001, message: "Token tidak valid. Buat token di EduSmart > AI saya > Sambungkan AI." } }, { status: 401, headers: { ...noStore, "WWW-Authenticate": 'Bearer realm="EduSmart"' } });
+const unauthorized = (origin: string) =>
+  NextResponse.json({ jsonrpc: "2.0", id: null, error: { code: -32001, message: "Token tidak valid. Buat token di EduSmart > AI saya > Sambungkan AI, atau masuk lewat OAuth." } }, {
+    status: 401,
+    headers: { ...noStore, "WWW-Authenticate": `Bearer realm="EduSmart", resource_metadata="${origin}/.well-known/oauth-protected-resource"` },
+  });
 
 // MCP Streamable HTTP (mode JSON). Autentikasi: Authorization: Bearer esm_...
 export async function POST(req: NextRequest) {
   const origin = req.headers.get("origin");
   if (origin && new URL(origin).host !== req.headers.get("host")) return NextResponse.json({ error: "Origin tidak diizinkan" }, { status: 403 });
   const token = (req.headers.get("authorization") ?? "").replace(/^Bearer\s+/i, "").trim();
-  if (!/^esm_[A-Za-z0-9_-]{40,}$/.test(token)) return unauthorized();
+  if (!/^esm_[A-Za-z0-9_-]{40,}$/.test(token)) return unauthorized(originOf(req.headers));
   const { supabaseUrl, supabasePublishableKey } = readPublicEnv();
 
   const rpc = async (fn: string, params: Record<string, unknown>) => {
@@ -39,7 +43,7 @@ export async function POST(req: NextRequest) {
     // Token diperiksa sekali di awal agar pemanggil dapat 401 yang jelas.
     await rpc("mcp_whoami", { p_token: token });
   } catch (e) {
-    if (e instanceof Error && e.message === "TOKEN") return unauthorized();
+    if (e instanceof Error && e.message === "TOKEN") return unauthorized(originOf(req.headers));
   }
   const out: unknown[] = [];
   for (const m of batch.slice(0, 20)) {

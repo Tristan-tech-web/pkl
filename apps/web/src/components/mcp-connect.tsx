@@ -27,6 +27,7 @@ export function McpConnect({ endpoint }: { endpoint: string }) {
         </div>
       ) : null}
       <div className="space-y-4">
+        <div><h3 className="font-semibold">claude.ai dan aplikasi dengan konektor kustom (tanpa token)</h3><CopyBox text={endpoint} label="Salin alamat" note="Tambahkan konektor kustom (Pengaturan > Konektor > Tambah konektor kustom), tempel alamat ini, lalu masuk dan setujui akses. Token tidak diperlukan." /></div>
         <div><h3 className="font-semibold">Claude Code / harness</h3><CopyBox text={cli} label="Salin perintah" /></div>
         <div><h3 className="font-semibold">Aplikasi yang mendukung MCP jarak jauh (Cursor, Cowork, dsb.)</h3><CopyBox text={json} label="Salin konfigurasi" note="Tempel pada pengaturan MCP aplikasi Anda." /></div>
         <div><h3 className="font-semibold">Claude Desktop (lewat penghubung)</h3><CopyBox text={bridge} label="Salin konfigurasi" note="Perlu Node.js; ditempel di claude_desktop_config.json." /></div>

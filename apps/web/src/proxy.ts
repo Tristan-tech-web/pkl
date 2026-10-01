@@ -29,7 +29,7 @@ export async function proxy(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const path = request.nextUrl.pathname;
-  if (!user && (path.startsWith("/dashboard") || path.startsWith("/gabung"))) {
+  if (!user && (path.startsWith("/dashboard") || path.startsWith("/gabung") || path.startsWith("/oauth/authorize"))) {
     const url = request.nextUrl.clone();
     url.pathname = "/masuk";
     url.search = `?next=${encodeURIComponent(path + request.nextUrl.search)}`;
