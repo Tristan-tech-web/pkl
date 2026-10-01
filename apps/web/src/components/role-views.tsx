@@ -1,9 +1,7 @@
 import Link from "next/link";
-import { StudentHero } from "@/components/student-hero";
+import { StudentHome } from "@/components/student-home";
 import { Card } from "@/components/ui";
 import { SchoolNav } from "@/components/school-nav";
-import { StudentStats } from "@/components/student-stats";
-import { loadMap, loadStats } from "@/lib/learning";
 import { createClient } from "@/lib/supabase/server";
 
 type Supa = Awaited<ReturnType<typeof createClient>>;
@@ -174,80 +172,16 @@ export async function StudentView({ supabase, schoolId, me }: { supabase: Supa; 
     .map((s) => ({ id: s.id, hours: s.hours_per_week, subject: one(s.school_subjects) }))
     .filter((s): s is { id: string; hours: number | null; subject: { id: string; name: string; group_code: string } } => s.subject !== null);
 
-  const heroStats = await loadStats(supabase, schoolId, me.memberId);
+  if (!cg) return <Empty title="Kamu belum masuk rombel" body="Minta guru atau admin sekolah memasukkanmu ke rombel. Setelah itu mata pelajaranmu muncul di sini." />;
   return (
-    <>
-      <StudentHero name={(me.displayName ?? "teman").split(" ")[0]} stats={heroStats} />
-      {cg ? (
-        <p className="inline-flex items-center gap-2 rounded-full border border-line bg-card px-3 py-1 text-sm font-semibold">
-          <span aria-hidden="true" className="size-3 rounded-full border-2 border-pen" />
-          {cg.name} <span className="num font-normal text-ink-soft">· Kelas {cg.grade}</span>
-        </p>
-      ) : (
-        <Empty title="Kamu belum masuk rombel" body="Minta guru atau admin sekolah memasukkanmu ke rombel. Setelah itu mata pelajaranmu muncul di sini." />
-      )}
-      {cg ? (
-        <section className="mt-8">
-          <h2 className="font-display text-2xl font-bold tracking-tight">Mata pelajaranmu</h2>
-          {subjects.length === 0 ? (
-            <div className="mt-4">
-              <Empty title="Belum ada mata pelajaran" body="Guru belum ditugaskan ke rombelmu." />
-            </div>
-          ) : (
-            <ul className="stagger mt-4 border-t border-line">
-              {subjects.map((s) => (
-                <li key={s.id} className="flex items-baseline justify-between gap-4 border-b border-line py-3">
-                  <span className="text-lg font-semibold">{s.subject.name}</span>
-                  <span className="num text-sm text-ink-soft">{s.hours ?? "–"} jam/minggu</span>
-                </li>
-              ))}
-            </ul>
-          )}
-          <LearnPanel supabase={supabase} schoolId={schoolId} memberId={me.memberId} />
-        </section>
-      ) : null}
-    </>
-  );
-}
-
-async function LearnPanel({ supabase, schoolId, memberId }: { supabase: Supa; schoolId: string; memberId: string }) {
-  const [map, stats] = await Promise.all([loadMap(supabase, schoolId, memberId), loadStats(supabase, schoolId, memberId)]);
-  const done = map.filter((n) => n.state === "selesai").length;
-  const next = map.find((n) => n.state === "tersedia");
-  return (
-    <div className="mt-8 space-y-4">
-      <StudentStats stats={stats} />
-      {map.length === 0 ? (
-        <Empty title="Materi belum tersedia" body="Guru sedang menyiapkan pelajaran. Begitu ada, peta belajarmu muncul di sini." />
-      ) : (
-        <Link
-          href={`/dashboard/sekolah/${schoolId}/belajar`}
-          className="press flex items-center justify-between gap-3 rounded-box border-2 border-pen bg-card p-4"
-        >
-          <span>
-            <span className="block text-xs font-semibold uppercase tracking-[0.08em] text-pen">Peta belajar</span>
-            <span className="block text-lg font-bold">{next ? `Lanjut: ${next.title}` : "Lihat semua materi"}</span>
-            <span className="num block text-sm text-ink-soft">
-              {done} dari {map.length} materi selesai
-            </span>
-          </span>
-          <span aria-hidden="true" className="text-2xl text-pen">→</span>
-        </Link>
-      )}
-      <Link href={`/dashboard/sekolah/${schoolId}/latihan`} className="press flex items-center justify-between gap-3 rounded-box border-2 border-line bg-card p-4">
-        <span>
-          <span className="block text-xs font-semibold uppercase tracking-[0.08em] text-pen">Latihan</span>
-          <span className="block text-lg font-bold">Kumpulkan XP dengan latihan soal</span>
-        </span>
-        <span aria-hidden="true" className="text-2xl text-pen">→</span>
-      </Link>
-    </div>
+    <StudentHome supabase={supabase} schoolId={schoolId} memberId={me.memberId} name={(me.displayName ?? "teman").split(" ")[0]} classId={cg.id}
+      subjects={subjects.map((s) => ({ id: s.id, name: s.subject.name, hours: s.hours }))} />
   );
 }
 
 export function BackLink() {
   return (
-    <Link href="/dashboard" className="text-sm font-semibold text-pen underline">
+    <Link href="/dashboard" className="back-link text-sm font-semibold text-pen underline">
       ← Semua sekolah
     </Link>
   );

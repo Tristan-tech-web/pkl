@@ -44,7 +44,7 @@ export default async function SchoolPage({ params }: { params: Promise<{ id: str
   return (
     <>
       {(schoolCount ?? 0) > 1 ? <BackLink /> : null}
-      <header className="mt-3 mb-8">
+      {me.roleCode === "student" ? null : <header className="mt-3 mb-8">
         <p className="text-sm font-semibold uppercase tracking-[0.08em] text-ink-soft">{me.roleName}</p>
         <h1 className="mt-1 font-display text-4xl font-bold tracking-tight">
           {me.roleCode === "student" || me.roleCode === "parent" ? `Halo, ${first}` : school.name}
@@ -52,7 +52,7 @@ export default async function SchoolPage({ params }: { params: Promise<{ id: str
         <p className="mt-1 text-ink-soft">
           {me.roleCode === "student" || me.roleCode === "parent" ? school.name : `${where ? `${where} · ` : ""}${authorityLabel(school.authority)} · ${school.ownership === "negeri" ? "Negeri" : "Swasta"}`}
         </p>
-      </header>
+      </header>}
       {MANAGEMENT.has(me.roleCode) ? (
         <>
           <OwnerView supabase={supabase} schoolId={id} />

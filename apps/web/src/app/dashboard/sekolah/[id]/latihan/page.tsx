@@ -1,4 +1,5 @@
 import { Button, ErrorNote } from "@/components/ui";
+import { Mascot } from "@/components/three/mascot";
 import { getSchoolContext } from "@/lib/school";
 import { practiceStart } from "./actions";
 
@@ -13,11 +14,11 @@ export default async function PracticePage({ params, searchParams }: { params: P
   const list = (data ?? []) as { subject_id: string; name: string; items: number; due: number }[];
   return (
     <>
-      <a href={`/dashboard/sekolah/${id}`} className="text-sm font-semibold text-pen underline">← Beranda</a>
-      <h1 className="mt-3 mb-1 font-display text-3xl font-bold tracking-tight">Latihan</h1>
+      <a href={`/dashboard/sekolah/${id}`} className="back-link text-sm font-semibold text-pen underline">← Beranda</a>
+      <h1 className="mb-1 font-display text-3xl font-extrabold tracking-tight">Latihan 💪</h1>
       <p className="text-ink-soft">10 soal tiap sesi. Benar dapat XP; soal yang sudah kamu kuasai muncul lagi beberapa hari kemudian supaya ingatan awet.</p>
       <div className="mt-3"><ErrorNote message={sp.error} /></div>
-      {list.length === 0 ? <p className="mt-6 surface p-4">Belum ada soal latihan. Guru akan menyiapkannya sebentar lagi.</p> : (
+      {list.length === 0 ? <div className="surface mt-6 flex flex-col items-center p-8 text-center"><Mascot size={120} /><p className="mt-2 font-display text-xl font-extrabold">Belum ada soal latihan</p><p className="text-ink-soft">Guru sedang menyiapkannya. Sambil menunggu, coba jalur belajarmu!</p><a href={`/dashboard/sekolah/${id}/belajar`} className="btn-solid mt-4 inline-flex min-h-11 items-center rounded-btn px-5 font-bold">Buka jalur belajar</a></div> : (
         <ul className="mt-6 grid gap-4 sm:grid-cols-2">
           {list.map((s) => (
             <li key={s.subject_id} className="surface p-4">
