@@ -64,7 +64,7 @@ Sinyal perilaku (selalu), kamera di perangkat (opsional), skor risiko, tahan/bat
 | B2 ☑ | Ulang desain komponen inti (tombol, kartu, navigasi, formulir) per pengalaman | audit axe bersih; kontras terjamin tiap tema; ukuran sentuh ≥ 44 px (Ringkas ≥ 48) |
 | B3 ☑ | Kit 3D prosedural (maskot, benda melayang, adegan latar, permata XP) + gerbang kemampuan | muatan three hanya di halaman yang meminta; ≥ 30 fps pada CPU throttle 4×; mode Ringkas tanpa three; `reduced-motion` statis |
 | C1 ☑ | Jalur belajar + aturan buka terjadwal + simpul ulang | Playwright: simpul besok terkunci dengan hitung mundur; terbuka setelah waktunya (waktu disimulasikan); tidak mengunci balik |
-| C2 | AI penyusun skill tree semester + editor + pratinjau murid | uji dengan buku 70 ribu karakter + jadwal nyata → pohon bertanggal valid, tanggal di hari pelajaran |
+| C2 ☑ | AI penyusun skill tree semester + editor + pratinjau murid | uji dengan buku 70 ribu karakter + jadwal nyata → pohon bertanggal valid, tanggal di hari pelajaran |
 | C3 | Bank soal AI + tinjau + mode Latihan + penjadwal ulang + kalibrasi | ≥ 300 butir terverifikasi dari buku uji; tingkat butir yang gagal verifikasi dilaporkan; sesi latihan berjalan |
 | C4 | Integritas: sinyal, skor, buku besar XP, kamera on-device, antrean guru, banding | tes SQL; uji skenario (cepat-asal, salin, tab keluar, tanpa wajah/dua wajah dengan video uji); tidak ada gambar terkirim (periksa lalu lintas) |
 | D1 | Redesign murid | semua halaman murid di 3 pengalaman × (HP, desktop) ditinjau tangkapan layar |
@@ -94,3 +94,9 @@ Urutan: B1 → B2 → B3 → C1 → C2 → C3 → C4 → D1 → D2 → D3 → E.
 ## 10. Catatan implementasi C1 (selesai)
 - DB: `path_units`, kolom `competency_nodes.unit_id`, jenis simpul baru (persiapan/latihan/ulang/boss/cerita), `node_schedule` (buka per rombel), `app_private.node_time_locked`, dan `submit_quiz` menolak simpul yang belum dibuka (tes SQL 9).
 - App: `lib/learning.ts` (status `dijadwalkan`, `opensAt`), `components/path-map.tsx` + `countdown.tsx` (jalur berkelok, simpul 'permen'/heksagon/datar per pengalaman), halaman `belajar` ditulis ulang, editor materi punya jenis/unit/jadwal buka (WIB). Playwright m26 (7 pemeriksaan). Simpul terjadwal tidak memakai prasyarat berantai: waktu yang mengatur, supaya murid yang terlewat tidak terkunci permanen (R2 aturan 6).
+
+## 11. Catatan implementasi C2 (selesai)
+- `lib/skilltree.ts` (murni, 12 tes): `buildMeetings` (jadwal rombel + libur), `allocate` (pertemuan per bab menurut bobot), `layoutTree` (persiapan H-1 15.00 WIB per pertemuan, latihan setelah pertemuan terakhir, cek H+1, ulang berjarak rasio Cepeda 10/25/50% ke ujian, tantangan H-2 ujian), `examDatesFromPlan`. Tanggal tidak pernah dibuat AI.
+- AI hanya mengisi konten per bab (pratinjau, pretes, latihan, cek, ulang) dengan satu panggilan; percobaan kedua meminta JSON ringkas bila jawaban rusak. Keluaran dibatasi 7000 token.
+- `skilltree/actions.ts`: `generateTreeChapter` (idempoten, hanya mengganti draf berawalan `ST-<plan8>-`), `shiftTree`, `publishUnit`/`unpublishUnit`, `deleteTree`. Halaman `/dashboard/sekolah/[id]/skilltree/[planId]` + `TreeRunner` (dapat dijeda/dilanjutkan, ulang otomatis saat 429/503).
+- Uji Playwright dengan AI nyata: 26 simpul dalam 3 unit, libur dilewati, geser +7 hari, terbit per unit. Batas: satu rombel per penyusunan; model gratis sering 429/503/JSON rusak (ditangani ulang).
