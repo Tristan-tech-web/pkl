@@ -33,7 +33,10 @@ export default async function AdministrasiPage({ params }: { params: Promise<{ i
           <h1 className="font-display text-4xl font-bold tracking-tight">Administrasi</h1>
           <p className="mt-1 max-w-2xl text-ink-soft">Data induk siswa dan guru. Data ini pribadi: hanya pengelola, wali kelas siswa itu, dan pemilik datanya yang bisa membaca.</p>
         </div>
-        <Link href={`/dashboard/sekolah/${id}/administrasi/surat`} className="press inline-flex min-h-11 items-center rounded-[6px] border border-line bg-card px-5 font-semibold hover:border-pen">Surat dan arsip</Link>
+        <div className="flex flex-wrap gap-2">
+          <Link href={`/dashboard/sekolah/${id}/administrasi/roster`} className="press inline-flex min-h-11 items-center rounded-[6px] border border-line bg-card px-5 font-semibold hover:border-pen">Roster (belum bergabung)</Link>
+          <Link href={`/dashboard/sekolah/${id}/administrasi/surat`} className="press inline-flex min-h-11 items-center rounded-[6px] border border-line bg-card px-5 font-semibold hover:border-pen">Surat dan arsip</Link>
+        </div>
       </header>
       {rows.length === 0 ? (
         <p className="rounded-[6px] border border-dashed border-line p-6 text-ink-soft">Belum ada anggota.</p>

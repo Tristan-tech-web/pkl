@@ -20,6 +20,7 @@ const TEACHER: Item[] = [
   { slug: "rapor", label: "Rapor", module: "gradebook" },
   { slug: "analitik", label: "Analitik", module: "analytics" },
   { slug: "liga", label: "Liga kelas", module: "learning" },
+  { slug: "berkas", label: "Berkas kurikulum", module: "data_hub" },
   { slug: "materi", label: "Materi dan soal", module: "learning" },
   { slug: "pengumuman", label: "Pengumuman", module: "announcements" },
 ];

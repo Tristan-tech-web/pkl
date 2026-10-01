@@ -110,3 +110,30 @@ export async function deleteTemplate(schoolId: string, id: string) {
   revalidatePath(`/dashboard/sekolah/${schoolId}/administrasi/surat/templat`);
   redirect(`/dashboard/sekolah/${schoolId}/administrasi/surat/templat?info=${q("Templat dihapus.")}`);
 }
+
+export async function createRosterInvite(schoolId: string, rosterId: string) {
+  const { supabase } = await getSchoolContext(schoolId, { management: true });
+  const page = `/dashboard/sekolah/${schoolId}/administrasi/roster`;
+  const { data: p } = await supabase.from("roster_people").select("id,kind,full_name,class_name,member_id").eq("id", rosterId).eq("school_id", schoolId).maybeSingle();
+  if (!p || p.member_id) redirect(`${page}?error=${q("Orang ini sudah bergabung atau tidak ditemukan.")}`);
+  const code = { siswa: "student", guru: "teacher", staf: "admin", orang_tua: "parent" }[p!.kind as string] ?? "student";
+  const [{ data: role }, { data: cls }] = await Promise.all([
+    supabase.from("roles").select("id").eq("school_id", schoolId).eq("code", code).maybeSingle(),
+    p!.class_name ? supabase.from("class_groups").select("id").eq("school_id", schoolId).ilike("name", p!.class_name as string).maybeSingle() : Promise.resolve({ data: null }),
+  ]);
+  if (!role) redirect(`${page}?error=${q("Peran tidak ditemukan.")}`);
+  const { data: inv, error } = await supabase.from("invites").insert({
+    school_id: schoolId, role_id: role!.id, class_group_id: (cls as { id: string } | null)?.id ?? null, max_uses: 1,
+    expires_at: new Date(Date.now() + 60 * 86400000).toISOString(), label: p!.full_name, roster_id: p!.id,
+  }).select("code").single();
+  if (error || !inv) redirect(`${page}?error=${q("Kode belum bisa dibuat.")}`);
+  revalidatePath(page);
+  redirect(`${page}?info=${q(`Kode untuk ${p!.full_name}: ${inv!.code}`)}`);
+}
+
+export async function deleteRoster(schoolId: string, rosterId: string) {
+  const { supabase } = await getSchoolContext(schoolId, { management: true });
+  await supabase.from("roster_people").delete().eq("id", rosterId).eq("school_id", schoolId);
+  revalidatePath(`/dashboard/sekolah/${schoolId}/administrasi/roster`);
+  redirect(`/dashboard/sekolah/${schoolId}/administrasi/roster?info=${q("Data dihapus dari roster.")}`);
+}
