@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BackLink } from "@/components/role-views";
 import { SchoolNav } from "@/components/school-nav";
+import { AutoAnalyze } from "@/components/auto-analyze";
 import { UploadZone } from "@/components/upload-zone";
 import { Button, ErrorNote, InfoNote, Input, Select } from "@/components/ui";
 import { CATEGORIES, CATEGORY_LABEL, type Category } from "@/lib/intake";
@@ -38,6 +39,7 @@ export default async function BerkasPage({ params, searchParams }: { params: Pro
   for (const r of all ?? []) counts.set(r.category as string, (counts.get(r.category as string) ?? 0) + 1);
   type F = { id: string; name: string; size_bytes: number; category: Category; category_source: string; ai_status: string; ai_summary: string | null; ai_confidence: number | null; status: string; scope: string; created_at: string; extracted: { via?: string; notes?: string; table?: { total_rows: number } } | null; school_subjects: { name: string } | { name: string }[] | null };
   const rows = (files ?? []) as unknown as F[];
+  const pending = rows.filter((r) => r.ai_status === "belum").map((r) => ({ id: r.id, createdAt: r.created_at })).slice(0, 10);
   const subjectOpts = (subjects ?? []).map((s) => ({ value: s.id as string, label: s.name as string }));
 
   return (
@@ -61,6 +63,7 @@ export default async function BerkasPage({ params, searchParams }: { params: Pro
         />
       </div>
 
+      <AutoAnalyze schoolId={id} items={pending} />
       <section className="mt-10">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <h2 className="font-display text-2xl font-bold tracking-tight">Berkas <span className="num text-ink-soft">({(all ?? []).length})</span></h2>
