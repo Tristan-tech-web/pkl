@@ -94,14 +94,14 @@ export async function generateTreeChapter(schoolId: string, planId: string, cfg:
     if (!ai.run) return { ok: false, error: ai.reason ?? "AI belum bisa dipakai." };
     const { data: f } = await supabase.from("school_files").select("text_content").eq("id", p.file_id as string).maybeSingle();
     const preps = specs.filter((s) => s.kind === "persiapan");
-    let content;
-    try {
-      const raw = await ai.run(TREE_SYSTEM, chapterPrompt({ subject, grade: p.grade as number, title: ch.title, summary: ch.summary, elements: ch.elements.map((e) => ({ name: e.name, method: e.method })), meetings, excerpt: excerptFor(String(f?.text_content ?? ""), ch.title, 4000) }), undefined, 7000);
-      content = sanitizeChapterContent(parseJsonLoose(raw), preps.length);
-    } catch (e) {
-      console.error("generateTreeChapter gagal", e instanceof Error ? e.message.slice(0, 200) : "?");
-      return { ok: false, error: "AI gagal menjawab untuk bab ini. Tekan Lanjutkan untuk mencoba lagi." };
+    let content: ReturnType<typeof sanitizeChapterContent> | undefined;
+    const prompt = chapterPrompt({ subject, grade: p.grade as number, title: ch.title, summary: ch.summary, elements: ch.elements.map((e) => ({ name: e.name, method: e.method })), meetings, excerpt: excerptFor(String(f?.text_content ?? ""), ch.title, 4000) });
+    // Model kecil kadang menghasilkan JSON membengkak/rusak; percobaan kedua meminta bentuk ringkas satu baris.
+    for (const extra of ["", "\nPENTING: tulis JSON ringkas dalam satu baris tanpa indentasi, pembahasan maksimal 1 kalimat, pratinjau maksimal 80 kata."]) {
+      try { content = sanitizeChapterContent(parseJsonLoose(await ai.run(TREE_SYSTEM, prompt + extra, undefined, 7000)), preps.length); break; }
+      catch (e) { console.error("generateTreeChapter gagal", e instanceof Error ? e.message.slice(0, 120) : "?"); }
     }
+    if (!content) return { ok: false, error: "AI gagal menjawab untuk bab ini. Tekan Lanjutkan untuk mencoba lagi." };
     if (content.practice.length + content.checkpoint.length === 0) return { ok: false, error: "AI belum menghasilkan soal yang layak. Coba lagi." };
     const unitId = await ensureUnit(supabase, schoolId, subjectId, unitTitle(step, ch.title), step + 1);
     const pre = spread(content.pretest, Math.max(1, preps.length));
