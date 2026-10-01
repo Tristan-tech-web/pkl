@@ -402,7 +402,7 @@ main:has([data-shell="student"]) { padding-top: 0; padding-bottom: 6.5rem; max-w
 .s-tab { display: flex; min-height: 3.75rem; flex-direction: column; align-items: center; justify-content: center; gap: 0.1rem; border-radius: var(--r-box); color: var(--ink-soft); font-weight: 700; transition: transform 0.15s, background 0.15s; }
 .s-tab-icon { font-size: 1.55rem; line-height: 1; filter: grayscale(0.6); transition: transform 0.2s; }
 .s-tab-label { font-size: 0.72rem; }
-.s-tab[data-on="true"] { color: var(--pen); background: color-mix(in srgb, var(--pen) 14%, transparent); }
+.s-tab[data-on="true"] { color: var(--ink); background: color-mix(in srgb, var(--pen) 14%, transparent); }
 .s-tab[data-on="true"] .s-tab-icon { filter: none; transform: translateY(-2px) scale(1.12); }
 .s-tab:active { transform: scale(0.94); }
 @media (min-width: 900px) {
@@ -413,3 +413,5 @@ main:has([data-shell="student"]) { padding-top: 0; padding-bottom: 6.5rem; max-w
 }
 @media (prefers-reduced-motion: reduce) { .s-tab, .s-tab-icon { transition: none; } }
 [data-shell="student"] .back-link { display: none; }
+
+.xp-chip { background: var(--hi); color: #1b1a3a; }

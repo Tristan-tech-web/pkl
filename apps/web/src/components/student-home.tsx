@@ -62,7 +62,7 @@ export async function StudentHome({ supabase, schoolId, memberId, name, classId,
               <>
                 <h1 className="mt-1 font-display text-2xl font-extrabold leading-tight">{next.title}</h1>
                 <p className="mt-1 text-sm text-ink-soft">{next.subjectName} · {KIND[next.kind] ?? "Materi"}</p>
-                <p className="num mt-1 inline-flex gap-2 text-sm font-bold"><span className="rounded-full bg-hi/60 px-2 text-ink">+{next.xpReward} XP</span>{next.minutes ? <span className="text-ink-soft">±{next.minutes} mnt</span> : null}</p>
+                <p className="num mt-1 inline-flex gap-2 text-sm font-bold"><span className="xp-chip rounded-full px-2">+{next.xpReward} XP</span>{next.minutes ? <span className="text-ink-soft">±{next.minutes} mnt</span> : null}</p>
                 <Link href={`${base}/belajar/${next.id}`} className="btn-solid mt-4 flex min-h-12 w-fit items-center whitespace-nowrap rounded-btn px-5 text-lg font-extrabold">Mulai ▶</Link>
               </>
             ) : soon ? (
