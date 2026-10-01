@@ -1,0 +1,94 @@
+-- Tes bank soal dan mode Latihan: kunci tersembunyi, XP anti-farming, kalibrasi, laporan, isolasi.
+create temp table _t (name text, ok boolean, info text);
+grant all on _t to public;
+create function pg_temp.chk(n text, c boolean, i text default null) returns void language sql as $$ insert into _t values (n, coalesce(c, false), i) $$;
+grant execute on function pg_temp.chk(text, boolean, text) to public;
+do $$
+declare
+  uo uuid := gen_random_uuid(); ut uuid := gen_random_uuid(); us uuid := gen_random_uuid(); us2 uuid := gen_random_uuid();
+  sa uuid; prog uuid; yr uuid; c1 uuid; c2 uuid; subj uuid; r_t uuid; r_s uuid; mt uuid; ms uuid; ms2 uuid; unit uuid; i1 uuid; i2 uuid; i3 uuid; sess uuid; nx jsonb; res jsonb; sess2 uuid;
+begin
+  insert into auth.users (id, email) values (uo,'o@qb.local'),(ut,'t@qb.local'),(us,'s@qb.local'),(us2,'s2@qb.local');
+  perform set_config('request.jwt.claims', json_build_object('sub', uo, 'role', 'authenticated')::text, true);
+  execute 'set local role authenticated';
+  sa := public.create_school('Sekolah QB', 'kemendikdasmen', 'swasta', array['SMK']);
+  select id into prog from public.school_programs where school_id = sa limit 1;
+  insert into public.academic_years (school_id, name, starts_on, ends_on, term_model) values (sa, '2026/2027', '2026-07-01', '2027-06-30', 'semester') returning id into yr;
+  insert into public.class_groups (school_id, program_id, academic_year_id, name, grade) values (sa, prog, yr, 'X-1', 10) returning id into c1;
+  insert into public.class_groups (school_id, program_id, academic_year_id, name, grade) values (sa, prog, yr, 'X-2', 10) returning id into c2;
+  insert into public.school_subjects (school_id, program_id, code, name, group_code) values (sa, prog, 'MAT', 'Matematika', 'umum') returning id into subj;
+  select r.id into r_t from public.roles r where r.school_id = sa and r.code = 'teacher';
+  select r.id into r_s from public.roles r where r.school_id = sa and r.code = 'student';
+  insert into public.school_members (school_id, user_id, role_id, display_name) values (sa, ut, r_t, 'Guru') returning id into mt;
+  insert into public.school_members (school_id, user_id, role_id, display_name) values (sa, us, r_s, 'Siswa 1') returning id into ms;
+  insert into public.school_members (school_id, user_id, role_id, display_name) values (sa, us2, r_s, 'Siswa 2') returning id into ms2;
+  insert into public.class_group_students (school_id, class_group_id, member_id) values (sa, c1, ms), (sa, c2, ms2);
+  execute 'reset role';
+  update public.schools set plan_code = 'school' where id = sa;
+
+  perform set_config('request.jwt.claims', json_build_object('sub', ut, 'role', 'authenticated')::text, true);
+  execute 'set local role authenticated';
+  insert into public.bank_items (school_id, subject_id, stem, options, status) values (sa, subj, 'Soal pertama yang cukup panjang untuk uji?', '["a","b","c"]', 'siap') returning id into i1;
+  insert into public.bank_items (school_id, subject_id, stem, options, status) values (sa, subj, 'Soal kedua untuk uji bank?', '["a","b","c"]', 'siap') returning id into i2;
+  insert into public.bank_items (school_id, subject_id, stem, options, status) values (sa, subj, 'Soal draf tidak boleh muncul?', '["a","b"]', 'draf') returning id into i3;
+  insert into public.bank_keys (item_id, school_id, answer, explanation) values (i1, sa, 1, 'Karena b'), (i2, sa, 2, 'Karena c'), (i3, sa, 0, 'x');
+  perform pg_temp.chk('guru: bank terisi', (select count(*) from public.bank_items) = 3 and (select count(*) from public.bank_keys) = 3);
+  begin insert into public.bank_items (school_id, subject_id, stem, options, status) values (sa, subj, 'Opsi satu saja?', '["a"]', 'draf'); perform pg_temp.chk('opsi kurang dari 2 ditolak', false);
+  exception when others then perform pg_temp.chk('opsi kurang dari 2 ditolak', true); end;
+
+  perform set_config('request.jwt.claims', json_build_object('sub', us, 'role', 'authenticated')::text, true);
+  perform pg_temp.chk('siswa: tak bisa membaca bank_items langsung', (select count(*) from public.bank_items) = 0);
+  perform pg_temp.chk('siswa: tak bisa membaca kunci', (select count(*) from public.bank_keys) = 0);
+  begin insert into public.bank_items (school_id, subject_id, stem, options) values (sa, subj, 'Siswa menulis?', '["a","b"]'); perform pg_temp.chk('siswa tak bisa menulis bank', false);
+  exception when others then perform pg_temp.chk('siswa tak bisa menulis bank', true); end;
+  res := public.practice_overview(sa);
+  perform pg_temp.chk('siswa: ringkasan hanya menghitung butir siap', (res->0->>'items')::int = 2, res::text);
+  sess := public.practice_start(sa, subj, 10);
+  nx := public.practice_next(sess);
+  perform pg_temp.chk('siswa: soal tanpa kunci', not (nx->'item' ? 'answer') and nx->'item'->>'stem' is not null, nx::text);
+  perform pg_temp.chk('siswa: soal tertunda diberikan lagi, bukan yang baru', public.practice_next(sess)->'item'->>'id' = nx->'item'->>'id');
+  -- jawab benar tapi terlalu cepat: tanpa XP
+  res := public.practice_answer(sess, (nx->'item'->>'id')::uuid, case when (nx->'item'->>'id')::uuid = i1 then 1 else 2 end);
+  perform pg_temp.chk('terlalu cepat: benar tapi 0 XP dan ditandai', (res->>'correct')::boolean and (res->>'xp')::int = 0 and res->'flags' ? 'terlalu_cepat', res::text);
+  begin perform public.practice_answer(sess, (nx->'item'->>'id')::uuid, 0); perform pg_temp.chk('jawab dua kali ditolak', false);
+  exception when others then perform pg_temp.chk('jawab dua kali ditolak', true); end;
+  nx := public.practice_next(sess);
+  perform pg_temp.chk('butir kedua berbeda dan draf tidak pernah muncul', nx->'item'->>'id' <> i3::text and (nx->'item'->>'id')::uuid in (i1, i2));
+  execute 'reset role';
+  update public.practice_answers set served_at = now() - interval '30 seconds' where session_id = sess and answered_at is null;
+  perform set_config('request.jwt.claims', json_build_object('sub', us, 'role', 'authenticated')::text, true);
+  execute 'set local role authenticated';
+  res := public.practice_answer(sess, (nx->'item'->>'id')::uuid, case when (nx->'item'->>'id')::uuid = i1 then 1 else 2 end);
+  perform pg_temp.chk('jawaban benar wajar: dapat XP', (res->>'xp')::int >= 5, res::text);
+  perform pg_temp.chk('XP tercatat di statistik dan buku peristiwa', (select xp from public.student_stats where member_id = ms) = (res->>'xp')::int and (select count(*) from public.xp_events where member_id = ms and reason = 'latihan') = 1);
+  begin perform public.practice_answer(sess, i3, 0); perform pg_temp.chk('butir yang tidak diberikan ditolak', false);
+  exception when others then perform pg_temp.chk('butir yang tidak diberikan ditolak', true); end;
+  nx := public.practice_next(sess);
+  perform pg_temp.chk('stok habis: sesi selesai lebih awal', (nx->>'done')::boolean and (nx->>'empty')::boolean, nx::text);
+  -- sesi baru: butir yang sudah benar dalam 7 hari menurun XP-nya; batas harian
+  sess2 := public.practice_start(sa, subj, 5);
+  nx := public.practice_next(sess2);
+  execute 'reset role';
+  update public.practice_answers set served_at = now() - interval '30 seconds' where session_id = sess2 and answered_at is null;
+  perform set_config('request.jwt.claims', json_build_object('sub', us, 'role', 'authenticated')::text, true);
+  execute 'set local role authenticated';
+  res := public.practice_answer(sess2, (nx->'item'->>'id')::uuid, case when (nx->'item'->>'id')::uuid = i1 then 1 else 2 end);
+  perform pg_temp.chk('mengulang butir yang sudah benar: ditandai dan XP berkurang', res->'flags' ? 'ulang_cepat' and (res->>'xp')::int < 15, res::text);
+  perform pg_temp.chk('kalibrasi: kemampuan siswa tercatat', (select count(*) from public.practice_ability where member_id = ms) = 1);
+  execute 'reset role';
+  perform pg_temp.chk('kalibrasi: butir yang dijawab terlalu cepat tidak dihitung, yang wajar dihitung', (select attempts from public.bank_items where id = i1) + (select attempts from public.bank_items where id = i2) = 2, (select jsonb_agg(attempts) from public.bank_items)::text);
+  perform set_config('request.jwt.claims', json_build_object('sub', us, 'role', 'authenticated')::text, true);
+  execute 'set local role authenticated';
+  perform set_config('request.jwt.claims', json_build_object('sub', us2, 'role', 'authenticated')::text, true);
+  begin perform public.practice_next(sess); perform pg_temp.chk('siswa lain tak bisa memakai sesi orang', false);
+  exception when others then perform pg_temp.chk('siswa lain tak bisa memakai sesi orang', sqlerrm like '%bukan sesi%', sqlerrm); end;
+  perform public.bank_report(i1, 'kunci salah'); perform public.bank_report(i1, 'dobel');
+  execute 'reset role';
+  perform pg_temp.chk('laporan: dihitung satu per siswa', (select reports from public.bank_items where id = i1) = 1);
+  perform set_config('request.jwt.claims', json_build_object('sub', us, 'role', 'authenticated')::text, true);
+  execute 'set local role authenticated';
+  perform public.bank_report(i1, 'salah');
+  execute 'reset role';
+  perform pg_temp.chk('laporan: dua siswa = dua laporan, masih siap', (select reports from public.bank_items where id = i1) = 2 and (select status from public.bank_items where id = i1) = 'siap');
+  raise exception 'HASIL_TES % | gagal=%', (select count(*) from _t), (select coalesce(jsonb_agg(name || ' [' || coalesce(info,'') || ']'), '[]'::jsonb) from _t where not ok);
+end $$;

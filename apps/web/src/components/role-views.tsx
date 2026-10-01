@@ -234,6 +234,13 @@ async function LearnPanel({ supabase, schoolId, memberId }: { supabase: Supa; sc
           <span aria-hidden="true" className="text-2xl text-pen">→</span>
         </Link>
       )}
+      <Link href={`/dashboard/sekolah/${schoolId}/latihan`} className="press flex items-center justify-between gap-3 rounded-box border-2 border-line bg-card p-4">
+        <span>
+          <span className="block text-xs font-semibold uppercase tracking-[0.08em] text-pen">Latihan</span>
+          <span className="block text-lg font-bold">Kumpulkan XP dengan latihan soal</span>
+        </span>
+        <span aria-hidden="true" className="text-2xl text-pen">→</span>
+      </Link>
     </div>
   );
 }
