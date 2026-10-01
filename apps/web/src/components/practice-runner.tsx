@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { appealCase, practiceAnswer, practiceNext, reportItem, type Answered, type Integrity, type Next, type PracticeItem } from "@/app/dashboard/sekolah/[id]/latihan/actions";
 import { FaceGuard, type FaceHandle } from "@/components/face-guard";
+import { Mascot } from "@/components/three/mascot";
 
 const FLAG_TEXT: Record<string, string> = {
   terlalu_cepat: "Terlalu cepat, baca soalnya dulu ya. XP tidak dihitung.",
@@ -57,6 +58,7 @@ export function PracticeRunner({ schoolId, sessionId, backHref, initial, camera 
     setBusy(false);
     if (!r.ok) { setError(r.error); setPicked(null); return; }
     setRes(r); setXp(r.sessionXp); if (r.integrity) setIntegrity(r.integrity);
+    if (r.correct && r.xp > 0) window.dispatchEvent(new Event("edusmart:reward"));
   }
 
   async function sendAppeal() {
@@ -70,7 +72,7 @@ export function PracticeRunner({ schoolId, sessionId, backHref, initial, camera 
     const held = integrity && integrity.level !== "rendah";
     return (
       <div className="surface p-6 text-center">
-        <p className="text-5xl" aria-hidden>{held ? "🔎" : "🎉"}</p>
+        {held ? <p className="text-5xl" aria-hidden>🔎</p> : <div className="flex justify-center"><Mascot size={150} /></div>}
         <h2 className="mt-2 font-display text-2xl font-bold">Sesi selesai!</h2>
         {held ? (
           <div className="mt-2 text-left">
@@ -113,7 +115,7 @@ export function PracticeRunner({ schoolId, sessionId, backHref, initial, camera 
   return (
     <div>
       {camOn ? <FaceGuard handleRef={face} /> : null}
-      <div className="flex items-center justify-between text-sm font-semibold"><span className="num">Soal {index} dari {total}</span><span className="num text-pen">+{xp} XP</span></div>
+      <div className="flex items-center justify-between text-sm font-semibold"><span className="num flex items-center gap-2"><Mascot size={44} />Soal {index} dari {total}</span><span className="num text-pen">+{xp} XP</span></div>
       <div className="mt-2 h-3 overflow-hidden rounded-full bg-line" role="progressbar" aria-valuenow={index - 1} aria-valuemin={0} aria-valuemax={total} aria-label="Kemajuan sesi">
         <div className="h-full bg-pen transition-[width] duration-300" style={{ width: `${((index - 1 + (res ? 1 : 0)) / total) * 100}%` }} />
       </div>

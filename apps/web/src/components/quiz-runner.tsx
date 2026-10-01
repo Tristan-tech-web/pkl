@@ -1,7 +1,8 @@
 "use client";
 
+import { Mascot } from "@/components/three/mascot";
 import Link from "next/link";
-import { useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { submitQuizAction, type QuizResult } from "@/app/dashboard/sekolah/[id]/belajar/[nodeId]/kuis/actions";
 import { gsap, NO_REDUCE, useGSAP } from "@/lib/motion";
 import { RewardBurst } from "@/components/motion/reward-burst";
@@ -10,6 +11,16 @@ import { Button, ErrorNote, Input, LinkButton } from "@/components/ui";
 
 type Q = { id: string; kind: "mcq" | "multi" | "short"; prompt: string; options: string[] };
 type Answer = number | string | number[];
+
+// Maskot menyambut hasil: melompat riang bila lulus (mendengar peristiwa hadiah).
+function MascotCheer({ passed }: { passed: boolean }) {
+  useEffect(() => {
+    if (!passed) return;
+    const t = setTimeout(() => window.dispatchEvent(new Event("edusmart:reward")), 700);
+    return () => clearTimeout(t);
+  }, [passed]);
+  return <div className="mb-2 flex justify-center"><Mascot size={150} /></div>;
+}
 
 export function QuizRunner({
   schoolId, nodeId, title, questions, nextHref, lessonHref,
@@ -74,6 +85,7 @@ export function QuizRunner({
     return (
       <div ref={stage} className="relative">
         {result.passed ? <RewardBurst intensity={0.5 + result.stars * 0.35} /> : null}
+        <MascotCheer passed={result.passed} />
         <p className="text-sm font-semibold uppercase tracking-[0.08em] text-ink-soft">{title}</p>
         <div className="r-score mt-2 flex items-end gap-4">
           <p className="num font-display text-7xl font-bold leading-none">{result.score}</p>
