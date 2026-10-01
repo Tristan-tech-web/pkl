@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { BackLink, OwnerView, ParentView, StudentView, TeacherView, type Membership } from "@/components/role-views";
+import { LatestAnnouncements, ModuleLinks } from "@/components/module-links";
 import { authorityLabel } from "@/lib/format";
 import { createClient } from "@/lib/supabase/server";
 
@@ -52,11 +53,22 @@ export default async function SchoolPage({ params }: { params: Promise<{ id: str
         </p>
       </header>
       {MANAGEMENT.has(me.roleCode) ? (
-        <OwnerView supabase={supabase} schoolId={id} />
+        <>
+          <OwnerView supabase={supabase} schoolId={id} />
+          <LatestAnnouncements schoolId={id} />
+        </>
       ) : TEACHING.has(me.roleCode) ? (
-        <TeacherView supabase={supabase} schoolId={id} me={me} />
+        <>
+          <TeacherView supabase={supabase} schoolId={id} me={me} />
+          <ModuleLinks schoolId={id} role="teacher" />
+          <LatestAnnouncements schoolId={id} />
+        </>
       ) : me.roleCode === "student" ? (
-        <StudentView supabase={supabase} schoolId={id} me={me} />
+        <>
+          <StudentView supabase={supabase} schoolId={id} me={me} />
+          <ModuleLinks schoolId={id} role="student" />
+          <LatestAnnouncements schoolId={id} />
+        </>
       ) : (
         <ParentView />
       )}
