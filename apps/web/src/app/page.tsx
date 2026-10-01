@@ -21,6 +21,8 @@ type Plan = {
 
 const FORMS = ["SD", "MI", "SMP", "MTs", "SMA", "MA", "SMK", "SLB", "Paket C", "Pesantren", "Kustom"];
 
+type ModuleRow = { code: string; name: string; description: string; status: string; sort: number };
+
 const FEATURES: { title: string; body: string; ready: boolean }[] = [
   {
     title: "Satu struktur untuk jenis sekolah apa pun",
@@ -40,7 +42,17 @@ const FEATURES: { title: string; body: string; ready: boolean }[] = [
   {
     title: "Tutor AI dengan kunci milik sekolah",
     body: "Sekolah yang ingin memakai AI menyambungkan kunci API sendiri, sehingga biaya dan ketentuan data berada di tangan sekolah.",
-    ready: false,
+    ready: true,
+  },
+  {
+    title: "Belajar yang terasa seperti permainan",
+    body: "Peta belajar bercabang, kuis yang dinilai server, XP, level, lencana, dan liga mingguan per kelas.",
+    ready: true,
+  },
+  {
+    title: "Absensi, nilai, rapor, jadwal, dan surat",
+    body: "Administrasi sekolah sehari-hari dalam satu tempat, hanya modul yang masuk paket Anda yang tampil. Orang tua melihat ringkasan anak lewat portal sendiri.",
+    ready: true,
   },
 ];
 
@@ -64,6 +76,12 @@ export default async function Home({
     .select("code,name,description,is_enterprise,sort,plan_entitlements(feature,enabled,limit_value)")
     .order("sort");
   const plans = (data ?? []) as Plan[];
+  const [{ data: modData }, { data: pmData }] = await Promise.all([
+    supabase.from("modules").select("code,name,description,status,sort").order("sort"),
+    supabase.from("plan_modules").select("plan_code,module_code"),
+  ]);
+  const modules = (modData ?? []) as ModuleRow[];
+  const inPlan = new Set((pmData ?? []).map((r) => `${r.plan_code as string}:${r.module_code as string}`));
   const features = FEATURE_ORDER.filter((f) => plans.some((p) => p.plan_entitlements.some((e) => e.feature === f)));
   const note = kontak ? CONTACT_MESSAGES[kontak] : undefined;
 
@@ -171,6 +189,20 @@ export default async function Home({
                           </td>
                         );
                       })}
+                    </tr>
+                  ))}
+                  {modules.map((m) => (
+                    <tr key={m.code} className="border-b border-line">
+                      <th scope="row" className="py-3 pr-4 font-semibold">
+                        {m.name}
+                        {m.status !== "tersedia" ? <span className="ml-2 rounded-full border border-line px-2 py-0.5 text-xs font-normal text-ink-soft">segera</span> : null}
+                        <span className="block text-sm font-normal text-ink-soft">{m.description}</span>
+                      </th>
+                      {plans.map((p) => (
+                        <td key={p.code} className="py-3 pr-4">
+                          {inPlan.has(`${p.code}:${m.code}`) ? <span aria-label="Termasuk" className="font-bold text-ok">✓</span> : <span aria-label="Tidak termasuk" className="text-ink-soft">–</span>}
+                        </td>
+                      ))}
                     </tr>
                   ))}
                   <tr>

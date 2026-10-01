@@ -39,3 +39,5 @@ const CATEGORY_LABELS: Record<string, string> = {
 export function categoryLabel(value: string): string {
   return CATEGORY_LABELS[value] ?? value;
 }
+
+export const rupiah = (n: number) => `Rp${new Intl.NumberFormat("id-ID").format(n)}`;

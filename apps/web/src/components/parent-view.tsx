@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { LatestAnnouncements } from "@/components/module-links";
 import { predicate } from "@/lib/grades";
+import { enabledModuleCodes } from "@/lib/modules";
 import { createClient } from "@/lib/supabase/server";
 
 type Overview = {
@@ -79,6 +80,9 @@ export async function ParentView({ schoolId }: { schoolId: string }) {
         );
       })}
       <LatestAnnouncements schoolId={schoolId} />
+      {(await enabledModuleCodes(supabase, schoolId)).has("fees") ? (
+        <p className="mt-4"><Link href={`/dashboard/sekolah/${schoolId}/keuangan`} className="font-semibold text-pen underline">Lihat tagihan anak</Link></p>
+      ) : null}
       <p className="mt-6 text-sm text-ink-soft">
         Rapor resmi diberikan sekolah.{" "}
         <Link href={`/dashboard/sekolah/${schoolId}/pengumuman`} className="font-semibold text-pen underline">Lihat semua pengumuman</Link>

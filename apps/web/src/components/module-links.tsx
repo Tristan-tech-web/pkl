@@ -11,6 +11,7 @@ const STUDENT: Item[] = [
   { slug: "rapor", label: "Rapor", module: "gradebook" },
   { slug: "pengumuman", label: "Pengumuman", module: "announcements" },
   { slug: "administrasi", label: "Data dan suratku", module: "admin_records" },
+  { slug: "keuangan", label: "Tagihanku", module: "fees" },
 ];
 const TEACHER: Item[] = [
   { slug: "jadwal", label: "Jadwal mengajarku", module: "schedule" },

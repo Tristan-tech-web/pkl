@@ -19,6 +19,7 @@ const ITEMS: { slug: string; label: string; module?: string }[] = [
   { slug: "liga", label: "Liga", module: "learning" },
   { slug: "ai", label: "Tutor AI", module: "ai_tutor" },
   { slug: "administrasi", label: "Administrasi", module: "admin_records" },
+  { slug: "keuangan", label: "Keuangan", module: "fees" },
   { slug: "paket", label: "Paket dan modul" },
 ];
 
