@@ -23,6 +23,7 @@ const GROUPS: { label: string; items: Item[] }[] = [
       { slug: "pantau", label: "Pantau", module: "learning" },
       { slug: "analitik", label: "Analitik", module: "analytics" },
       { slug: "liga", label: "Liga", module: "learning" },
+      { slug: "ujian", label: "Ujian", module: "exams" },
       { slug: "ai", label: "Tutor AI", module: "ai_tutor" },
     ],
   },
