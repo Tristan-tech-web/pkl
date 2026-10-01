@@ -17,10 +17,16 @@ export function PlanRunner({ schoolId, planId }: { schoolId: string; planId: str
 
   async function run() {
     setRunning(true); setError(null); stop.current = false;
+    let fails = 0;
     for (;;) {
       if (stop.current) break;
       const r = await advancePlan(schoolId, planId);
-      if (!r.ok) { setError(r.error); break; }
+      if (!r.ok) {
+        // Batas laju atau gangguan sesaat: tunggu lalu coba lagi sebelum menyerah.
+        if (++fails < 5) { setLabel(`Menunggu AI, mencoba lagi (${fails}/4)…`); await new Promise((res) => setTimeout(res, 8000 * fails)); continue; }
+        setError(r.error); break;
+      }
+      fails = 0;
       setPct(r.pct); setLabel(r.label);
       if (r.done) { start(() => router.refresh()); break; }
     }

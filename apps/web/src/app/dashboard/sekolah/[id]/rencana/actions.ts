@@ -101,7 +101,8 @@ export async function advancePlan(schoolId: string, planId: string): Promise<Ste
     await save({ status: "selesai", plan: { chapters: w.chapters, ...sched }, work: {} });
     revalidatePath(base(schoolId));
     return { ok: true, done: true, pct: 100, label: "Selesai" };
-  } catch {
+  } catch (e) {
+    console.error("advancePlan gagal", w.stage, e instanceof Error ? e.message.slice(0, 200) : "?");
     return { ok: false, error: "AI gagal menjawab untuk langkah ini. Tekan Lanjutkan untuk mencoba lagi; kemajuan tersimpan." };
   }
 }
