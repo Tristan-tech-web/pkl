@@ -55,6 +55,13 @@ Permintaan pemilik: situs harus lengkap untuk siswa, guru, dan sekolah; modul (r
 - Selesai: keuangan (hanya Enterprise): `invoices`, `payments`; pengelola menerbitkan tagihan ke semua siswa atau satu rombel, mencatat pembayaran manual (tunai/transfer), saring status (terlambat dihitung dari jatuh tempo); siswa dan wali hanya melihat tagihan anak sendiri; guru tidak melihat keuangan. Tes SQL 10/10, Playwright 6/7 (satu hanya soal waktu). Halaman paket di landing kini menampilkan semua modul per paket dari data.
 - Urutan berikutnya: integrasi (impor CSV/Dapodik, SSO, API; dibahas bersama tim dev), templat surat dan notifikasi, rapor cetak untuk orang tua, uji kegunaan, pengerasan (UU PDP, audit log, backup), dan polesan desain/gerak untuk halaman modul baru.
 
+## Pengerasan dan polesan (iterasi ini)
+- Advisor keamanan: hanya peringatan `SECURITY DEFINER` yang disengaja (semua dijelaskan lewat `comment on function`) dan Leaked Password Protection (pengaturan dasbor, belum diaktifkan). Advisor performa: 20 FK komposit kini berindeks, 8 tabel dengan kebijakan `for all` dipecah per aksi (tidak ada lagi "multiple permissive policies"); sisa hanya INFO indeks belum terpakai (basis data baru).
+- CI database (`database.yml` + `scripts/run-sql-tests.sh`) memuat semua `supabase/tests/*.test.sql` lewat glob, termasuk tes baru.
+- Navigasi pengelola dikelompokkan (Sekolah, Belajar, Administrasi, Komunikasi) tanpa gulir samping; ringkasan keuangan tidak lagi bertabrakan di HP.
+- Impor CSV (`/anggota/impor`): nama[,peran[,kelas]] dengan pemisah koma/titik koma/tab, satu baris salah membatalkan semua, satu kode undangan sekali pakai per baris (nama dan rombel terisi dari label sekolah), kartu kode cetak dan salin sebagai CSV. Tes SQL 6/6, Vitest csv 6, Playwright 3/3.
+- Data demo ekosistem: `supabase/seed/demo_ecosystem.sql` (jadwal, absensi, nilai, pengumuman, data induk, tagihan untuk Ayu Lestari).
+
 ## Berikutnya
 0. Prioritas langsung: M2 (graf kompetensi, skill tree dengan prasyarat, kuis dinilai di server, XP/streak/level di server dengan satu konfigurasi, dashboard guru dengan intervensi).
 1. (selesai) integrasi Supabase Auth di web (`@supabase/ssr`; di Next 16 pakai `proxy.ts`, bukan middleware), halaman login/daftar, wizard pembuatan sekolah lewat RPC `create_school`, landing dengan paket dan formulir enterprise (tabel `leads`).

@@ -2,6 +2,7 @@ import { CopyButton } from "@/components/copy-button";
 import { SchoolNav } from "@/components/school-nav";
 import { Button, Card, ErrorNote, InfoNote, Input, Label, Select } from "@/components/ui";
 import { first, getSchoolContext } from "@/lib/school";
+import Link from "next/link";
 import { createInvite, revokeInvite } from "../actions";
 
 export const metadata = { title: "Anggota · EduSmart" };
@@ -118,6 +119,9 @@ export default async function AnggotaPage({
 
         <Card className="self-start">
           <h2 className="text-lg font-bold">Buat undangan</h2>
+          <Link href={`/dashboard/sekolah/${id}/anggota/impor`} className="mt-1 inline-flex min-h-11 items-center text-sm font-semibold text-pen underline">
+            Atau impor banyak orang dari CSV
+          </Link>
           <form action={add} className="mt-3 flex flex-col gap-4">
             <label>
               <Label>Peran</Label>

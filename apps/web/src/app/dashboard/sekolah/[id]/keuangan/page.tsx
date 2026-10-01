@@ -66,7 +66,7 @@ export default async function KeuanganPage({ params, searchParams }: { params: P
         {management ? <p className="mt-1 max-w-2xl text-ink-soft">Tagihan per siswa dan pencatatan pembayaran manual (tunai atau transfer). Pembayaran online lewat gerbang pembayaran dibahas di modul Integrasi.</p> : null}
       </header>
       <div className="space-y-3"><ErrorNote message={sp.error} /><InfoNote message={sp.info} /></div>
-      <section aria-label="Ringkasan" className="stagger mt-4 grid grid-cols-3 gap-6">
+      <section aria-label="Ringkasan" className="stagger mt-4 grid gap-x-6 gap-y-5 sm:grid-cols-3">
         <div className="border-t-2 border-ink pt-3"><p className="num font-display text-2xl font-bold sm:text-3xl">{rupiah(total)}</p><p className="text-sm font-semibold">Ditagihkan</p></div>
         <div className="border-t-2 border-ink pt-3"><p className="num font-display text-2xl font-bold text-ok sm:text-3xl">{rupiah(paid)}</p><p className="text-sm font-semibold">Terbayar</p></div>
         <div className="border-t-2 border-ink pt-3"><p className={`num font-display text-2xl font-bold sm:text-3xl ${overdue > 0 ? "text-bad" : ""}`}>{rupiah(overdue)}</p><p className="text-sm font-semibold">Terlambat</p></div>
