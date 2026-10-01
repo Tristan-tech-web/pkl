@@ -20,9 +20,10 @@ export async function askTutor(
     .map((m) => ({ role: m.role, content: m.content.slice(0, 600) }));
   if (msgs.length === 0 || msgs[msgs.length - 1].role !== "user") return { ok: false, error: "Tulis pertanyaanmu dulu." };
 
-  const [{ data: node }, { data: lesson }] = await Promise.all([
+  const [{ data: node }, { data: lesson }, { data: ex }] = await Promise.all([
     supabase.from("competency_nodes").select("title,school_subjects(name)").eq("id", nodeId).eq("school_id", schoolId).maybeSingle(),
     supabase.from("lessons").select("body_md").eq("node_id", nodeId).maybeSingle(),
+    supabase.rpc("book_excerpts", { p_school_id: schoolId, p_node_id: nodeId }),
   ]);
   if (!node) return { ok: false, error: "Materi tidak ditemukan." };
   const subj = node.school_subjects as { name: string } | { name: string }[] | null;
@@ -30,6 +31,7 @@ export async function askTutor(
     title: node.title as string,
     subject: (Array.isArray(subj) ? subj[0]?.name : subj?.name) ?? "Pelajaran",
     body: (lesson?.body_md as string | undefined) ?? "",
+    excerpts: Array.isArray(ex) ? (ex as { file: string; excerpt: string }[]).filter((e) => typeof e?.file === "string" && typeof e?.excerpt === "string").slice(0, 2) : [],
   });
 
   const { data, error } = await supabase.rpc("reserve_ai_call", { p_school_id: schoolId, p_node_id: nodeId });
