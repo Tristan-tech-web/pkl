@@ -37,7 +37,7 @@ export function ReportSheet(p: SheetProps) {
   let n = 0;
 
   return (
-    <div className="rounded-[6px] border border-line bg-card p-6 sm:p-8">
+    <div className="surface p-6 sm:p-8">
       <header className="border-b-2 border-ink pb-3 text-center">
         <p className="font-display text-2xl font-bold">{p.school.name}</p>
         {where ? <p className="text-sm text-ink-soft">{where}</p> : null}
@@ -103,7 +103,7 @@ export function ReportSheet(p: SheetProps) {
             <tr className="border-b border-line"><td className="py-1.5">Sikap spiritual</td><td className="text-right font-semibold">{p.extras.sikap?.spiritual || "–"}</td></tr>
             <tr className="border-b border-line"><td className="py-1.5">Sikap sosial</td><td className="text-right font-semibold">{p.extras.sikap?.sosial || "–"}</td></tr>
           </tbody></table>
-          {p.extras.sikap?.deskripsi ? <p className="mt-2 whitespace-pre-wrap rounded-[6px] border border-line p-3">{p.extras.sikap.deskripsi}</p> : null}
+          {p.extras.sikap?.deskripsi ? <p className="mt-2 whitespace-pre-wrap rounded-box border border-line p-3">{p.extras.sikap.deskripsi}</p> : null}
         </>
       ) : null}
 
@@ -122,7 +122,7 @@ export function ReportSheet(p: SheetProps) {
         <>
           <h2 className="mt-6 font-display text-lg font-bold">{letter("p5")}. Projek penguatan profil pelajar</h2>
           {(p.extras.p5?.items ?? []).length === 0 ? <p className="mt-2 text-ink-soft">–</p> : (
-            <ul className="mt-2 space-y-2">{p.extras.p5!.items!.map((e, i) => <li key={i} className="rounded-[6px] border border-line p-3"><p className="font-semibold">{e.tema}</p>{e.deskripsi ? <p className="text-ink-soft">{e.deskripsi}</p> : null}</li>)}</ul>
+            <ul className="mt-2 space-y-2">{p.extras.p5!.items!.map((e, i) => <li key={i} className="rounded-box border border-line p-3"><p className="font-semibold">{e.tema}</p>{e.deskripsi ? <p className="text-ink-soft">{e.deskripsi}</p> : null}</li>)}</ul>
           )}
         </>
       ) : null}
@@ -137,7 +137,7 @@ export function ReportSheet(p: SheetProps) {
       {c.sections.catatan ? (
         <>
           <h2 className="mt-6 font-display text-lg font-bold">{letter("catatan")}. Catatan wali kelas</h2>
-          <p className="mt-2 min-h-12 whitespace-pre-wrap rounded-[6px] border border-line p-3">{p.note ?? "–"}</p>
+          <p className="mt-2 min-h-12 whitespace-pre-wrap rounded-box border border-line p-3">{p.note ?? "–"}</p>
         </>
       ) : null}
 

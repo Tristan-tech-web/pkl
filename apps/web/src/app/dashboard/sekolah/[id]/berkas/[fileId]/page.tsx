@@ -55,7 +55,7 @@ export default async function ReviewPage({ params, searchParams }: { params: Pro
       <h1 className="mt-3 mb-1 font-display text-3xl font-bold tracking-tight">Tinjau impor</h1>
       <p className="text-ink-soft">{f.name as string} · {parsed.rows.length} baris, lembar “{parsed.sheet}”. Periksa pemetaan kolom, lalu impor. Tidak ada data yang masuk sebelum Anda menekan Impor.</p>
 
-      <form method="get" className="mt-6 rounded-[6px] border border-line bg-card p-4">
+      <form method="get" className="mt-6 surface p-4">
         <h2 className="font-display text-lg font-bold">1. Pemetaan kolom</h2>
         <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <label><Label>Jenis data</Label>
@@ -78,7 +78,7 @@ export default async function ReviewPage({ params, searchParams }: { params: Pro
           <span className="text-ink-soft">{warn} dengan catatan</span>
           <span className="text-ink-soft">{dupes} sudah ada di roster</span>
         </p>
-        {unknownClasses.length > 0 ? <p className="mt-2 rounded-[6px] border border-warn/40 p-3 text-sm">Rombel belum ada di sekolah: <span className="font-semibold">{unknownClasses.join(", ")}</span>. Orangnya tetap diimpor dengan nama rombel itu, tetapi tidak otomatis masuk rombel saat bergabung. Buat rombelnya dulu di menu Rombel bila perlu.</p> : null}
+        {unknownClasses.length > 0 ? <p className="mt-2 rounded-box border border-warn/40 p-3 text-sm">Rombel belum ada di sekolah: <span className="font-semibold">{unknownClasses.join(", ")}</span>. Orangnya tetap diimpor dengan nama rombel itu, tetapi tidak otomatis masuk rombel saat bergabung. Buat rombelnya dulu di menu Rombel bila perlu.</p> : null}
         <div className="mt-3 overflow-x-auto" tabIndex={0} role="region" aria-label="Pratinjau baris">
           <table className="w-full min-w-[40rem] text-left text-sm">
             <thead><tr className="border-b-2 border-ink"><th className="py-2 pr-2">Baris</th><th className="pr-2">Nama</th><th className="pr-2">NIS/NISN/NIP</th><th className="pr-2">L/P</th><th className="pr-2">Lahir</th><th className="pr-2">Rombel</th><th>Status</th></tr></thead>
@@ -100,7 +100,7 @@ export default async function ReviewPage({ params, searchParams }: { params: Pro
         {results.length > 20 ? <p className="mt-1 text-sm text-ink-soft">Menampilkan 20 dari {results.length} baris.</p> : null}
       </section>
 
-      <form action={importRoster.bind(null, id, fileId)} className="mt-6 rounded-[6px] border border-line bg-card p-4">
+      <form action={importRoster.bind(null, id, fileId)} className="mt-6 surface p-4">
         <h2 className="font-display text-lg font-bold">3. Impor</h2>
         <input type="hidden" name="kind" value={kind} />
         <input type="hidden" name="header_row" value={headerRow} />

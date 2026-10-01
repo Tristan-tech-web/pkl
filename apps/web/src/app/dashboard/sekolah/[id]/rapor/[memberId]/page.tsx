@@ -88,13 +88,13 @@ export default async function ReportCard({ params, searchParams }: { params: Pro
       {canWrite ? (
         <div className="no-print mt-6 space-y-4">
           {config.sections.catatan ? (
-            <form action={saveReportNote.bind(null, id, memberId, term.id)} className="rounded-[6px] border border-line bg-card p-4">
+            <form action={saveReportNote.bind(null, id, memberId, term.id)} className="surface p-4">
               <label><Label>Catatan wali kelas</Label><Textarea name="note" rows={3} maxLength={1000} defaultValue={(note.data?.note as string | undefined) ?? ""} placeholder="Perkembangan, kekuatan, dan saran untuk semester berikutnya" /></label>
               <div className="mt-3"><Button type="submit">Simpan catatan</Button></div>
             </form>
           ) : null}
           {config.sections.sikap ? (
-            <form action={saveExtras.bind(null, id, memberId, term.id, "sikap")} className="grid gap-3 rounded-[6px] border border-line bg-card p-4 sm:grid-cols-2">
+            <form action={saveExtras.bind(null, id, memberId, term.id, "sikap")} className="grid gap-3 surface p-4 sm:grid-cols-2">
               <h2 className="font-display text-lg font-bold sm:col-span-2">Sikap</h2>
               <label><Label>Spiritual</Label><Input name="spiritual" defaultValue={extras.sikap?.spiritual ?? ""} placeholder="mis. Baik" maxLength={30} /></label>
               <label><Label>Sosial</Label><Input name="sosial" defaultValue={extras.sikap?.sosial ?? ""} placeholder="mis. Sangat baik" maxLength={30} /></label>
@@ -103,7 +103,7 @@ export default async function ReportCard({ params, searchParams }: { params: Pro
             </form>
           ) : null}
           {config.sections.ekskul ? (
-            <form action={saveExtras.bind(null, id, memberId, term.id, "ekskul")} className="rounded-[6px] border border-line bg-card p-4">
+            <form action={saveExtras.bind(null, id, memberId, term.id, "ekskul")} className="surface p-4">
               <h2 className="font-display text-lg font-bold">Ekstrakurikuler</h2>
               {[0, 1, 2, 3].map((i) => (
                 <div key={i} className="mt-2 grid gap-2 sm:grid-cols-[2fr_1fr_3fr]">
@@ -116,13 +116,13 @@ export default async function ReportCard({ params, searchParams }: { params: Pro
             </form>
           ) : null}
           {config.sections.p5 ? (
-            <form action={saveExtras.bind(null, id, memberId, term.id, "p5")} className="rounded-[6px] border border-line bg-card p-4">
+            <form action={saveExtras.bind(null, id, memberId, term.id, "p5")} className="surface p-4">
               <label><Label hint="satu per baris: Tema: deskripsi capaian">Projek penguatan profil pelajar</Label><Textarea name="items" rows={3} defaultValue={(extras.p5?.items ?? []).map((x) => `${x.tema}: ${x.deskripsi ?? ""}`).join("\n")} /></label>
               <div className="mt-3"><Button type="submit">Simpan projek</Button></div>
             </form>
           ) : null}
           {config.sections.prestasi ? (
-            <form action={saveExtras.bind(null, id, memberId, term.id, "prestasi")} className="rounded-[6px] border border-line bg-card p-4">
+            <form action={saveExtras.bind(null, id, memberId, term.id, "prestasi")} className="surface p-4">
               <label><Label hint="satu per baris">Prestasi</Label><Textarea name="items" rows={3} defaultValue={(extras.prestasi?.items ?? []).join("\n")} /></label>
               <div className="mt-3"><Button type="submit">Simpan prestasi</Button></div>
             </form>

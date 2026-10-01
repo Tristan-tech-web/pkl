@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { StudentHero } from "@/components/student-hero";
 import { Card } from "@/components/ui";
 import { SchoolNav } from "@/components/school-nav";
 import { StudentStats } from "@/components/student-stats";
@@ -23,7 +24,7 @@ function Stat({ label, value, hint }: { label: string; value: number | string; h
 
 function Empty({ title, body }: { title: string; body: string }) {
   return (
-    <div className="bg-grid rounded-[6px] border border-dashed border-line p-6">
+    <div className="bg-grid rounded-box border border-dashed border-line p-6">
       <p className="font-semibold">{title}</p>
       <p className="mt-1 max-w-xl text-ink-soft">{body}</p>
     </div>
@@ -113,7 +114,7 @@ export async function TeacherView({ supabase, schoolId, me }: { supabase: Supa; 
       </p>
       <Link
         href={`/dashboard/sekolah/${schoolId}/pantau`}
-        className="press mt-4 flex items-center justify-between gap-3 rounded-[6px] border-2 border-pen bg-card p-4"
+        className="press mt-4 flex items-center justify-between gap-3 rounded-box border-2 border-pen bg-card p-4"
       >
         <span>
           <span className="block text-xs font-semibold uppercase tracking-[0.08em] text-pen">Pantau belajar</span>
@@ -173,8 +174,10 @@ export async function StudentView({ supabase, schoolId, me }: { supabase: Supa; 
     .map((s) => ({ id: s.id, hours: s.hours_per_week, subject: one(s.school_subjects) }))
     .filter((s): s is { id: string; hours: number | null; subject: { id: string; name: string; group_code: string } } => s.subject !== null);
 
+  const heroStats = await loadStats(supabase, schoolId, me.memberId);
   return (
     <>
+      <StudentHero name={(me.displayName ?? "teman").split(" ")[0]} stats={heroStats} />
       {cg ? (
         <p className="inline-flex items-center gap-2 rounded-full border border-line bg-card px-3 py-1 text-sm font-semibold">
           <span aria-hidden="true" className="size-3 rounded-full border-2 border-pen" />
@@ -219,7 +222,7 @@ async function LearnPanel({ supabase, schoolId, memberId }: { supabase: Supa; sc
       ) : (
         <Link
           href={`/dashboard/sekolah/${schoolId}/belajar`}
-          className="press flex items-center justify-between gap-3 rounded-[6px] border-2 border-pen bg-card p-4"
+          className="press flex items-center justify-between gap-3 rounded-box border-2 border-pen bg-card p-4"
         >
           <span>
             <span className="block text-xs font-semibold uppercase tracking-[0.08em] text-pen">Peta belajar</span>

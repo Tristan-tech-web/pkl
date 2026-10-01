@@ -3,7 +3,7 @@ import { loadStats } from "@/lib/learning";
 export async function StudentStats({ stats }: { stats: Awaited<ReturnType<typeof loadStats>> }) {
   const pct = Math.min(100, Math.round((stats.into / stats.need) * 100));
   return (
-    <section aria-label="Kemajuanmu" className="rounded-[6px] border border-line bg-card p-4">
+    <section aria-label="Kemajuanmu" className="surface p-4">
       <div className="flex items-end justify-between gap-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.08em] text-ink-soft">Level</p>

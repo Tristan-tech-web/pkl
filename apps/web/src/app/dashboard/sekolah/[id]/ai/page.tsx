@@ -27,7 +27,7 @@ export default async function AiPage({ params, searchParams }: { params: Promise
       </header>
       <div className="space-y-3"><ErrorNote message={error} /><InfoNote message={info} /></div>
       <div className="mt-4 grid gap-6 lg:grid-cols-[3fr_2fr]">
-        <form action={saveAiSettings.bind(null, id)} className="grid gap-4 rounded-[6px] border border-line bg-card p-5 sm:grid-cols-2">
+        <form action={saveAiSettings.bind(null, id)} className="grid gap-4 surface p-5 sm:grid-cols-2">
           <label><Label>Penyedia</Label>
             <Select name="provider" defaultValue={(cfg?.provider as string | undefined) ?? "gemini"}>
               <option value="gemini">Google Gemini</option><option value="anthropic">Anthropic Claude</option>
@@ -40,7 +40,7 @@ export default async function AiPage({ params, searchParams }: { params: Promise
           <div className="flex items-end"><Button type="submit">Simpan dan uji</Button></div>
         </form>
         <aside className="space-y-4">
-          <div className="rounded-[6px] border border-line p-4">
+          <div className="rounded-box border border-line p-4">
             <p className="text-xs font-semibold uppercase tracking-[0.08em] text-ink-soft">Status</p>
             <p className={`text-xl font-bold ${cfg ? "text-ok" : "text-bad"}`}>{cfg ? "Aktif" : "Belum aktif"}</p>
             <p className="num mt-1 text-sm text-ink-soft">{used ?? 0} pertanyaan tercatat sejak awal</p>
@@ -48,13 +48,13 @@ export default async function AiPage({ params, searchParams }: { params: Promise
               <form action={removeAiSettings.bind(null, id)} className="mt-3"><Button type="submit" variant="ghost">Hapus kunci</Button></form>
             ) : null}
           </div>
-          <form action={setStudentKeys.bind(null, id)} className="rounded-[6px] border border-line p-4 text-sm">
+          <form action={setStudentKeys.bind(null, id)} className="rounded-box border border-line p-4 text-sm">
             <p className="font-semibold">Kunci pribadi</p>
             <p className="mt-1 text-ink-soft">Guru dan staf boleh memakai kunci pribadinya (menu AI saya). Untuk siswa, aktifkan hanya bila sekolah setuju data belajar mereka melewati akun AI pribadi.</p>
             <label className="mt-2 flex min-h-11 items-center gap-2"><input type="checkbox" name="allow" defaultChecked={Boolean(sch?.allow_student_keys)} className="size-4" /> Izinkan siswa memakai kunci pribadi</label>
             <Button type="submit" variant="ghost">Simpan</Button>
           </form>
-          <div className="rounded-[6px] border border-line p-4 text-sm text-ink-soft">
+          <div className="rounded-box border border-line p-4 text-sm text-ink-soft">
             <p className="font-semibold text-ink">Yang dikirim ke penyedia</p>
             <ul className="mt-1 list-disc pl-5">
               <li>Teks materi yang sedang dibuka dan pertanyaan siswa.</li>

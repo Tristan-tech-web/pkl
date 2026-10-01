@@ -19,19 +19,19 @@ export default async function ImporPage({ params, searchParams }: { params: Prom
         Setiap baris menjadi satu kode undangan sekali pakai, dengan nama dan rombel sudah terisi. Bagikan kodenya; anggota mendaftar lalu memasukkan kode di halaman Gabung. Tidak ada data yang dimasukkan sebelum orangnya mendaftar sendiri.
       </p>
       <div className="mt-4"><ErrorNote message={error} /></div>
-      <form action={importInvites.bind(null, id)} encType="multipart/form-data" className="mt-4 grid gap-4 rounded-[6px] border border-line bg-card p-5 lg:grid-cols-[3fr_2fr]">
+      <form action={importInvites.bind(null, id)} encType="multipart/form-data" className="mt-4 grid gap-4 surface p-5 lg:grid-cols-[3fr_2fr]">
         <div className="space-y-4">
           <label className="block"><Label hint="nama, peran (opsional), kelas (opsional)">Tempel isi CSV</Label>
             <Textarea name="csv" rows={10} className="font-mono text-sm" placeholder={"nama,peran,kelas\nAyu Lestari,siswa,X PPLG 1\nMade Arta,guru,"} /></label>
           <label className="block"><Label hint="atau pilih berkas .csv">Berkas</Label>
-            <input type="file" name="file" accept=".csv,text/csv,text/plain" className="block min-h-11 w-full text-base file:mr-3 file:min-h-11 file:rounded-[6px] file:border file:border-line file:bg-card file:px-4 file:font-semibold" /></label>
+            <input type="file" name="file" accept=".csv,text/csv,text/plain" className="block min-h-11 w-full text-base file:mr-3 file:min-h-11 file:rounded-box file:border file:border-line file:bg-card file:px-4 file:font-semibold" /></label>
         </div>
         <div className="space-y-4">
           <label className="block"><Label>Peran bila kolom peran kosong</Label>
             <Select name="default_role" defaultValue="student">{(roles ?? []).map((r) => <option key={r.code as string} value={r.code as string}>{r.name as string}</option>)}</Select></label>
           <label className="block"><Label>Masa berlaku kode (hari)</Label>
             <Select name="days" defaultValue="30"><option value="7">7</option><option value="14">14</option><option value="30">30</option><option value="60">60</option><option value="90">90</option></Select></label>
-          <div className="rounded-[6px] border border-line p-3 text-sm text-ink-soft">
+          <div className="rounded-box border border-line p-3 text-sm text-ink-soft">
             <p className="font-semibold text-ink">Aturan</p>
             <ul className="mt-1 list-disc pl-5">
               <li>Maksimal 300 baris, 200 KB.</li>

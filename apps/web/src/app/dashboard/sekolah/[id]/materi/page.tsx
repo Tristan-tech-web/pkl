@@ -40,7 +40,7 @@ export default async function MateriPage({ params, searchParams }: { params: Pro
         <p className="mt-1 text-ink-soft">Buat materi, tulis pelajaran, dan susun soal. Materi berstatus draf tidak terlihat siswa.</p>
       </header>
       <div className="space-y-3"><ErrorNote message={error} /><InfoNote message={info} /></div>
-      <section className="mt-6 rounded-[6px] border border-line bg-card p-4">
+      <section className="mt-6 surface p-4">
         <h2 className="font-display text-xl font-bold">Materi baru</h2>
         <form action={createNode.bind(null, id)} className="mt-3 grid gap-3 sm:grid-cols-[1fr_1fr_6rem_auto]">
           <label><Label>Mata pelajaran</Label>

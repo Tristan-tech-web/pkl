@@ -50,7 +50,7 @@ export default async function FinanceReview({ params, searchParams }: { params: 
       <p className="text-ink-soft">{f.name as string} · {parsed.rows.length} baris. Setiap baris dicocokkan ke siswa yang sudah punya akun (NIS, atau nama yang unik). Tidak ada data masuk sebelum Anda menekan Buat tagihan.</p>
       {sp.error ? <div className="mt-3"><ErrorNote message={sp.error} /></div> : null}
 
-      <form method="get" className="mt-6 rounded-[6px] border border-line bg-card p-4">
+      <form method="get" className="mt-6 surface p-4">
         <h2 className="font-display text-lg font-bold">1. Pemetaan kolom</h2>
         <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <label><Label>Baris judul kolom</Label>
@@ -71,7 +71,7 @@ export default async function FinanceReview({ params, searchParams }: { params: 
           <span className={unmatched.length ? "font-semibold text-bad" : "text-ink-soft"}>{unmatched.length} tidak cocok siswa</span>
           <span className={bad.length ? "font-semibold text-bad" : "text-ink-soft"}>{bad.length} bermasalah</span>
         </p>
-        {unmatched.length > 0 ? <p className="mt-2 rounded-[6px] border border-warn/40 p-3 text-sm">Baris yang tidak cocok biasanya siswa yang belum bergabung. Impor roster siswa dan bagikan kodenya dulu. Setelah mereka masuk, unggah ulang berkas yang hanya berisi baris tersebut agar tagihan tidak ganda.</p> : null}
+        {unmatched.length > 0 ? <p className="mt-2 rounded-box border border-warn/40 p-3 text-sm">Baris yang tidak cocok biasanya siswa yang belum bergabung. Impor roster siswa dan bagikan kodenya dulu. Setelah mereka masuk, unggah ulang berkas yang hanya berisi baris tersebut agar tagihan tidak ganda.</p> : null}
         <div className="mt-3 overflow-x-auto" tabIndex={0} role="region" aria-label="Pratinjau baris">
           <table className="w-full min-w-[40rem] text-left text-sm">
             <thead><tr className="border-b-2 border-ink"><th className="py-2 pr-2">Baris</th><th className="pr-2">Nama</th><th className="pr-2">Tagihan</th><th className="pr-2 text-right">Nominal</th><th className="pr-2">Bayar</th><th>Cocok</th></tr></thead>
@@ -92,7 +92,7 @@ export default async function FinanceReview({ params, searchParams }: { params: 
         {results.length > 25 ? <p className="mt-1 text-sm text-ink-soft">Menampilkan 25 dari {results.length} baris.</p> : null}
       </section>
 
-      <form action={importFinance.bind(null, id, fileId)} className="mt-6 rounded-[6px] border border-line bg-card p-4">
+      <form action={importFinance.bind(null, id, fileId)} className="mt-6 surface p-4">
         <h2 className="font-display text-lg font-bold">3. Buat tagihan</h2>
         <input type="hidden" name="header_row" value={headerRow} />
         {FIN_FIELDS.map((k) => (mapping[k] === undefined ? null : <input key={k} type="hidden" name={`m_${k}`} value={mapping[k]} />))}

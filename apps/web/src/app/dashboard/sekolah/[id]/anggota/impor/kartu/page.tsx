@@ -30,7 +30,7 @@ export default async function KartuPage({ params, searchParams }: { params: Prom
       <p className="no-print mb-6 mt-1 text-ink-soft">Cetak kartu ini dan bagikan satu per orang. Kode hanya berlaku sekali.</p>
       <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 print:grid-cols-2">
         {rows.map((r) => (
-          <li key={r.code} className="break-inside-avoid rounded-[6px] border border-line bg-card p-4">
+          <li key={r.code} className="break-inside-avoid surface p-4">
             <p className="text-xs font-semibold uppercase tracking-[0.08em] text-ink-soft">{school.name}</p>
             <p className="mt-1 text-lg font-bold">{r.label}</p>
             <p className="text-sm text-ink-soft">{first(r.roles)?.name}{first(r.class_groups)?.name ? ` · ${first(r.class_groups)?.name}` : ""}</p>

@@ -20,7 +20,7 @@ export default async function LaunchPage({ params }: { params: Promise<{ id: str
       <h1 className="mt-3 mb-1 font-display text-3xl font-bold tracking-tight">{e.title as string}</h1>
       <p className="text-ink-soft">{e.duration_minutes as number} menit. Waktu dihitung server sejak kamu menekan Mulai di aplikasi.</p>
       {error || !code ? <div className="mt-4"><ErrorNote message="Ujian belum bisa dimulai. Pastikan ujian sedang dibuka dan belum kamu kumpulkan." /></div> : (
-        <section className="mt-6 rounded-[6px] border border-line bg-card p-5" aria-label="Buka aplikasi ujian">
+        <section className="mt-6 surface p-5" aria-label="Buka aplikasi ujian">
           <h2 className="font-display text-xl font-bold">1. Buka aplikasi ujian</h2>
           <p className="mt-1 text-sm text-ink-soft">Aplikasi akan mengunci perangkat: tidak bisa membuka aplikasi lain, tangkapan layar, atau jendela melayang selama ujian. Kode ini berlaku 5 menit dan sekali pakai.</p>
           <LaunchLink code={code as string} />

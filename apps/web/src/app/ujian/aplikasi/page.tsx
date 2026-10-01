@@ -20,12 +20,12 @@ export default function ExamAppPage() {
         {PLATFORMS.map((p) => {
           const url = process.env[p.env];
           return (
-            <li key={p.key} className="rounded-[6px] border border-line bg-card p-5">
+            <li key={p.key} className="surface p-5">
               <h2 className="font-display text-xl font-bold">{p.name}</h2>
               <p className="mt-1 text-sm text-ink-soft">{p.how}</p>
               <p className="mt-1 text-sm"><span className="font-semibold">Penguncian:</span> {p.lock}</p>
-              {url ? <a href={url} className="press mt-3 inline-flex min-h-11 items-center rounded-[6px] bg-pen px-5 font-semibold text-on-pen">Unduh untuk {p.name}</a>
-                   : <p className="mt-3 inline-flex min-h-11 items-center rounded-[6px] border border-line px-4 text-sm text-ink-soft">Belum dirilis untuk sekolah ini. Hubungi admin sekolah.</p>}
+              {url ? <a href={url} className="press mt-3 inline-flex min-h-11 items-center rounded-box bg-pen px-5 font-semibold text-on-pen">Unduh untuk {p.name}</a>
+                   : <p className="mt-3 inline-flex min-h-11 items-center rounded-box border border-line px-4 text-sm text-ink-soft">Belum dirilis untuk sekolah ini. Hubungi admin sekolah.</p>}
             </li>
           );
         })}

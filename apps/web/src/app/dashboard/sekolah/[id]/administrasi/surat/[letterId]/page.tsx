@@ -28,7 +28,7 @@ export default async function LetterPage({ params }: { params: Promise<{ id: str
           {management ? <form action={deleteLetter.bind(null, id, letterId)}><Button type="submit" variant="ghost">Hapus dari arsip</Button></form> : null}
         </div>
       </div>
-      <div className="rounded-[6px] border border-line bg-card p-8 sm:p-12">
+      <div className="surface p-8 sm:p-12">
         <header className="border-b-2 border-ink pb-3 text-center">
           <p className="font-display text-2xl font-bold">{s.name as string}</p>
           {where ? <p className="text-sm text-ink-soft">{where}</p> : null}

@@ -27,7 +27,7 @@ export async function ParentView({ schoolId }: { schoolId: string }) {
   const children = (kids ?? []) as { student_id: string; name: string; class_name: string | null; relation: string }[];
   if (children.length === 0) {
     return (
-      <div className="bg-grid rounded-[6px] border border-dashed border-line p-6">
+      <div className="bg-grid rounded-box border border-dashed border-line p-6">
         <p className="font-semibold">Belum ada anak yang terhubung</p>
         <p className="mt-1 max-w-xl text-ink-soft">Minta tata usaha sekolah menghubungkan akun Anda dengan data anak. Setelah itu ringkasan kehadiran, nilai, dan belajar tampil di sini.</p>
       </div>
@@ -66,12 +66,12 @@ export async function ParentView({ schoolId }: { schoolId: string }) {
                     ))}
                   </ul>
                 )}
-                {o.note ? <p className="mt-3 rounded-[6px] border border-line bg-card p-3"><span className="text-sm font-semibold">Catatan wali kelas: </span>{o.note}</p> : null}
+                {o.note ? <p className="mt-3 surface p-3"><span className="text-sm font-semibold">Catatan wali kelas: </span>{o.note}</p> : null}
               </div>
             ) : null}
 
             {o.grades ? (
-              <p className="mt-4"><Link href={`/dashboard/sekolah/${schoolId}/anak/${c.student_id}`} className="press inline-flex min-h-11 items-center rounded-[6px] border border-line bg-card px-4 font-semibold hover:border-pen">Buka rapor (cetak)</Link></p>
+              <p className="mt-4"><Link href={`/dashboard/sekolah/${schoolId}/anak/${c.student_id}`} className="press inline-flex min-h-11 items-center surface px-4 font-semibold hover:border-pen">Buka rapor (cetak)</Link></p>
             ) : null}
             {att && total > 0 ? (
               <div className="mt-6">

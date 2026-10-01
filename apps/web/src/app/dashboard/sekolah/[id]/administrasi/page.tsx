@@ -34,12 +34,12 @@ export default async function AdministrasiPage({ params }: { params: Promise<{ i
           <p className="mt-1 max-w-2xl text-ink-soft">Data induk siswa dan guru. Data ini pribadi: hanya pengelola, wali kelas siswa itu, dan pemilik datanya yang bisa membaca.</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Link href={`/dashboard/sekolah/${id}/administrasi/roster`} className="press inline-flex min-h-11 items-center rounded-[6px] border border-line bg-card px-5 font-semibold hover:border-pen">Roster (belum bergabung)</Link>
-          <Link href={`/dashboard/sekolah/${id}/administrasi/surat`} className="press inline-flex min-h-11 items-center rounded-[6px] border border-line bg-card px-5 font-semibold hover:border-pen">Surat dan arsip</Link>
+          <Link href={`/dashboard/sekolah/${id}/administrasi/roster`} className="press inline-flex min-h-11 items-center surface px-5 font-semibold hover:border-pen">Roster (belum bergabung)</Link>
+          <Link href={`/dashboard/sekolah/${id}/administrasi/surat`} className="press inline-flex min-h-11 items-center surface px-5 font-semibold hover:border-pen">Surat dan arsip</Link>
         </div>
       </header>
       {rows.length === 0 ? (
-        <p className="rounded-[6px] border border-dashed border-line p-6 text-ink-soft">Belum ada anggota.</p>
+        <p className="rounded-box border border-dashed border-line p-6 text-ink-soft">Belum ada anggota.</p>
       ) : (
         <ul className="stagger border-t border-line">
           {rows.map((r, i) => (
@@ -75,7 +75,7 @@ async function MyRecords({ schoolId, memberId, role }: { schoolId: string; membe
         <dl className="grid gap-x-8 sm:grid-cols-2">
           {L.filter(([, k]) => p[k]).map(([l, k]) => <div key={k} className="flex gap-3 border-b border-line py-2"><dt className="w-32 shrink-0 text-ink-soft">{l}</dt><dd className="font-semibold">{String(p[k])}</dd></div>)}
         </dl>
-      ) : <p className="rounded-[6px] border border-dashed border-line p-6 text-ink-soft">Data induk belum diisi sekolah.</p>}
+      ) : <p className="rounded-box border border-dashed border-line p-6 text-ink-soft">Data induk belum diisi sekolah.</p>}
       <h2 className="mt-10 font-display text-2xl font-bold tracking-tight">Surat untukku</h2>
       {(letters ?? []).length === 0 ? <p className="mt-3 text-ink-soft">Belum ada surat.</p> : (
         <ul className="mt-3 border-t border-line">

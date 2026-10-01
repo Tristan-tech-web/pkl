@@ -93,14 +93,14 @@ export function QuizRunner({
         </p>
 
         <div className="mt-6 grid gap-3 sm:grid-cols-3">
-          <div className="r-reward rounded-[6px] border border-line bg-card p-4">
+          <div className="r-reward surface p-4">
             <p className="text-xs font-semibold uppercase tracking-[0.08em] text-ink-soft">XP didapat</p>
             <p className="font-display text-3xl font-bold">
               <XpCounter to={result.xp_awarded} prefix="+" delay={0.9} />
             </p>
             {result.bonus > 0 ? <p className="text-sm text-ok">termasuk bonus nilai sempurna +{result.bonus}</p> : result.xp_awarded === 0 && result.passed ? <p className="text-sm text-ink-soft">Nilaimu tidak melampaui rekor sebelumnya.</p> : null}
           </div>
-          <div className="r-reward rounded-[6px] border border-line bg-card p-4">
+          <div className="r-reward surface p-4">
             <p className="text-xs font-semibold uppercase tracking-[0.08em] text-ink-soft">Level {result.level}</p>
             <div className="mt-2 h-2.5 overflow-hidden rounded-full border border-line bg-paper">
               <div className="h-full rounded-full bg-pen" style={{ width: `${Math.round((result.xp_into_level / result.xp_for_level) * 100)}%` }} />
@@ -109,19 +109,19 @@ export function QuizRunner({
               {result.xp_into_level} / {result.xp_for_level} XP
             </p>
           </div>
-          <div className="r-reward rounded-[6px] border border-line bg-card p-4">
+          <div className="r-reward surface p-4">
             <p className="text-xs font-semibold uppercase tracking-[0.08em] text-ink-soft">Beruntun</p>
             <p className="num font-display text-3xl font-bold">{result.streak} hari</p>
           </div>
         </div>
 
         {result.leveled_up ? (
-          <p className="r-level mt-4 inline-block rounded-[6px] border-2 border-pen bg-card px-4 py-2 font-display text-xl font-bold text-pen">
+          <p className="r-level mt-4 inline-block rounded-box border-2 border-pen bg-card px-4 py-2 font-display text-xl font-bold text-pen">
             Naik level! Sekarang level {result.level}
           </p>
         ) : null}
         {result.unlocked.length > 0 ? (
-          <div className="r-reward mt-4 rounded-[6px] border border-ok/40 bg-ok-bg p-4">
+          <div className="r-reward mt-4 rounded-box border border-ok/40 bg-ok-bg p-4">
             <p className="font-semibold text-ok">Materi baru terbuka</p>
             <ul className="mt-1 list-disc pl-5">
               {result.unlocked.map((u) => (
@@ -142,7 +142,7 @@ export function QuizRunner({
           {questions.map((qq, n) => {
             const r = byId.get(qq.id);
             return (
-              <li key={qq.id} className={`rounded-[6px] border p-4 ${r?.correct ? "border-ok/40 bg-ok-bg" : "border-bad/40 bg-bad-bg"}`}>
+              <li key={qq.id} className={`rounded-box border p-4 ${r?.correct ? "border-ok/40 bg-ok-bg" : "border-bad/40 bg-bad-bg"}`}>
                 <p className="font-semibold">
                   {n + 1}. {qq.prompt}
                 </p>
@@ -170,7 +170,7 @@ export function QuizRunner({
           {i + 1}/{questions.length}
         </span>
       </div>
-      <div className="q-card mt-6 rounded-[6px] border border-line bg-card p-5">
+      <div className="q-card mt-6 surface p-5">
         <h1 className="font-display text-2xl font-bold leading-snug tracking-tight">{q.prompt}</h1>
         <div className="mt-5 grid gap-3">
           {q.kind === "short" ? (
@@ -187,7 +187,7 @@ export function QuizRunner({
                   type="button"
                   aria-pressed={on}
                   onClick={() => (q.kind === "mcq" ? set(n) : set(Array.isArray(cur) ? (cur.includes(n) ? cur.filter((x) => x !== n) : [...cur, n]) : [n]))}
-                  className={`q-opt press flex min-h-12 items-center gap-3 rounded-[6px] border-2 px-4 py-3 text-left text-lg ${on ? "border-pen bg-pen/10 font-semibold" : "border-line hover:border-pen"}`}
+                  className={`q-opt press flex min-h-12 items-center gap-3 rounded-box border-2 px-4 py-3 text-left text-lg ${on ? "border-pen bg-pen/10 font-semibold" : "border-line hover:border-pen"}`}
                 >
                   <span aria-hidden="true" className={`grid size-6 shrink-0 place-items-center rounded-full border-2 text-xs font-bold ${on ? "border-pen bg-pen text-on-pen" : "border-line"}`}>
                     {String.fromCharCode(65 + n)}

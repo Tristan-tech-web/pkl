@@ -36,7 +36,7 @@ export default async function PengumumanPage({ params, searchParams }: { params:
       </header>
       <div className="space-y-3"><ErrorNote message={sp.error} /><InfoNote message={sp.info} /></div>
       {canWrite ? (
-        <details className="mt-4 rounded-[6px] border border-line bg-card p-4" open={rows.length === 0}>
+        <details className="mt-4 surface p-4" open={rows.length === 0}>
           <summary className="cursor-pointer font-display text-lg font-bold">Tulis pengumuman</summary>
           <form action={createAnnouncement.bind(null, id)} className="mt-3 grid gap-3 sm:grid-cols-2">
             <label className="sm:col-span-2"><Label>Judul</Label><Input name="title" required minLength={3} maxLength={140} /></label>
@@ -54,11 +54,11 @@ export default async function PengumumanPage({ params, searchParams }: { params:
         </details>
       ) : null}
       {rows.length === 0 ? (
-        <p className="mt-6 rounded-[6px] border border-dashed border-line p-6 text-ink-soft">Belum ada pengumuman.</p>
+        <p className="mt-6 rounded-box border border-dashed border-line p-6 text-ink-soft">Belum ada pengumuman.</p>
       ) : (
         <ul className="stagger mt-6 space-y-4">
           {rows.map((r) => (
-            <li key={r.id} className={`rounded-[6px] border bg-card p-4 ${r.pinned ? "border-pen" : "border-line"}`}>
+            <li key={r.id} className={`rounded-box border bg-card p-4 ${r.pinned ? "border-pen" : "border-line"}`}>
               <div className="flex flex-wrap items-baseline justify-between gap-2">
                 <h2 className="text-lg font-bold">{r.pinned ? "📌 " : ""}{r.title}</h2>
                 <span className="rounded-full border border-line px-2 py-0.5 text-xs text-ink-soft">{r.audience === "kelas" ? first(r.class_groups)?.name ?? "Rombel" : AUD[r.audience]}</span>

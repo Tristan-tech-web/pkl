@@ -19,7 +19,7 @@ export function CopyButton({ text, path, label = "Salin" }: { text?: string; pat
     <button
       type="button"
       onClick={copy}
-      className="inline-flex min-h-11 items-center rounded-[6px] border border-line bg-card px-3 text-sm font-semibold hover:border-pen"
+      className="inline-flex min-h-11 items-center surface px-3 text-sm font-semibold hover:border-pen"
     >
       {state === "ok" ? "Tersalin" : state === "gagal" ? "Salin manual" : label}
     </button>

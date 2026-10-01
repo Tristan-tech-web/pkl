@@ -13,15 +13,15 @@ export function McpConnect({ endpoint }: { endpoint: string }) {
   const bridge = JSON.stringify({ mcpServers: { edusmart: { command: "npx", args: ["-y", "mcp-remote", endpoint, "--header", `Authorization:Bearer ${t}`] } } }, null, 2);
   return (
     <div className="space-y-5">
-      <form action={action} className="grid gap-3 rounded-[6px] border border-line bg-card p-4 sm:grid-cols-4">
+      <form action={action} className="grid gap-3 surface p-4 sm:grid-cols-4">
         <label className="sm:col-span-2"><Label>Nama token</Label><Input name="name" required minLength={2} maxLength={60} placeholder="mis. Claude di laptop" /></label>
         <label><Label>Berlaku (hari)</Label><Input name="days" type="number" min={1} max={365} defaultValue={90} /></label>
         <label className="flex min-h-11 items-center gap-2 self-end"><input type="checkbox" name="can_write" className="size-4" /> Izinkan unggah berkas</label>
         <div className="sm:col-span-4"><Button type="submit" disabled={pending}>{pending ? "Membuat…" : "Buat token"}</Button></div>
       </form>
-      {state.error ? <p role="alert" className="rounded-[6px] border border-bad/40 p-3 text-sm text-bad">{state.error}</p> : null}
+      {state.error ? <p role="alert" className="rounded-box border border-bad/40 p-3 text-sm text-bad">{state.error}</p> : null}
       {state.token ? (
-        <div className="rounded-[6px] border border-ok/50 bg-card p-4" role="status">
+        <div className="rounded-box border border-ok/50 bg-card p-4" role="status">
           <p className="font-semibold">Token dibuat. Salin sekarang; tidak akan ditampilkan lagi.</p>
           <div className="mt-2"><CopyBox text={state.token} label="Salin token" /></div>
         </div>

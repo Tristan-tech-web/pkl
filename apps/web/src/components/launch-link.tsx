@@ -10,7 +10,7 @@ export function LaunchLink({ code }: { code: string }) {
   useEffect(() => { if (host) window.location.assign(href); }, [host, href]);
   return (
     <div className="mt-4">
-      <a href={href} aria-disabled={!host} className="press inline-flex min-h-11 items-center rounded-[6px] bg-pen px-5 font-semibold text-on-pen">Buka aplikasi ujian</a>
+      <a href={href} aria-disabled={!host} className="press inline-flex min-h-11 items-center rounded-box bg-pen px-5 font-semibold text-on-pen">Buka aplikasi ujian</a>
       <p className="mt-2 text-sm text-ink-soft">Bila aplikasi tidak terbuka, pastikan sudah terpasang, lalu tekan tombol di atas.</p>
     </div>
   );

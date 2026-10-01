@@ -34,7 +34,7 @@ export default async function EditProfile({ params, searchParams }: { params: Pr
       <a href={`/dashboard/sekolah/${id}/administrasi`} className="text-sm font-semibold text-pen underline">← Semua anggota</a>
       <h1 className="mt-3 mb-6 font-display text-3xl font-bold tracking-tight">{m.display_name as string}</h1>
       <div className="space-y-3"><ErrorNote message={sp.error} /><InfoNote message={sp.info} /></div>
-      <form action={saveProfile.bind(null, id, memberId)} className="mt-4 grid gap-4 rounded-[6px] border border-line bg-card p-5 sm:grid-cols-2">
+      <form action={saveProfile.bind(null, id, memberId)} className="mt-4 grid gap-4 surface p-5 sm:grid-cols-2">
         <label><Label>NIS</Label><Input name="nis" defaultValue={v("nis")} maxLength={30} /></label>
         <label><Label hint="10 digit">NISN</Label><Input name="nisn" defaultValue={v("nisn")} inputMode="numeric" maxLength={10} /></label>
         <label><Label hint="guru/staf">NIP</Label><Input name="nip" defaultValue={v("nip")} maxLength={30} /></label>
@@ -59,7 +59,7 @@ export default async function EditProfile({ params, searchParams }: { params: Pr
               </li>
             ))}
           </ul>
-          <form action={linkGuardian.bind(null, id, memberId)} className="mt-3 grid gap-3 rounded-[6px] border border-line bg-card p-4 sm:grid-cols-[1fr_8rem_auto]">
+          <form action={linkGuardian.bind(null, id, memberId)} className="mt-3 grid gap-3 surface p-4 sm:grid-cols-[1fr_8rem_auto]">
             <label><Label>Akun orang tua</Label><Select name="parent_id" required>{((parents?.data ?? []) as unknown as { id: string; display_name: string | null }[]).map((p) => <option key={p.id} value={p.id}>{p.display_name}</option>)}</Select></label>
             <label><Label>Hubungan</Label><Select name="relation" defaultValue="wali"><option value="ayah">Ayah</option><option value="ibu">Ibu</option><option value="wali">Wali</option></Select></label>
             <div className="flex items-end"><Button type="submit">Hubungkan</Button></div>

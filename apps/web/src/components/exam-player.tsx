@@ -139,19 +139,19 @@ export function ExamPlayer() {
   const remaining = answered.filter((x) => !x).length;
 
   if (phase === "loading") return <Shell><p role="status" className="text-center text-ink-soft">Menyiapkan ujian…</p></Shell>;
-  if (phase === "error") return <Shell><div role="alert" className="rounded-[6px] border border-bad/40 bg-card p-6 text-center"><h1 className="font-display text-2xl font-bold">Ujian tidak bisa dibuka</h1><p className="mt-2 text-ink-soft">{msg}</p></div></Shell>;
+  if (phase === "error") return <Shell><div role="alert" className="rounded-box border border-bad/40 bg-card p-6 text-center"><h1 className="font-display text-2xl font-bold">Ujian tidak bisa dibuka</h1><p className="mt-2 text-ink-soft">{msg}</p></div></Shell>;
   if (phase === "done") return (
     <Shell>
-      <div className="rounded-[6px] border border-ok/40 bg-card p-8 text-center">
+      <div className="rounded-box border border-ok/40 bg-card p-8 text-center">
         <h1 className="font-display text-3xl font-bold">Jawabanmu sudah terkumpul</h1>
         <p className="mt-2 text-ink-soft">Terima kasih. Nilai akan diumumkan oleh gurumu.</p>
-        <button type="button" className="mt-6 min-h-11 rounded-[6px] bg-pen px-6 font-semibold text-on-pen" onClick={() => { try { sessionStorage.removeItem("esx"); } catch { /* abaikan */ } if (native?.done) native.done(); else router.push("/dashboard"); }}>Selesai</button>
+        <button type="button" className="mt-6 min-h-11 rounded-box bg-pen px-6 font-semibold text-on-pen" onClick={() => { try { sessionStorage.removeItem("esx"); } catch { /* abaikan */ } if (native?.done) native.done(); else router.push("/dashboard"); }}>Selesai</button>
       </div>
     </Shell>
   );
   if (phase === "frozen") return (
     <Shell>
-      <div role="alert" className="rounded-[6px] border border-bad/50 bg-card p-8 text-center">
+      <div role="alert" className="rounded-box border border-bad/50 bg-card p-8 text-center">
         <h1 className="font-display text-3xl font-bold text-bad">Ujian dibekukan</h1>
         <p className="mt-2 text-ink-soft">Ada pelanggaran aturan ujian. Angkat tangan dan hubungi pengawas; ujian dilanjutkan setelah pengawas mengizinkan. Jawabanmu aman.</p>
       </div>
@@ -164,56 +164,56 @@ export function ExamPlayer() {
         <h1 className="truncate font-display text-lg font-bold">{title}</h1>
         <div className="flex items-center gap-3">
           <span role="status" aria-live="polite" className="text-xs text-ink-soft">{saved === "ok" ? "Tersimpan" : saved === "pending" ? "Menyimpan…" : "Gagal menyimpan, mencoba lagi"}</span>
-          <span className={`num rounded-[6px] border px-3 py-1 font-bold ${left < 300 ? "border-bad text-bad" : "border-line"}`} aria-label="Sisa waktu" role="timer">{fmt(left)}</span>
+          <span className={`num rounded-box border px-3 py-1 font-bold ${left < 300 ? "border-bad text-bad" : "border-line"}`} aria-label="Sisa waktu" role="timer">{fmt(left)}</span>
         </div>
       </header>
-      {warn ? <p role="alert" className="mb-3 rounded-[6px] border border-warn/50 p-3 text-sm">{warn}</p> : null}
+      {warn ? <p role="alert" className="mb-3 rounded-box border border-warn/50 p-3 text-sm">{warn}</p> : null}
       <div className="grid gap-6 lg:grid-cols-[1fr_16rem]">
-        <section aria-label={`Soal ${idx + 1} dari ${qs.length}`} className="rounded-[6px] border border-line bg-card p-5">
+        <section aria-label={`Soal ${idx + 1} dari ${qs.length}`} className="surface p-5">
           <p className="text-sm text-ink-soft">Soal {idx + 1} dari {qs.length} · {q.points} poin</p>
           <p className="mt-2 whitespace-pre-wrap text-lg font-semibold">{q.prompt}</p>
           <div className="mt-4 space-y-2">
             {q.kind === "mcq" && q.options.map((o, i) => (
-              <label key={i} className="flex min-h-11 cursor-pointer items-center gap-3 rounded-[6px] border border-line px-3 has-[:checked]:border-pen has-[:checked]:bg-pen/10">
+              <label key={i} className="flex min-h-11 cursor-pointer items-center gap-3 rounded-box border border-line px-3 has-[:checked]:border-pen has-[:checked]:bg-pen/10">
                 <input type="radio" name={q.id} checked={answers[q.id] === i} onChange={() => save(q.id, i)} className="size-4" /> {o}
               </label>
             ))}
             {q.kind === "multi" && q.options.map((o, i) => {
               const cur = (Array.isArray(answers[q.id]) ? (answers[q.id] as number[]) : []);
               return (
-                <label key={i} className="flex min-h-11 cursor-pointer items-center gap-3 rounded-[6px] border border-line px-3 has-[:checked]:border-pen has-[:checked]:bg-pen/10">
+                <label key={i} className="flex min-h-11 cursor-pointer items-center gap-3 rounded-box border border-line px-3 has-[:checked]:border-pen has-[:checked]:bg-pen/10">
                   <input type="checkbox" checked={cur.includes(i)} onChange={(e) => save(q.id, e.target.checked ? [...cur, i].sort() : cur.filter((x) => x !== i))} className="size-4" /> {o}
                 </label>
               );
             })}
-            {q.kind === "short" && <input value={String(answers[q.id] ?? "")} onChange={(e) => save(q.id, e.target.value, 500)} aria-label="Jawaban" className="min-h-11 w-full rounded-[6px] border border-line bg-paper px-3" autoComplete="off" />}
-            {q.kind === "essay" && <textarea value={String(answers[q.id] ?? "")} onChange={(e) => save(q.id, e.target.value, 700)} rows={9} aria-label="Jawaban uraian" className="w-full rounded-[6px] border border-line bg-paper p-3" />}
+            {q.kind === "short" && <input value={String(answers[q.id] ?? "")} onChange={(e) => save(q.id, e.target.value, 500)} aria-label="Jawaban" className="min-h-11 w-full rounded-box border border-line bg-paper px-3" autoComplete="off" />}
+            {q.kind === "essay" && <textarea value={String(answers[q.id] ?? "")} onChange={(e) => save(q.id, e.target.value, 700)} rows={9} aria-label="Jawaban uraian" className="w-full rounded-box border border-line bg-paper p-3" />}
           </div>
           <div className="mt-6 flex justify-between gap-3">
-            <button type="button" className="min-h-11 rounded-[6px] border border-line px-4 font-semibold disabled:opacity-40" disabled={idx === 0} onClick={() => setIdx(idx - 1)}>Sebelumnya</button>
+            <button type="button" className="min-h-11 rounded-box border border-line px-4 font-semibold disabled:opacity-40" disabled={idx === 0} onClick={() => setIdx(idx - 1)}>Sebelumnya</button>
             {idx < qs.length - 1
-              ? <button type="button" className="min-h-11 rounded-[6px] bg-pen px-4 font-semibold text-on-pen" onClick={() => setIdx(idx + 1)}>Berikutnya</button>
-              : <button type="button" className="min-h-11 rounded-[6px] bg-pen px-4 font-semibold text-on-pen" onClick={() => setConfirmEnd(true)}>Kumpulkan</button>}
+              ? <button type="button" className="min-h-11 rounded-box bg-pen px-4 font-semibold text-on-pen" onClick={() => setIdx(idx + 1)}>Berikutnya</button>
+              : <button type="button" className="min-h-11 rounded-box bg-pen px-4 font-semibold text-on-pen" onClick={() => setConfirmEnd(true)}>Kumpulkan</button>}
           </div>
         </section>
-        <aside aria-label="Navigasi soal" className="rounded-[6px] border border-line bg-card p-4">
+        <aside aria-label="Navigasi soal" className="surface p-4">
           <div className="grid grid-cols-5 gap-2">
             {qs.map((x, i) => (
               <button key={x.id} type="button" onClick={() => setIdx(i)} aria-label={`Soal ${i + 1}${answered[i] ? ", terjawab" : ", belum dijawab"}`} aria-current={i === idx}
-                className={`num min-h-11 rounded-[6px] border font-semibold ${i === idx ? "border-pen bg-pen text-on-pen" : answered[i] ? "border-ok/60 bg-ok/10" : "border-line"}`}>{i + 1}</button>
+                className={`num min-h-11 rounded-box border font-semibold ${i === idx ? "border-pen bg-pen text-on-pen" : answered[i] ? "border-ok/60 bg-ok/10" : "border-line"}`}>{i + 1}</button>
             ))}
           </div>
-          <button type="button" className="mt-4 min-h-11 w-full rounded-[6px] border border-pen font-semibold text-pen" onClick={() => setConfirmEnd(true)}>Kumpulkan ujian</button>
+          <button type="button" className="mt-4 min-h-11 w-full rounded-box border border-pen font-semibold text-pen" onClick={() => setConfirmEnd(true)}>Kumpulkan ujian</button>
         </aside>
       </div>
       {confirmEnd ? (
         <div role="dialog" aria-modal="true" aria-label="Konfirmasi kumpulkan" className="fixed inset-0 z-20 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-sm rounded-[6px] bg-card p-6">
+          <div className="w-full max-w-sm rounded-box bg-card p-6">
             <h2 className="font-display text-xl font-bold">Kumpulkan sekarang?</h2>
             <p className="mt-2 text-ink-soft">{remaining > 0 ? `${remaining} soal belum dijawab. ` : "Semua soal sudah dijawab. "}Setelah dikumpulkan, jawaban tidak bisa diubah.</p>
             <div className="mt-5 flex justify-end gap-3">
-              <button type="button" className="min-h-11 rounded-[6px] border border-line px-4 font-semibold" onClick={() => setConfirmEnd(false)}>Kembali</button>
-              <button type="button" className="min-h-11 rounded-[6px] bg-pen px-4 font-semibold text-on-pen" onClick={() => void submit()}>Ya, kumpulkan</button>
+              <button type="button" className="min-h-11 rounded-box border border-line px-4 font-semibold" onClick={() => setConfirmEnd(false)}>Kembali</button>
+              <button type="button" className="min-h-11 rounded-box bg-pen px-4 font-semibold text-on-pen" onClick={() => void submit()}>Ya, kumpulkan</button>
             </div>
           </div>
         </div>

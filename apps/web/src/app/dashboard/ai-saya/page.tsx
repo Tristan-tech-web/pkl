@@ -26,7 +26,7 @@ export default async function MyAiPage({ searchParams }: { searchParams: Promise
       </header>
       <div className="space-y-3"><ErrorNote message={error} /><InfoNote message={info} /></div>
       <div className="mt-4 grid gap-6 lg:grid-cols-[3fr_2fr]">
-        <form action={saveMyAiKey} className="grid gap-4 rounded-[6px] border border-line bg-card p-5 sm:grid-cols-2">
+        <form action={saveMyAiKey} className="grid gap-4 surface p-5 sm:grid-cols-2">
           <label><Label>Penyedia</Label>
             <Select name="provider" defaultValue={(cfg?.provider as string | undefined) ?? "gemini"}><option value="gemini">Google Gemini</option><option value="anthropic">Anthropic Claude</option></Select></label>
           <label><Label hint="kosong = bawaan">Model</Label><Input name="model" defaultValue={(cfg?.model as string | undefined) ?? ""} placeholder="gemini-2.5-flash-lite" /></label>
@@ -35,16 +35,16 @@ export default async function MyAiPage({ searchParams }: { searchParams: Promise
           <div className="sm:col-span-2"><Button type="submit">Simpan dan uji</Button></div>
         </form>
         <aside className="space-y-4">
-          <div className="rounded-[6px] border border-line p-4">
+          <div className="rounded-box border border-line p-4">
             <p className="text-xs font-semibold uppercase tracking-[0.08em] text-ink-soft">Status</p>
             <p className={`text-xl font-bold ${cfg ? "text-ok" : "text-ink-soft"}`}>{cfg ? "Memakai kuncimu" : "Belum ada kunci"}</p>
             {cfg ? <form action={removeMyAiKey} className="mt-3"><Button type="submit" variant="ghost">Hapus kunci</Button></form> : <p className="mt-1 text-sm text-ink-soft">Tanpa kunci, AI memakai kunci sekolah (bila ada).</p>}
           </div>
-          <div className="rounded-[6px] border border-line p-4 text-sm text-ink-soft">
+          <div className="rounded-box border border-line p-4 text-sm text-ink-soft">
             <p className="font-semibold text-ink">Tidak punya kunci API?</p>
             <p className="mt-1">Di fitur AI tersedia tombol <span className="font-semibold text-ink">Salin prompt</span>. Tempel di ChatGPT, Claude, atau Gemini milikmu, lalu tempel jawabannya kembali. Tidak perlu kunci.</p>
           </div>
-          <div className="rounded-[6px] border border-line p-4 text-sm text-ink-soft">
+          <div className="rounded-box border border-line p-4 text-sm text-ink-soft">
             <p className="font-semibold text-ink">Siswa</p>
             <p className="mt-1">Siswa memakai kunci pribadi hanya bila sekolah mengizinkan (menu Tutor AI pengelola).</p>
           </div>
@@ -55,7 +55,7 @@ export default async function MyAiPage({ searchParams }: { searchParams: Promise
         <p className="mt-1 max-w-2xl text-ink-soft">Hubungkan Claude Code, Cowork, atau AI lain yang mendukung MCP ke EduSmart. Guru bisa bertanya “hari ini aku mengajar apa?”, siswa “hari ini ada apa?”, dan pengelola bisa meminta AI memasukkan berkas besar. Akses AI selalu sebatas hak peran Anda.</p>
         <div className="mt-4"><McpConnect endpoint={endpoint} /></div>
         <h3 className="mt-8 font-semibold">Token aktif</h3>
-        <ul className="mt-2 divide-y divide-line rounded-[6px] border border-line bg-card">
+        <ul className="mt-2 divide-y divide-line surface">
           {(tokens ?? []).length === 0 ? <li className="p-3 text-sm text-ink-soft">Belum ada token.</li> : null}
           {(tokens ?? []).map((t) => (
             <li key={t.id as string} className="flex flex-wrap items-center justify-between gap-2 p-3 text-sm">

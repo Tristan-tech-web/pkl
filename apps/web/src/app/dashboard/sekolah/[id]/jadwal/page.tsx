@@ -66,11 +66,11 @@ export default async function JadwalPage({ params, searchParams }: { params: Pro
       ) : null}
 
       {slots.length === 0 ? (
-        <p className="mt-6 rounded-[6px] border border-dashed border-line p-6 text-ink-soft">Belum ada jadwal.</p>
+        <p className="mt-6 rounded-box border border-dashed border-line p-6 text-ink-soft">Belum ada jadwal.</p>
       ) : (
         <div className="stagger mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3, 4, 5, 6, 7].filter((d) => byDay.has(d)).map((d) => (
-            <section key={d} className="rounded-[6px] border border-line bg-card p-4">
+            <section key={d} className="surface p-4">
               <h2 className="font-display text-xl font-bold">{DAYS[d]}</h2>
               <ul className="mt-2">
                 {byDay.get(d)!.map((s) => (
@@ -91,7 +91,7 @@ export default async function JadwalPage({ params, searchParams }: { params: Pro
       )}
 
       {management && cls ? (
-        <form action={addSlot.bind(null, id)} className="mt-8 grid gap-3 rounded-[6px] border border-line bg-card p-4 sm:grid-cols-6">
+        <form action={addSlot.bind(null, id)} className="mt-8 grid gap-3 surface p-4 sm:grid-cols-6">
           <input type="hidden" name="class_id" value={cls.id} />
           <h2 className="font-display text-lg font-bold sm:col-span-6">Tambah jam pelajaran untuk {cls.name}</h2>
           <label className="sm:col-span-2"><Label>Mata pelajaran</Label><Select name="subject_id" required>{subjects.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</Select></label>

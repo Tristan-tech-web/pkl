@@ -61,8 +61,8 @@ Sinyal perilaku (selalu), kamera di perangkat (opsional), skor risiko, tahan/bat
 |---|---|---|
 | A1–A8 | Riset dan analisis (dokumen ini + R2–R4) | ☑ dokumen di repo |
 | B1 ☑ | Arsitektur tema: token, 3 pengalaman, 9+ paket, tema efektif tanpa kedip, tabel kebijakan sekolah dan preferensi pengguna, halaman pengaturan (murid/guru/sekolah) | tes SQL RLS; Playwright: pilih tema → bertahan setelah muat ulang; kebijakan sekolah membatasi pilihan; tangkapan layar tiap tema |
-| B2 | Ulang desain komponen inti (tombol, kartu, navigasi, formulir) per pengalaman | audit axe bersih; kontras terjamin tiap tema; ukuran sentuh ≥ 44 px (Ringkas ≥ 48) |
-| B3 | Kit 3D prosedural (maskot, benda melayang, adegan latar, permata XP) + gerbang kemampuan | muatan three hanya di halaman yang meminta; ≥ 30 fps pada CPU throttle 4×; mode Ringkas tanpa three; `reduced-motion` statis |
+| B2 ☑ | Ulang desain komponen inti (tombol, kartu, navigasi, formulir) per pengalaman | audit axe bersih; kontras terjamin tiap tema; ukuran sentuh ≥ 44 px (Ringkas ≥ 48) |
+| B3 ☑ | Kit 3D prosedural (maskot, benda melayang, adegan latar, permata XP) + gerbang kemampuan | muatan three hanya di halaman yang meminta; ≥ 30 fps pada CPU throttle 4×; mode Ringkas tanpa three; `reduced-motion` statis |
 | C1 | Jalur belajar + aturan buka terjadwal + simpul ulang | Playwright: simpul besok terkunci dengan hitung mundur; terbuka setelah waktunya (waktu disimulasikan); tidak mengunci balik |
 | C2 | AI penyusun skill tree semester + editor + pratinjau murid | uji dengan buku 70 ribu karakter + jadwal nyata → pohon bertanggal valid, tanggal di hari pelajaran |
 | C3 | Bank soal AI + tinjau + mode Latihan + penjadwal ulang + kalibrasi | ≥ 300 butir terverifikasi dari buku uji; tingkat butir yang gagal verifikasi dilaporkan; sesi latihan berjalan |
@@ -86,3 +86,7 @@ Urutan: B1 → B2 → B3 → C1 → C2 → C3 → C4 → D1 → D2 → D3 → E.
 - Tampilan efektif: `src/lib/appearance.ts` (bawaan ← kebijakan sekolah ← pilihan pengguna), cookie `es_look` + skrip `<head>` tanpa kedip, `AppearanceApply` pada layout `sekolah/[id]` (layout `dashboard` tidak dirender ulang antar-navigasi, jadi tidak dipakai untuk ini).
 - Halaman: `/dashboard/tampilan` (pilihan pengguna, pratinjau langsung) dan `/dashboard/sekolah/[id]/tampilan` (kebijakan: warna sekolah, gaya per kelompok, tema yang diizinkan, 3D/suara/kustomisasi). Tabel `school_appearance`, `user_preferences` (tes SQL 8). Playwright m24 (8 pemeriksaan).
 - Belum: komponen belum memakai token bentuk (B2); 3D belum ada (B3).
+
+## 9. Catatan implementasi B2/B3 (selesai)
+- B2: token bentuk (`--r-box`, `--r-btn`, `--bw`, bayangan) dipakai lewat kelas `surface`, `btn-solid`, `btn-ghost`, `field`; 152 pemakaian `rounded-[6px]` dipindah ke `rounded-box`/`surface`. Ceria: tombol 'stiker' menekan ke bawah; Seru: tombol bercahaya; Ringkas: target sentuh 48 px, fokus tebal. Latar bernuansa per pengalaman (gradien murni CSS). Pelajaran: `backdrop-filter` pada `.surface` mengganggu kanvas WebGL dan boros di HP lemah, jadi dihapus.
+- B3: `components/three/` (kit.ts: 7 adegan prosedural + maskot 'Pena'; capability.ts: gerbang kemampuan; float-field.tsx, mascot.tsx). three dimuat dinamis (chunk ±537 KB mentah) hanya di halaman yang memintanya; guru/Ringkas tidak memuatnya; `reduced-motion` = satu bingkai diam; maskot SVG sebagai cadangan; tema berganti → warna dan adegan ikut berganti langsung. Playwright m25: 5 pemeriksaan (≥ 20 fps pada CPU 4× lebih lambat dengan GL perangkat lunak).

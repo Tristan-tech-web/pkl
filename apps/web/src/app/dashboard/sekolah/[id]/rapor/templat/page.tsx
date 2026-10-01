@@ -46,7 +46,7 @@ export default async function TemplatPage({ params, searchParams }: { params: Pr
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[2fr_3fr]">
         <div className="space-y-6">
-          <section className="rounded-[6px] border border-line bg-card p-4">
+          <section className="surface p-4">
             <h2 className="font-display text-lg font-bold">Templat sekolah</h2>
             <ul className="mt-2 border-t border-line">
               <li className="flex flex-wrap items-center justify-between gap-2 border-b border-line py-2">
@@ -67,7 +67,7 @@ export default async function TemplatPage({ params, searchParams }: { params: Pr
             <a href="?" className="mt-2 inline-flex min-h-11 items-center text-sm font-semibold text-pen underline">+ Templat baru</a>
           </section>
 
-          <section className="rounded-[6px] border border-line bg-card p-4">
+          <section className="surface p-4">
             <h2 className="font-display text-lg font-bold">Buat dari contoh rapor (AI)</h2>
             <p className="mt-1 text-sm text-ink-soft">Unggah contoh rapor sekolah di menu Berkas (kategori “Contoh rapor”), lalu pilih di sini. AI mengusulkan templat; Anda memeriksa sebelum memakainya.</p>
             {(samples ?? []).length === 0 ? <p className="mt-2 text-sm">Belum ada contoh rapor. <a href={`/dashboard/sekolah/${id}/berkas`} className="font-semibold text-pen underline">Unggah di Berkas</a>.</p> : (
@@ -78,7 +78,7 @@ export default async function TemplatPage({ params, searchParams }: { params: Pr
             )}
           </section>
 
-          <form action={saveReportTemplate.bind(null, id)} className="grid gap-3 rounded-[6px] border border-line bg-card p-4">
+          <form action={saveReportTemplate.bind(null, id)} className="grid gap-3 surface p-4">
             <h2 className="font-display text-lg font-bold">{editing ? "Sunting templat" : "Templat baru"}</h2>
             {editing ? <input type="hidden" name="id" value={editing.id as string} /> : null}
             <label><Label>Nama templat</Label><Input name="name" required minLength={2} maxLength={80} defaultValue={(editing?.name as string | undefined) ?? "Rapor sekolah"} /></label>

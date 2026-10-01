@@ -33,7 +33,7 @@ export default async function ExamsPage({ params, searchParams }: { params: Prom
         <p className="mt-1 max-w-2xl text-ink-soft">{author ? "Buat ujian, tambahkan soal, terbitkan, lalu pantau siswa. Siswa mengerjakan di aplikasi ujian yang mengunci perangkat." : "Ujian untuk kelasmu. Tekan Mulai pada waktunya; ujian dikerjakan di aplikasi ujian."}</p>
       </header>
       <div className="space-y-3"><ErrorNote message={sp.error} /><InfoNote message={sp.info} /></div>
-      <ul className="mt-4 divide-y divide-line rounded-[6px] border border-line bg-card">
+      <ul className="mt-4 divide-y divide-line surface">
         {(exams ?? []).length === 0 ? <li className="p-4 text-ink-soft">Belum ada ujian.</li> : null}
         {(exams ?? []).map((e) => {
           const s = sess.get(e.id as string);
@@ -47,14 +47,14 @@ export default async function ExamsPage({ params, searchParams }: { params: Prom
               </div>
               <div className="flex items-center gap-3">
                 <span className="rounded-full border border-line px-3 py-1 text-sm">{author ? STATUS[e.status as string] : s?.status === "selesai" ? "Sudah dikumpulkan" : open ? "Sedang dibuka" : now < new Date(e.starts_at as string) ? "Belum dibuka" : "Ditutup"}</span>
-                {!author && open && s?.status !== "selesai" ? <Link prefetch={false} href={`/dashboard/sekolah/${id}/ujian/${e.id}/mulai`} className="press inline-flex min-h-11 items-center rounded-[6px] bg-pen px-4 font-semibold text-on-pen">{s ? "Lanjutkan" : "Mulai ujian"}</Link> : null}
+                {!author && open && s?.status !== "selesai" ? <Link prefetch={false} href={`/dashboard/sekolah/${id}/ujian/${e.id}/mulai`} className="press inline-flex min-h-11 items-center rounded-box bg-pen px-4 font-semibold text-on-pen">{s ? "Lanjutkan" : "Mulai ujian"}</Link> : null}
               </div>
             </li>
           );
         })}
       </ul>
       {author ? (
-        <details className="mt-8 rounded-[6px] border border-line bg-card p-4">
+        <details className="mt-8 surface p-4">
           <summary className="cursor-pointer font-display text-xl font-bold">Buat ujian baru</summary>
           <form action={createExam.bind(null, id)} className="mt-4 grid gap-3 sm:grid-cols-2">
             <label><Label>Rombel</Label><Select name="class_group_id" required>{(classes ?? []).map((c) => <option key={c.id as string} value={c.id as string}>{c.name as string}</option>)}</Select></label>

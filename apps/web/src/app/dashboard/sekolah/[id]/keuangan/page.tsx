@@ -73,7 +73,7 @@ export default async function KeuanganPage({ params, searchParams }: { params: P
       </section>
 
       {management ? (
-        <details className="mt-8 rounded-[6px] border border-line bg-card p-4" open={invoices.length === 0}>
+        <details className="mt-8 surface p-4" open={invoices.length === 0}>
           <summary className="cursor-pointer font-display text-lg font-bold">Terbitkan tagihan</summary>
           <form action={issueInvoices.bind(null, id)} className="mt-3 grid gap-3 sm:grid-cols-2">
             <label className="sm:col-span-2"><Label>Judul</Label><Input name="title" required minLength={3} maxLength={120} placeholder="mis. SPP Oktober 2026" /></label>
@@ -95,7 +95,7 @@ export default async function KeuanganPage({ params, searchParams }: { params: P
             ))}
           </nav>
         </div>
-        {shown.length === 0 ? <p className="mt-3 rounded-[6px] border border-dashed border-line p-6 text-ink-soft">Tidak ada tagihan.</p> : (
+        {shown.length === 0 ? <p className="mt-3 rounded-box border border-dashed border-line p-6 text-ink-soft">Tidak ada tagihan.</p> : (
           <ul className="stagger mt-3 border-t border-line">
             {shown.map((i) => {
               const p = paidBy.get(i.id) ?? 0;
@@ -111,7 +111,7 @@ export default async function KeuanganPage({ params, searchParams }: { params: P
                   {management && i.status !== "dibatalkan" && left > 0 ? (
                     <details className="mt-2">
                       <summary className="cursor-pointer text-sm font-semibold text-pen underline">Catat pembayaran</summary>
-                      <form action={recordPayment.bind(null, id, i.id)} className="mt-2 grid gap-3 rounded-[6px] border border-line bg-card p-3 sm:grid-cols-[1fr_8rem_1fr_auto]">
+                      <form action={recordPayment.bind(null, id, i.id)} className="mt-2 grid gap-3 surface p-3 sm:grid-cols-[1fr_8rem_1fr_auto]">
                         <label><Label>Jumlah (Rp)</Label><Input name="amount" inputMode="numeric" defaultValue={left} required /></label>
                         <label><Label>Cara</Label><Select name="method"><option value="tunai">Tunai</option><option value="transfer">Transfer</option><option value="lainnya">Lainnya</option></Select></label>
                         <label><Label hint="opsional">Catatan</Label><Input name="note" maxLength={200} /></label>

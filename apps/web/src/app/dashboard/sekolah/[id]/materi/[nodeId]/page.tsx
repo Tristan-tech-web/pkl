@@ -81,7 +81,7 @@ export default async function EditNodePage({ params, searchParams }: { params: P
             );
           })}
         </ol>
-        <form action={addQuestion.bind(null, id, nodeId)} className="mt-5 grid gap-3 rounded-[6px] border border-line bg-card p-4 sm:grid-cols-2">
+        <form action={addQuestion.bind(null, id, nodeId)} className="mt-5 grid gap-3 surface p-4 sm:grid-cols-2">
           <h3 className="font-display text-lg font-bold sm:col-span-2">Tambah soal</h3>
           <label><Label>Jenis</Label><Select name="kind" defaultValue="mcq"><option value="mcq">Pilihan ganda</option><option value="short">Isian singkat</option></Select></label>
           <label className="sm:col-span-2"><Label>Pertanyaan</Label><Input name="prompt" required minLength={3} maxLength={1000} /></label>

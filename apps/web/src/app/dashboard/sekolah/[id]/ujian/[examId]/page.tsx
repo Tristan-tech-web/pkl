@@ -76,7 +76,7 @@ export default async function ExamDetail({ params, searchParams }: { params: Pro
         <h2 id="soal" className="font-display text-2xl font-bold">Soal <span className="num text-ink-soft">({(qs ?? []).length})</span></h2>
         <ol className="mt-3 space-y-3">
           {(qs ?? []).map((x, i) => (
-            <li key={x.id as string} className="rounded-[6px] border border-line bg-card p-4">
+            <li key={x.id as string} className="surface p-4">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="text-xs text-ink-soft">{i + 1}. {KIND[x.kind as string]} · {x.points as number} poin</p>
@@ -90,7 +90,7 @@ export default async function ExamDetail({ params, searchParams }: { params: Pro
           ))}
         </ol>
         {status === "draf" ? (
-          <form action={addExamQuestion.bind(null, id, examId)} className="mt-4 grid gap-3 rounded-[6px] border border-line bg-card p-4 sm:grid-cols-2">
+          <form action={addExamQuestion.bind(null, id, examId)} className="mt-4 grid gap-3 surface p-4 sm:grid-cols-2">
             <h3 className="font-display text-lg font-bold sm:col-span-2">Tambah soal</h3>
             <label><Label>Jenis</Label><Select name="kind"><option value="mcq">Pilihan ganda</option><option value="multi">Banyak jawaban benar</option><option value="short">Isian singkat</option><option value="essay">Uraian (dinilai guru)</option></Select></label>
             <label><Label>Poin</Label><Input name="points" type="number" min={0.5} max={100} step={0.5} defaultValue={1} /></label>

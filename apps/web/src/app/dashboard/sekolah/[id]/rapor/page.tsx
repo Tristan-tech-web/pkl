@@ -44,7 +44,7 @@ export default async function RaporIndex({ params, searchParams }: { params: Pro
         <Button type="submit" variant="ghost">Tampilkan</Button>
       </form>
       {students.length === 0 ? (
-        <p className="mt-6 rounded-[6px] border border-dashed border-line p-6 text-ink-soft">Belum ada siswa di rombel ini.</p>
+        <p className="mt-6 rounded-box border border-dashed border-line p-6 text-ink-soft">Belum ada siswa di rombel ini.</p>
       ) : (
         <ul className="stagger mt-6 border-t border-line">
           {students.map((s) => (

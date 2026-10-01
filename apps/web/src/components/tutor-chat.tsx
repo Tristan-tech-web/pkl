@@ -39,7 +39,7 @@ export function TutorChat({ schoolId, nodeId }: { schoolId: string; nodeId: stri
   };
 
   return (
-    <section aria-label="Tanya tutor" className="rounded-[6px] border border-line bg-card">
+    <section aria-label="Tanya tutor" className="surface">
       <div className="border-b border-line px-4 py-3">
         <h2 className="font-display text-lg font-bold">Tanya tutor</h2>
         <p className="text-sm text-ink-soft">Tutor memberi petunjuk, bukan jawaban kuis. Jangan tulis data pribadi.</p>
@@ -55,7 +55,7 @@ export function TutorChat({ schoolId, nodeId }: { schoolId: string; nodeId: stri
           </li>
         ) : null}
         {msgs.map((m, i) => (
-          <li key={i} className={m.role === "user" ? "ml-8 rounded-[6px] bg-pen/10 px-3 py-2" : "mr-8 rounded-[6px] border border-line px-3 py-2"}>
+          <li key={i} className={m.role === "user" ? "ml-8 rounded-box bg-pen/10 px-3 py-2" : "mr-8 rounded-box border border-line px-3 py-2"}>
             <span className="sr-only">{m.role === "user" ? "Kamu: " : "Tutor: "}</span>
             <span>{m.role === "assistant" ? <InlineMd text={m.content} /> : m.content}</span>
           </li>

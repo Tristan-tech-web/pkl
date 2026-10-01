@@ -35,7 +35,7 @@ export async function ModuleLinks({ schoolId, role }: { schoolId: string; role: 
   return (
     <nav aria-label="Menu" className="stagger mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
       {items.map((i) => (
-        <Link key={i.slug} href={`/dashboard/sekolah/${schoolId}/${i.slug}`} className="press flex min-h-14 items-center rounded-[6px] border border-line bg-card px-3 font-semibold hover:border-pen">
+        <Link key={i.slug} href={`/dashboard/sekolah/${schoolId}/${i.slug}`} className="press flex min-h-14 items-center surface px-3 font-semibold hover:border-pen">
           {i.label}
         </Link>
       ))}

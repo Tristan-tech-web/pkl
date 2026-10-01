@@ -23,7 +23,7 @@ export default async function TemplatPage({ params, searchParams }: { params: Pr
       <p className="max-w-2xl text-ink-soft">Tulis surat sekolah Anda sendiri. Bagian yang diisi otomatis: {TOKENS.map((t) => <code key={t} className="mr-1 rounded-[4px] border border-line bg-card px-1.5 py-0.5 font-mono text-sm">{t}</code>)} Tulis ______ untuk bagian yang diisi tangan.</p>
       <div className="mt-4 space-y-3"><ErrorNote message={sp.error} /><InfoNote message={sp.info} /></div>
 
-      <form action={saveTemplate.bind(null, id)} className="mt-4 grid gap-3 rounded-[6px] border border-line bg-card p-4">
+      <form action={saveTemplate.bind(null, id)} className="mt-4 grid gap-3 surface p-4">
         <h2 className="font-display text-lg font-bold">Templat baru</h2>
         <label><Label>Judul</Label><Input name="title" required minLength={3} maxLength={120} placeholder="mis. Surat Keterangan Berkelakuan Baik" /></label>
         <label><Label>Isi surat</Label><Textarea name="body" rows={8} required minLength={10} maxLength={4000} /></label>

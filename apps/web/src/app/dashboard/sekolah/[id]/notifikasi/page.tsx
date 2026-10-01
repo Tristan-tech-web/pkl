@@ -21,7 +21,7 @@ export default async function NotifikasiPage({ params }: { params: Promise<{ id:
         {unread > 0 ? <form action={markAllRead.bind(null, id)}><Button type="submit" variant="ghost">Tandai semua dibaca ({unread})</Button></form> : null}
       </header>
       {rows.length === 0 ? (
-        <p className="rounded-[6px] border border-dashed border-line p-6 text-ink-soft">Belum ada notifikasi. Pengumuman, tagihan, dan nilai baru akan muncul di sini.</p>
+        <p className="rounded-box border border-dashed border-line p-6 text-ink-soft">Belum ada notifikasi. Pengumuman, tagihan, dan nilai baru akan muncul di sini.</p>
       ) : (
         <ul className="stagger border-t border-line">
           {rows.map((r) => (

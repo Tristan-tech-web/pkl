@@ -24,5 +24,5 @@ export function AutoAnalyze({ schoolId, items }: { schoolId: string; items: { id
     })();
   }, [items, schoolId, router]);
   if (left <= 0) return null;
-  return <p role="status" aria-live="polite" className="mt-3 rounded-[6px] border border-line bg-card p-3 text-sm">Memilah {left} berkas yang dikirim lewat AI Anda…</p>;
+  return <p role="status" aria-live="polite" className="mt-3 surface p-3 text-sm">Memilah {left} berkas yang dikirim lewat AI Anda…</p>;
 }

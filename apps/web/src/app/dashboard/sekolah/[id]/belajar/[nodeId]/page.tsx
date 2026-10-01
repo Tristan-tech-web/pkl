@@ -40,14 +40,14 @@ export default async function LessonPage({ params }: { params: Promise<{ id: str
         ) : null}
       </header>
       {locked ? (
-        <p className="rounded-[6px] border border-dashed border-line p-6 text-ink-soft">
+        <p className="rounded-box border border-dashed border-line p-6 text-ink-soft">
           Materi ini masih terkunci. Selesaikan prasyaratnya di peta belajar dulu.
         </p>
       ) : (
         <div className="grid gap-8 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
           <div>
             {objectives.length ? (
-              <div className="mb-6 rounded-[6px] border border-line bg-card p-4">
+              <div className="mb-6 surface p-4">
                 <p className="text-sm font-semibold">Setelah ini kamu bisa:</p>
                 <ul className="mt-1 list-disc pl-5 text-ink-soft">
                   {objectives.map((o) => (

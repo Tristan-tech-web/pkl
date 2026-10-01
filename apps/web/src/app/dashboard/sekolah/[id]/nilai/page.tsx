@@ -68,7 +68,7 @@ export default async function NilaiPage({ params, searchParams }: { params: Prom
       </header>
       <div className="space-y-3"><ErrorNote message={sp.error} /><InfoNote message={sp.info} /></div>
       {pairs.length === 0 || !term ? (
-        <p className="mt-6 rounded-[6px] border border-dashed border-line p-6 text-ink-soft">
+        <p className="mt-6 rounded-box border border-dashed border-line p-6 text-ink-soft">
           {pairs.length === 0 ? "Belum ada penugasan mengajar." : "Belum ada semester. Pengelola perlu membuat tahun ajaran dulu."}
         </p>
       ) : (
@@ -84,7 +84,7 @@ export default async function NilaiPage({ params, searchParams }: { params: Prom
           <section className="mt-8">
             <h2 className="font-display text-2xl font-bold tracking-tight">Penilaian</h2>
             {assessments.length === 0 ? (
-              <p className="mt-3 rounded-[6px] border border-dashed border-line p-5 text-ink-soft">Belum ada penilaian untuk pilihan ini.</p>
+              <p className="mt-3 rounded-box border border-dashed border-line p-5 text-ink-soft">Belum ada penilaian untuk pilihan ini.</p>
             ) : (
               <ul className="stagger mt-3 border-t border-line">
                 {assessments.map((a) => (
@@ -97,7 +97,7 @@ export default async function NilaiPage({ params, searchParams }: { params: Prom
                 ))}
               </ul>
             )}
-            <form action={createAssessment.bind(null, id)} className="mt-4 grid gap-3 rounded-[6px] border border-line bg-card p-4 sm:grid-cols-6">
+            <form action={createAssessment.bind(null, id)} className="mt-4 grid gap-3 surface p-4 sm:grid-cols-6">
               <input type="hidden" name="class_id" value={pair.classId} />
               <input type="hidden" name="subject_id" value={pair.subjectId} />
               <input type="hidden" name="term_id" value={term.id} />
@@ -165,7 +165,7 @@ async function StudentGrades({ schoolId, memberId, terms, term }: { schoolId: st
         </form>
       </header>
       {bySubject.size === 0 ? (
-        <p className="rounded-[6px] border border-dashed border-line p-6 text-ink-soft">Belum ada nilai di semester ini.</p>
+        <p className="rounded-box border border-dashed border-line p-6 text-ink-soft">Belum ada nilai di semester ini.</p>
       ) : (
         [...bySubject.entries()].map(([subject, items]) => {
           const g = finalGrade(items.map((i) => ({ weight: i.weight, maxScore: i.max, score: i.score })));

@@ -44,6 +44,56 @@ html[data-fs="sangat-besar"] { --fs-user: 1.25; }
 html[data-density="rapat"] { --spacing: 0.22rem; }
 html[data-density="longgar"] { --spacing: 0.29rem; }
 
+/* ===== Komponen bertema: bentuk, tepi, dan bayangan mengikuti pengalaman ===== */
+.surface {
+  background: var(--card);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-box);
+  box-shadow: var(--shadow-card);
+}
+.field { border-width: var(--bw); }
+
+.btn-solid {
+  background: var(--pen); color: var(--on-pen);
+  border: var(--bw) solid var(--pen-strong);
+  transition: transform var(--dur-fast, 150ms) var(--ease-out, ease-out), box-shadow var(--dur-fast, 150ms) var(--ease-out, ease-out), background-color var(--dur-fast, 150ms);
+}
+.btn-solid:hover { background: var(--pen-strong); }
+.btn-ghost {
+  background: var(--card); color: var(--ink);
+  border: var(--bw) solid var(--line);
+}
+.btn-ghost:hover { border-color: var(--pen); }
+
+/* Ceria: tombol "stiker" yang menekan ke bawah */
+html[data-experience="ceria"] .btn-solid { box-shadow: 0 5px 0 0 var(--pen-strong); font-weight: 800; }
+html[data-experience="ceria"] .btn-solid:active { transform: translateY(5px); box-shadow: 0 0 0 0 var(--pen-strong); }
+html[data-experience="ceria"] .btn-ghost { box-shadow: 0 4px 0 0 var(--line); }
+html[data-experience="ceria"] .btn-ghost:active { transform: translateY(4px); box-shadow: none; }
+html[data-experience="ceria"] .surface:hover { border-color: var(--pen); }
+/* Seru: tombol bercahaya */
+html[data-experience="seru"] .btn-solid { box-shadow: 0 0 0 0 transparent, 0 8px 22px -10px var(--pen); text-transform: none; letter-spacing: 0.01em; }
+html[data-experience="seru"] .btn-solid:hover { box-shadow: 0 0 22px -2px var(--pen); }
+/* Ringkas: target sentuh lebih besar, fokus tebal */
+html[data-experience="ringkas"] .min-h-11 { min-height: 3rem; }
+html[data-experience="ceria"] .min-h-11 { min-height: 3.1rem; }
+html[data-experience="ringkas"] :focus-visible { outline-width: 4px; }
+
+/* Latar bernuansa per pengalaman (selalu di belakang konten, tanpa gambar unduhan) */
+html[data-experience="ceria"] body {
+  background-image:
+    radial-gradient(circle at 8% 6%, color-mix(in oklab, var(--accent) 16%, transparent) 0 11rem, transparent 11.1rem),
+    radial-gradient(circle at 96% 18%, color-mix(in oklab, var(--pen) 13%, transparent) 0 9rem, transparent 9.1rem),
+    radial-gradient(circle at 80% 92%, color-mix(in oklab, var(--hi) 30%, transparent) 0 8rem, transparent 8.1rem);
+  background-attachment: fixed;
+}
+html[data-experience="seru"] body {
+  background-image:
+    radial-gradient(120% 55% at 50% -12%, color-mix(in oklab, var(--pen) 22%, transparent), transparent 62%),
+    radial-gradient(60% 40% at 100% 100%, color-mix(in oklab, var(--accent) 14%, transparent), transparent 70%);
+  background-attachment: fixed;
+}
+
 /* Gerak dikurangi atas pilihan pengguna (selain pengaturan sistem): animasi dimatikan, transisi warna tetap. */
 html[data-motion="kurangi"] *, html[data-motion="kurangi"] *::before, html[data-motion="kurangi"] *::after {
   animation-duration: 0.001ms !important;

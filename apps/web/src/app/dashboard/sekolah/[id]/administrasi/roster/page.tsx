@@ -38,7 +38,7 @@ export default async function RosterPage({ params, searchParams }: { params: Pro
           <h1 className="font-display text-4xl font-bold tracking-tight">Roster</h1>
           <p className="mt-1 max-w-2xl text-ink-soft">Semua siswa dan guru yang didaftarkan sekolah, termasuk yang belum punya akun. Data induk tersambung otomatis saat mereka bergabung dengan kodenya.</p>
         </div>
-        <Link href={`/dashboard/sekolah/${id}/berkas`} className="press inline-flex min-h-11 items-center rounded-[6px] bg-pen px-5 font-semibold text-on-pen hover:bg-pen-strong">Unggah berkas</Link>
+        <Link href={`/dashboard/sekolah/${id}/berkas`} className="press inline-flex min-h-11 items-center rounded-box bg-pen px-5 font-semibold text-on-pen hover:bg-pen-strong">Unggah berkas</Link>
       </header>
       <div className="space-y-3"><ErrorNote message={sp.error} /><InfoNote message={sp.info} /></div>
       <section aria-label="Ringkasan" className="stagger mt-4 grid grid-cols-3 gap-6">
@@ -53,7 +53,7 @@ export default async function RosterPage({ params, searchParams }: { params: Pro
         <Input name="q" defaultValue={term} placeholder="Cari nama, NIS, NISN" aria-label="Cari" className="w-52" />
         <Button type="submit" variant="ghost">Saring</Button>
       </form>
-      {rows.length === 0 ? <p className="mt-4 rounded-[6px] border border-dashed border-line p-6 text-ink-soft">Roster kosong. Unggah berkas daftar siswa atau guru di menu Berkas.</p> : (
+      {rows.length === 0 ? <p className="mt-4 rounded-box border border-dashed border-line p-6 text-ink-soft">Roster kosong. Unggah berkas daftar siswa atau guru di menu Berkas.</p> : (
         <div className="mt-4 overflow-x-auto" tabIndex={0} role="region" aria-label="Daftar roster">
           <table className="w-full min-w-[44rem] text-left">
             <thead><tr className="border-b-2 border-ink text-sm"><th className="py-2 pr-3">Nama</th><th className="pr-3">Jenis</th><th className="pr-3">Rombel</th><th className="pr-3">NIS / NISN / NIP</th><th className="pr-3">Status</th><th><span className="sr-only">Aksi</span></th></tr></thead>

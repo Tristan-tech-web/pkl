@@ -61,7 +61,7 @@ export async function SchoolNav({ schoolId, active }: { schoolId: string; active
                     <Link
                       href={`/dashboard/sekolah/${schoolId}${i.slug ? `/${i.slug}` : ""}`}
                       aria-current={current ? "page" : undefined}
-                      className={`inline-flex min-h-11 items-center rounded-[6px] px-2.5 text-sm font-semibold ${
+                      className={`inline-flex min-h-11 items-center rounded-box px-2.5 text-sm font-semibold ${
                         current ? "bg-pen text-on-pen" : "text-ink-soft hover:bg-card hover:text-ink"
                       }`}
                     >

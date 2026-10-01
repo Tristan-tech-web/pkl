@@ -83,13 +83,13 @@ export default async function BerkasPage({ params, searchParams }: { params: Pro
           ))}
         </nav>
         {rows.length === 0 ? (
-          <p className="mt-4 rounded-[6px] border border-dashed border-line p-6 text-ink-soft">{term || kategori ? "Tidak ada berkas yang cocok." : "Belum ada berkas."}</p>
+          <p className="mt-4 rounded-box border border-dashed border-line p-6 text-ink-soft">{term || kategori ? "Tidak ada berkas yang cocok." : "Belum ada berkas."}</p>
         ) : (
           <ul className="stagger mt-4 space-y-3">
             {rows.map((f) => {
               const subj = Array.isArray(f.school_subjects) ? f.school_subjects[0]?.name : f.school_subjects?.name;
               return (
-                <li key={f.id} className="rounded-[6px] border border-line bg-card p-4">
+                <li key={f.id} className="surface p-4">
                   <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
                     <p className="min-w-0 break-words font-semibold">{f.name}</p>
                     <p className="num text-sm text-ink-soft">{fmtSize(Number(f.size_bytes))} · {new Date(f.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Jakarta" })}</p>
@@ -106,10 +106,10 @@ export default async function BerkasPage({ params, searchParams }: { params: Pro
                   {f.extracted?.notes ? <p className="mt-1 text-sm text-ink-soft">Catatan: {f.extracted.notes}</p> : null}
                   <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2">
                     {management && TABLE_CATS.has(f.category) && f.extracted?.table ? (
-                      <Link href={`/dashboard/sekolah/${id}/berkas/${f.id}`} className="press inline-flex min-h-11 items-center rounded-[6px] bg-pen px-4 font-semibold text-on-pen hover:bg-pen-strong">{f.status === "diimpor" ? "Impor ulang" : `Tinjau dan impor (${f.extracted.table.total_rows} baris)`}</Link>
+                      <Link href={`/dashboard/sekolah/${id}/berkas/${f.id}`} className="press inline-flex min-h-11 items-center rounded-box bg-pen px-4 font-semibold text-on-pen hover:bg-pen-strong">{f.status === "diimpor" ? "Impor ulang" : `Tinjau dan impor (${f.extracted.table.total_rows} baris)`}</Link>
                     ) : null}
                     {management && f.category === "keuangan" && f.extracted?.table ? (
-                      <Link href={`/dashboard/sekolah/${id}/berkas/${f.id}/keuangan`} className="press inline-flex min-h-11 items-center rounded-[6px] bg-pen px-4 font-semibold text-on-pen hover:bg-pen-strong">{f.status === "diimpor" ? "Impor ulang tagihan" : `Tinjau tagihan (${f.extracted.table.total_rows} baris)`}</Link>
+                      <Link href={`/dashboard/sekolah/${id}/berkas/${f.id}/keuangan`} className="press inline-flex min-h-11 items-center rounded-box bg-pen px-4 font-semibold text-on-pen hover:bg-pen-strong">{f.status === "diimpor" ? "Impor ulang tagihan" : `Tinjau tagihan (${f.extracted.table.total_rows} baris)`}</Link>
                     ) : null}
                     {["kurikulum", "buku_paket", "lks"].includes(f.category) && f.ai_status === "selesai" && subjectOpts.length > 0 ? (
                       <details className="w-full">

@@ -24,7 +24,7 @@ export function CopyBox({ text, label = "Salin prompt", note }: { text: string; 
         </span>
       </div>
       {note ? <p className="mt-1 text-sm text-ink-soft">{note}</p> : null}
-      <textarea readOnly value={text} rows={4} aria-label="Isi prompt" className="mt-2 w-full rounded-[6px] border border-line bg-paper p-2 font-mono text-xs" onFocus={(e) => e.currentTarget.select()} />
+      <textarea readOnly value={text} rows={4} aria-label="Isi prompt" className="mt-2 w-full rounded-box border border-line bg-paper p-2 font-mono text-xs" onFocus={(e) => e.currentTarget.select()} />
     </div>
   );
 }

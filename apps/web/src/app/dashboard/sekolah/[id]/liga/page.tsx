@@ -37,7 +37,7 @@ export default async function LigaPage({ params, searchParams }: { params: Promi
         </form>
       ) : null}
       {league.length === 0 ? (
-        <p className="rounded-[6px] border border-dashed border-line p-6 text-ink-soft">Belum ada peserta liga.</p>
+        <p className="rounded-box border border-dashed border-line p-6 text-ink-soft">Belum ada peserta liga.</p>
       ) : (
         <ol className="stagger border-t border-line">
           {league.map((r, i) => (
@@ -59,7 +59,7 @@ export default async function LigaPage({ params, searchParams }: { params: Promi
             {(all?.data ?? []).map((a) => {
               const got = earned.has(a.code as string);
               return (
-                <li key={a.code as string} className={`rounded-[6px] border p-4 ${got ? "border-pen bg-card" : "border-line bg-paper opacity-60"}`}>
+                <li key={a.code as string} className={`rounded-box border p-4 ${got ? "border-pen bg-card" : "border-line bg-paper opacity-60"}`}>
                   <p className={`text-3xl ${got ? "" : "grayscale"}`} aria-hidden="true">{ICON[a.icon as string] ?? "🏅"}</p>
                   <p className="mt-1 font-bold">{a.name as string}</p>
                   <p className="text-sm text-ink-soft">{a.description as string}</p>

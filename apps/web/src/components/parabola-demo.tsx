@@ -184,7 +184,7 @@ export function ParabolaDemo({ hero = true }: { hero?: boolean }) {
         : `akar x = ${formatNumber(r[0])} dan ${formatNumber(r[1])}`;
 
   return (
-    <figure ref={figure} {...(hero ? { "data-hero": "card" } : {})} className={`${hero ? "hero-item " : ""}rounded-[6px] border border-line bg-card`}>
+    <figure ref={figure} {...(hero ? { "data-hero": "card" } : {})} className={`${hero ? "hero-item " : ""}surface`}>
       <figcaption className="border-b border-line px-4 py-3">
         <p className="text-xs font-semibold uppercase tracking-[0.08em] text-ink-soft">
           Contoh modul visual · Matematika, fungsi kuadrat

@@ -44,7 +44,7 @@ export default async function BelajarPage({ params }: { params: Promise<{ id: st
       {next ? (
         <Link
           href={`/dashboard/sekolah/${id}/belajar/${next.id}`}
-          className="press mt-4 flex items-center justify-between gap-3 rounded-[6px] border-2 border-pen bg-card p-4"
+          className="press mt-4 flex items-center justify-between gap-3 rounded-box border-2 border-pen bg-card p-4"
         >
           <span>
             <span className="block text-xs font-semibold uppercase tracking-[0.08em] text-pen">Lanjutkan</span>
@@ -54,7 +54,7 @@ export default async function BelajarPage({ params }: { params: Promise<{ id: st
         </Link>
       ) : null}
       {nodes.length === 0 ? (
-        <p className="mt-8 rounded-[6px] border border-dashed border-line p-6 text-ink-soft">Belum ada materi yang terbit.</p>
+        <p className="mt-8 rounded-box border border-dashed border-line p-6 text-ink-soft">Belum ada materi yang terbit.</p>
       ) : null}
       {[...bySubject.entries()].map(([subject, list]) => (
         <section key={subject} className="mt-10">
@@ -88,7 +88,7 @@ function NodeCard({ n, schoolId, names }: { n: MapNode; schoolId: string; names:
   const locked = n.state === "terkunci";
   const body = (
     <div
-      className={`rounded-[6px] border p-4 ${
+      className={`rounded-box border p-4 ${
         locked ? "border-line bg-paper opacity-70" : n.state === "selesai" ? "border-ok/40 bg-card" : "border-pen bg-card"
       }`}
     >

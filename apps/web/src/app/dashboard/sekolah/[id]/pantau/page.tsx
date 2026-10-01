@@ -99,7 +99,7 @@ export default async function PantauPage({
       <section className="mt-10">
         <h2 className="font-display text-2xl font-bold tracking-tight">Progres siswa</h2>
         {rows.length === 0 ? (
-          <p className="mt-4 rounded-[6px] border border-dashed border-line p-6 text-ink-soft">Belum ada siswa di rombel yang Anda pantau.</p>
+          <p className="mt-4 rounded-box border border-dashed border-line p-6 text-ink-soft">Belum ada siswa di rombel yang Anda pantau.</p>
         ) : (
           <ul className="stagger mt-4 border-t border-line">
             {rows.map((r) => (
@@ -122,7 +122,7 @@ export default async function PantauPage({
                 )}
                 <details className="mt-2">
                   <summary className="cursor-pointer text-sm font-semibold text-pen underline">Buat tindak lanjut</summary>
-                  <form action={createIntervention.bind(null, id)} className="mt-3 grid gap-3 rounded-[6px] border border-line bg-card p-4 sm:grid-cols-2">
+                  <form action={createIntervention.bind(null, id)} className="mt-3 grid gap-3 surface p-4 sm:grid-cols-2">
                     <input type="hidden" name="student_id" value={r.id} />
                     <label><Label>Jenis</Label>
                       <Select name="kind" defaultValue="bimbingan">{Object.entries(KIND_LABEL).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</Select>
@@ -146,7 +146,7 @@ export default async function PantauPage({
       <section className="mt-10">
         <h2 className="font-display text-2xl font-bold tracking-tight">Tindak lanjut</h2>
         {(ivs.data ?? []).length === 0 ? (
-          <p className="mt-4 rounded-[6px] border border-dashed border-line p-6 text-ink-soft">Belum ada tindak lanjut.</p>
+          <p className="mt-4 rounded-box border border-dashed border-line p-6 text-ink-soft">Belum ada tindak lanjut.</p>
         ) : (
           <ul className="mt-4 border-t border-line">
             {(ivs.data ?? []).map((i) => (

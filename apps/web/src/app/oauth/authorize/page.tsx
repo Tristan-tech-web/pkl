@@ -28,7 +28,7 @@ export default async function AuthorizePage({ searchParams }: { searchParams: Pr
         <li>Melihat jadwal, pengumuman, dan peraturan sekolah Anda.</li>
         <li>Melihat berkas yang boleh Anda baca (pengelola dan guru).</li>
       </ul>
-      <form action={decide} className="mt-5 space-y-4 rounded-[6px] border border-line bg-card p-4">
+      <form action={decide} className="mt-5 space-y-4 surface p-4">
         {(["client_id", "redirect_uri", "state", "code_challenge"] as const).map((k) => <input key={k} type="hidden" name={k} value={q[k] ?? ""} />)}
         <label className="flex min-h-11 items-start gap-2 text-sm"><input type="checkbox" name="can_write" className="mt-1 size-4" /> <span>Izinkan juga <strong>mengunggah berkas</strong> ke Pusat Data (hanya jika peran Anda berhak).</span></label>
         <p className="text-xs text-ink-soft">Setelah disetujui Anda diarahkan ke <span className="font-semibold">{host}</span>. Akses dapat dicabut kapan saja di menu AI saya.</p>

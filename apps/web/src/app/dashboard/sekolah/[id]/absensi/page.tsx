@@ -72,7 +72,7 @@ export default async function AbsensiPage({ params, searchParams }: { params: Pr
       </header>
       <div className="space-y-3"><ErrorNote message={sp.error} /><InfoNote message={sp.info} /></div>
       {classes.length === 0 ? (
-        <p className="mt-6 rounded-[6px] border border-dashed border-line p-6 text-ink-soft">Anda belum ditugaskan di rombel mana pun.</p>
+        <p className="mt-6 rounded-box border border-dashed border-line p-6 text-ink-soft">Anda belum ditugaskan di rombel mana pun.</p>
       ) : (
         <>
           <form method="get" className="mt-4 flex flex-wrap items-end gap-3">
@@ -84,7 +84,7 @@ export default async function AbsensiPage({ params, searchParams }: { params: Pr
           {cls ? (
             <form action={saveAttendance.bind(null, id, cls.id, date)} className="mt-6">
               {students.length === 0 ? (
-                <p className="rounded-[6px] border border-dashed border-line p-6 text-ink-soft">Belum ada siswa di rombel ini.</p>
+                <p className="rounded-box border border-dashed border-line p-6 text-ink-soft">Belum ada siswa di rombel ini.</p>
               ) : (
                 <ul className="border-t border-line">
                   {students.map((s) => {
@@ -98,7 +98,7 @@ export default async function AbsensiPage({ params, searchParams }: { params: Pr
                             {STATUS.map((st) => (
                               <label key={st.code} className="relative">
                                 <input type="radio" name={`status:${s.id}`} value={st.code} defaultChecked={(cur?.status ?? "hadir") === st.code && (cur !== undefined || st.code === "hadir")} className="peer sr-only" />
-                                <span className="press flex min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-[6px] border-2 border-line px-2 text-sm font-semibold peer-checked:border-pen peer-checked:bg-pen peer-checked:text-on-pen peer-focus-visible:ring-2 peer-focus-visible:ring-pen/40 sm:px-3">
+                                <span className="press flex min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-box border-2 border-line px-2 text-sm font-semibold peer-checked:border-pen peer-checked:bg-pen peer-checked:text-on-pen peer-focus-visible:ring-2 peer-focus-visible:ring-pen/40 sm:px-3">
                                   <span className="sm:hidden" aria-hidden="true">{st.short}</span>
                                   <span className="hidden sm:inline">{st.label}</span>
                                   <span className="sr-only sm:hidden">{st.label}</span>
@@ -161,7 +161,7 @@ async function StudentAttendance({ schoolId, memberId }: { schoolId: string; mem
         <p className="text-sm font-semibold">Kehadiran</p>
       </div>
       {rows.length === 0 ? (
-        <p className="mt-6 rounded-[6px] border border-dashed border-line p-6 text-ink-soft">Belum ada catatan absensi.</p>
+        <p className="mt-6 rounded-box border border-dashed border-line p-6 text-ink-soft">Belum ada catatan absensi.</p>
       ) : (
         <ul className="stagger mt-6 border-t border-line">
           {rows.map((r) => (
