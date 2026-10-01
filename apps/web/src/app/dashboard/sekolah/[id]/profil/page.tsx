@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { signOut } from "@/app/auth-actions";
 import { AvatarPicker } from "@/components/avatar-picker";
 import { Mascot } from "@/components/three/mascot";
@@ -12,6 +13,7 @@ export const metadata = { title: "Profil · EduSmart" };
 export default async function ProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const { supabase, me, school } = await getSchoolContext(id);
+  if (me.roleCode !== "student") redirect(`/dashboard/sekolah/${id}`);
   const on = await enabledModuleCodes(supabase, id);
   const { data: avRow } = await supabase.from("user_preferences").select("avatar").eq("user_id", (await supabase.auth.getUser()).data.user?.id ?? "").maybeSingle();
   const base = `/dashboard/sekolah/${id}`;
