@@ -121,6 +121,9 @@ export async function TeacherView({ supabase, schoolId, me }: { supabase: Supa; 
         </span>
         <span aria-hidden="true" className="text-2xl text-pen">→</span>
       </Link>
+      <Link href={`/dashboard/sekolah/${schoolId}/materi`} className="mt-3 inline-flex min-h-11 items-center font-semibold text-pen underline">
+        Kelola materi dan soal
+      </Link>
       {byClass.size === 0 ? (
         <div className="mt-6">
           <Empty

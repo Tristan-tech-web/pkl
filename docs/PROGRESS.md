@@ -38,7 +38,8 @@ Cara melanjutkan di sesi baru: baca `CLAUDE.md`, berkas ini, lalu kerjakan "Beri
 - Siswa: statistik level/XP/beruntun, peta belajar bertingkat (terkunci/tersedia/selesai + bintang), pelajaran (markdown mini + grafik parabola), kuis satu soal per layar, penilaian lewat RPC `submit_quiz`, hasil dengan bintang menghentak, hitung naik XP, konfeti kanvas, pembahasan.
 - Guru/manajemen: `/pantau` dengan progres per siswa, tanda risiko (belum mulai, tidak aktif 7 hari, materi belum lulus, rata-rata < 60), pembuatan dan pembaruan tindak lanjut.
 - Diuji Playwright (siswa desktop+HP, guru): 14 pemeriksaan lulus; siswa tidak bisa membuka `/pantau` (404); ulang kuis tidak memberi XP ganda.
-- Belum: penulisan konten oleh guru, tutor AI (BYOK), analitik, ringkasan orang tua, liga/pencapaian.
+- Authoring guru (`/materi`): buat draf materi, tulis pelajaran (markdown mini), prasyarat, tambah/hapus soal (pilihan ganda & isian singkat) dengan kunci terpisah; terbit ditolak bila belum ada soal. Diuji Playwright (7 pemeriksaan; siswa 404 di /materi, materi terbit langsung muncul di peta siswa).
+- Belum: tutor AI (BYOK), analitik, ringkasan orang tua, liga/pencapaian.
 
 ## Berikutnya
 0. Prioritas langsung: M2 (graf kompetensi, skill tree dengan prasyarat, kuis dinilai di server, XP/streak/level di server dengan satu konfigurasi, dashboard guru dengan intervensi).

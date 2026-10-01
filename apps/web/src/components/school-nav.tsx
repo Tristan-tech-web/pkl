@@ -5,6 +5,7 @@ const ITEMS = [
   { slug: "rombel", label: "Rombel" },
   { slug: "anggota", label: "Anggota" },
   { slug: "mapel", label: "Mata pelajaran" },
+  { slug: "materi", label: "Materi" },
   { slug: "pantau", label: "Pantau belajar" },
 ];
 
