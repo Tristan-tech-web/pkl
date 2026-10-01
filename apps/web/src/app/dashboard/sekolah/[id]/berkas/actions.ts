@@ -4,7 +4,10 @@ import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { FIN_FIELDS, loadStudents, matchStudents, normalizeFinance, type FinField } from "@/lib/finance-import";
-import { analyzeFileById } from "@/lib/file-analysis";
+import { DRAFT_SYSTEM, draftPrompt, sanitizeDraft } from "@/lib/curriculum-draft";
+import { aiAttachableMime } from "@/lib/parse-file";
+import { parseJsonLoose } from "@/lib/ai";
+import { analyzeFileById, resolveAdminAi } from "@/lib/file-analysis";
 import { CATEGORIES, type Category, normalizePeople, type PersonField, PERSON_FIELDS, type PersonKind } from "@/lib/intake";
 import { parseBuffer } from "@/lib/parse-file";
 import { requireModule } from "@/lib/modules";
@@ -179,4 +182,57 @@ export async function importFinance(schoolId: string, fileId: string, formData: 
   await supabase.from("school_files").update({ status: "diimpor", imported_at: new Date().toISOString() }).eq("id", fileId);
   revalidatePath(`/dashboard/sekolah/${schoolId}/keuangan`);
   redirect(`/dashboard/sekolah/${schoolId}/keuangan?info=${q(`${made} tagihan dibuat, ${paid} langsung lunas${unmatched.length ? `, ${unmatched.length} baris tidak cocok dengan siswa (dilewati)` : ""}.`)}`);
+}
+
+export async function draftMateri(schoolId: string, fileId: string, formData: FormData) {
+  const { supabase } = await getSchoolContext(schoolId);
+  await requireModule(supabase, schoolId, "data_hub");
+  const here = page(schoolId);
+  const subjectId = String(formData.get("subject_id") ?? "");
+  const grade = Math.min(13, Math.max(0, Number(formData.get("grade")) || 10));
+  const maxNodes = Math.min(8, Math.max(1, Number(formData.get("max_nodes")) || 4));
+  const [{ data: f }, { data: subj }] = await Promise.all([
+    supabase.from("school_files").select("name,mime,path,category,text_content").eq("id", fileId).eq("school_id", schoolId).maybeSingle(),
+    supabase.from("school_subjects").select("id,name").eq("school_id", schoolId).eq("id", subjectId).maybeSingle(),
+  ]);
+  if (!f || !subj) redirect(`${here}?error=${q("Pilih berkas dan mata pelajaran yang valid.")}`);
+  if (!["kurikulum", "buku_paket", "lks"].includes(f!.category as string)) redirect(`${here}?error=${q("Draf materi hanya dari berkas kurikulum, buku paket, atau LKS.")}`);
+  const ai = await resolveAdminAi(supabase, schoolId);
+  if (!ai.run) redirect(`${here}?error=${q(ai.reason ?? "AI belum bisa dipakai.")}`);
+  const text = String(f!.text_content ?? "").slice(0, 14000);
+  let file: { mime: string; base64: string } | undefined;
+  if (text.length < 200) {
+    const mime = aiAttachableMime(f!.name as string, f!.mime as string | null);
+    const dl = await supabase.storage.from("school-files").download(f!.path as string);
+    if (mime && !dl.error && dl.data && dl.data.size <= 8 * 1024 * 1024) file = { mime, base64: Buffer.from(await dl.data.arrayBuffer()).toString("base64") };
+    else if (text.length < 40) redirect(`${here}?error=${q("Isi berkas belum terbaca. Analisis ulang berkas dulu.")}`);
+  }
+  let nodes;
+  try {
+    const raw = await ai.run!(DRAFT_SYSTEM, draftPrompt({ fileName: f!.name as string, subject: subj!.name as string, grade, maxNodes, text }), file);
+    nodes = sanitizeDraft(parseJsonLoose(raw), maxNodes);
+  } catch {
+    redirect(`${here}?error=${q("AI gagal menyusun draf. Coba lagi sebentar lagi.")}`);
+  }
+  if (!nodes || nodes.length === 0) redirect(`${here}?error=${q("AI tidak menghasilkan materi yang layak. Coba berkas lain.")}`);
+  const { data: last } = await supabase.from("competency_nodes").select("position").eq("school_id", schoolId).eq("subject_id", subjectId).order("position", { ascending: false }).limit(1).maybeSingle();
+  let position = (last?.position as number | undefined) ?? 0, made = 0, qCount = 0;
+  const stamp = Date.now().toString(36).slice(-4).toUpperCase();
+  for (const n of nodes!) {
+    position += 1;
+    const { data: node, error } = await supabase.from("competency_nodes").insert({ school_id: schoolId, subject_id: subjectId, grade, code: `AI-${stamp}-${position}`, title: n.title, summary: n.summary || null, position, status: "draft", estimated_minutes: n.minutes }).select("id").single();
+    if (error || !node) continue;
+    made++;
+    await supabase.from("lessons").insert({ school_id: schoolId, node_id: node.id, body_md: n.body_md, objectives: n.objectives });
+    let pos = 0;
+    for (const qn of n.questions) {
+      const { data: row } = await supabase.from("quiz_questions").insert({ school_id: schoolId, node_id: node.id, kind: "mcq", prompt: qn.prompt, options: qn.options, position: ++pos }).select("id").single();
+      if (!row) continue;
+      const { error: ke } = await supabase.from("quiz_answer_keys").insert({ question_id: row.id, school_id: schoolId, answer: qn.answer, explanation: qn.explanation });
+      if (ke) await supabase.from("quiz_questions").delete().eq("id", row.id); else qCount++;
+    }
+  }
+  if (made === 0) redirect(`${here}?error=${q("Draf tidak bisa disimpan. Anda butuh izin menulis materi.")}`);
+  revalidatePath(`/dashboard/sekolah/${schoolId}/materi`);
+  redirect(`/dashboard/sekolah/${schoolId}/materi?info=${q(`${made} draf materi dan ${qCount} soal dibuat dari berkas. Tinjau dan terbitkan satu per satu.`)}`);
 }

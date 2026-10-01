@@ -7,7 +7,7 @@ import { Button, ErrorNote, InfoNote, Input, Select } from "@/components/ui";
 import { CATEGORIES, CATEGORY_LABEL, type Category } from "@/lib/intake";
 import { requireModule } from "@/lib/modules";
 import { getSchoolContext, MANAGEMENT_ROLES } from "@/lib/school";
-import { deleteFile, reanalyze, setCategory } from "./actions";
+import { deleteFile, draftMateri, reanalyze, setCategory } from "./actions";
 
 export const metadata = { title: "Berkas · EduSmart" };
 export const maxDuration = 120;
@@ -105,6 +105,18 @@ export default async function BerkasPage({ params, searchParams }: { params: Pro
                     ) : null}
                     {management && f.category === "keuangan" && f.extracted?.table ? (
                       <Link href={`/dashboard/sekolah/${id}/berkas/${f.id}/keuangan`} className="press inline-flex min-h-11 items-center rounded-[6px] bg-pen px-4 font-semibold text-on-pen hover:bg-pen-strong">{f.status === "diimpor" ? "Impor ulang tagihan" : `Tinjau tagihan (${f.extracted.table.total_rows} baris)`}</Link>
+                    ) : null}
+                    {["kurikulum", "buku_paket", "lks"].includes(f.category) && f.ai_status === "selesai" && subjectOpts.length > 0 ? (
+                      <details className="w-full">
+                        <summary className="inline-flex min-h-11 cursor-pointer items-center font-semibold text-pen underline">Buat draf materi dengan AI</summary>
+                        <form action={draftMateri.bind(null, id, f.id)} className="mt-2 grid gap-2 sm:grid-cols-4">
+                          <Select name="subject_id" aria-label="Mata pelajaran">{subjectOpts.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}</Select>
+                          <Input name="grade" type="number" min={0} max={13} defaultValue={10} aria-label="Kelas" />
+                          <Input name="max_nodes" type="number" min={1} max={8} defaultValue={4} aria-label="Jumlah materi" />
+                          <Button type="submit">Susun draf</Button>
+                        </form>
+                        <p className="mt-1 text-sm text-ink-soft">Hasilnya berstatus draf dan baru terlihat siswa setelah Anda terbitkan.</p>
+                      </details>
                     ) : null}
                     <a href={`/dashboard/sekolah/${id}/berkas/${f.id}/unduh`} className="inline-flex min-h-11 items-center font-semibold text-pen underline">Unduh</a>
                     <form action={reanalyze.bind(null, id, f.id)}><button type="submit" className="inline-flex min-h-11 items-center font-semibold text-pen underline">Analisis ulang</button></form>

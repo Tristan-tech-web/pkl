@@ -99,3 +99,8 @@ Permintaan pemilik: situs harus lengkap untuk siswa, guru, dan sekolah; modul (r
 - Berkas kategori `keuangan` (SPP/LKS dll.) punya halaman `berkas/[id]/keuangan`: pemetaan kolom otomatis, pencocokan ke siswa berakun (NIS, atau nama unik), pratinjau, lalu tagihan dibuat; baris "Lunas" langsung jadi pembayaran. Baris tak cocok dilewati dan dijelaskan.
 - Logika murni di `lib/finance-import.ts` (+4 tes). Diuji Playwright (m16).
 - Belum: tagihan untuk siswa yang belum bergabung (perlu `invoices.roster_id`), kurikulum/buku → draf materi, tutor memakai kutipan buku.
+
+## Pusat Data fase 2b: draf materi dari kurikulum/buku (selesai)
+- Berkas kurikulum/buku paket/LKS punya tombol "Buat draf materi dengan AI" (guru dan pengelola): pilih mapel, kelas, jumlah materi. AI menyusun materi, tujuan, isi, dan soal pilihan ganda; hasil validasi `lib/curriculum-draft.ts` (+2 tes) dan disimpan sebagai **draf** (tidak terlihat siswa sampai diterbitkan).
+- Memakai kunci AI sekolah (BYOK) atau kunci platform untuk sekolah demo; jatah harian sama dengan pemilahan berkas. Diuji Playwright (m17) dengan guru.
+- Belum: tutor memakai kutipan buku sekolah (fase 2c); tagihan untuk siswa belum bergabung.
