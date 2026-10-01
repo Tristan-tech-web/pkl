@@ -60,7 +60,7 @@ Sinyal perilaku (selalu), kamera di perangkat (opsional), skor risiko, tahan/bat
 | # | Tugas | Selesai bila |
 |---|---|---|
 | A1–A8 | Riset dan analisis (dokumen ini + R2–R4) | ☑ dokumen di repo |
-| B1 | Arsitektur tema: token, 3 pengalaman, 9+ paket, tema efektif tanpa kedip, tabel kebijakan sekolah dan preferensi pengguna, halaman pengaturan (murid/guru/sekolah) | tes SQL RLS; Playwright: pilih tema → bertahan setelah muat ulang; kebijakan sekolah membatasi pilihan; tangkapan layar tiap tema |
+| B1 ☑ | Arsitektur tema: token, 3 pengalaman, 9+ paket, tema efektif tanpa kedip, tabel kebijakan sekolah dan preferensi pengguna, halaman pengaturan (murid/guru/sekolah) | tes SQL RLS; Playwright: pilih tema → bertahan setelah muat ulang; kebijakan sekolah membatasi pilihan; tangkapan layar tiap tema |
 | B2 | Ulang desain komponen inti (tombol, kartu, navigasi, formulir) per pengalaman | audit axe bersih; kontras terjamin tiap tema; ukuran sentuh ≥ 44 px (Ringkas ≥ 48) |
 | B3 | Kit 3D prosedural (maskot, benda melayang, adegan latar, permata XP) + gerbang kemampuan | muatan three hanya di halaman yang meminta; ≥ 30 fps pada CPU throttle 4×; mode Ringkas tanpa three; `reduced-motion` statis |
 | C1 | Jalur belajar + aturan buka terjadwal + simpul ulang | Playwright: simpul besok terkunci dengan hitung mundur; terbuka setelah waktunya (waktu disimulasikan); tidak mengunci balik |
@@ -80,3 +80,9 @@ Urutan: B1 → B2 → B3 → C1 → C2 → C3 → C4 → D1 → D2 → D3 → E.
 - **Jendela H-1**: hipotesis; sediakan mode lain dan ukur.
 - **Kualitas soal AI**: distraktor sering bermasalah; verifikasi dua tahap + tinjau guru.
 - **Kinerja 3D di HP lemah**: gerbang kemampuan + anggaran ketat; 3D tidak pernah menjadi satu-satunya cara memahami layar.
+
+## 8. Catatan implementasi B1 (selesai)
+- Tema: `src/lib/themes.ts` (10 paket, sumber tunggal) → `scripts/gen-themes.mjs` → `src/app/themes.generated.css`; tes kontras WCAG per tema (41 tes) dan tes sinkron CSS.
+- Tampilan efektif: `src/lib/appearance.ts` (bawaan ← kebijakan sekolah ← pilihan pengguna), cookie `es_look` + skrip `<head>` tanpa kedip, `AppearanceApply` pada layout `sekolah/[id]` (layout `dashboard` tidak dirender ulang antar-navigasi, jadi tidak dipakai untuk ini).
+- Halaman: `/dashboard/tampilan` (pilihan pengguna, pratinjau langsung) dan `/dashboard/sekolah/[id]/tampilan` (kebijakan: warna sekolah, gaya per kelompok, tema yang diizinkan, 3D/suara/kustomisasi). Tabel `school_appearance`, `user_preferences` (tes SQL 8). Playwright m24 (8 pemeriksaan).
+- Belum: komponen belum memakai token bentuk (B2); 3D belum ada (B3).

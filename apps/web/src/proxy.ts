@@ -4,9 +4,10 @@ import { readPublicEnv } from "@/lib/env";
 
 // Menyegarkan sesi Supabase di setiap permintaan dan melindungi /dashboard.
 export async function proxy(request: NextRequest) {
+  const forward = new Headers(request.headers);
   // API MCP memakai token pribadi, bukan sesi cookie.
   if (request.nextUrl.pathname.startsWith("/api/mcp")) return NextResponse.next();
-  let response = NextResponse.next({ request });
+  let response = NextResponse.next({ request: { headers: forward } });
   const { supabaseUrl, supabasePublishableKey } = readPublicEnv();
 
   const supabase = createServerClient(supabaseUrl, supabasePublishableKey, {
@@ -16,7 +17,7 @@ export async function proxy(request: NextRequest) {
       },
       setAll(cookiesToSet) {
         cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
-        response = NextResponse.next({ request });
+        response = NextResponse.next({ request: { headers: forward } });
         cookiesToSet.forEach(({ name, value, options }) =>
           response.cookies.set(name, value, options),
         );

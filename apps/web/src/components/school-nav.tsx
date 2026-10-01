@@ -13,6 +13,7 @@ const GROUPS: { label: string; items: Item[] }[] = [
       { slug: "anggota", label: "Anggota" },
       { slug: "mapel", label: "Mata pelajaran" },
       { slug: "berkas", label: "Berkas", module: "data_hub" },
+      { slug: "tampilan", label: "Tampilan" },
       { slug: "paket", label: "Paket dan modul" },
     ],
   },

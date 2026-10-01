@@ -1,0 +1,291 @@
+/* DIBANGKITKAN dari src/lib/themes.ts oleh scripts/gen-themes.mjs. Jangan diedit tangan. */
+
+:root {
+  --paper: #f5f8fb;
+  --card: #ffffff;
+  --ink: #14213d;
+  --ink-soft: #46546b;
+  --pen: #1d3fa8;
+  --pen-strong: #152f80;
+  --on-pen: #ffffff;
+  --margin: #d8433b;
+  --hi: #ffe34d;
+  --star: #e0a100;
+  --grid: #dce6ef;
+  --line: #c7d3e0;
+  --ok: #1f7a4d;
+  --ok-bg: #e5f4ec;
+  --warn: #8a5200;
+  --warn-bg: #fff4db;
+  --bad: #b42318;
+  --bad-bg: #fdecea;
+  --accent: #c4372f;
+  --on-accent: #ffffff;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --paper: #10201b;
+    --card: #172b24;
+    --ink: #ecf3ee;
+    --ink-soft: #aec0b6;
+    --pen: #8db2ff;
+    --pen-strong: #b3ccff;
+    --on-pen: #0b1b33;
+    --margin: #ff8f85;
+    --hi: #e9d96b;
+    --star: #f2cf4a;
+    --grid: #1f342c;
+    --line: #2c463c;
+    --ok: #6fd3a0;
+    --ok-bg: #123226;
+    --warn: #f2c46b;
+    --warn-bg: #3a2d10;
+    --bad: #ff9a90;
+    --bad-bg: #3a1815;
+    --accent: #ff8f85;
+    --on-accent: #10201b;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="kertas"], [data-theme-scope="kertas"] {
+  --paper: #f5f8fb;
+  --card: #ffffff;
+  --ink: #14213d;
+  --ink-soft: #46546b;
+  --pen: #1d3fa8;
+  --pen-strong: #152f80;
+  --on-pen: #ffffff;
+  --margin: #d8433b;
+  --hi: #ffe34d;
+  --star: #e0a100;
+  --grid: #dce6ef;
+  --line: #c7d3e0;
+  --ok: #1f7a4d;
+  --ok-bg: #e5f4ec;
+  --warn: #8a5200;
+  --warn-bg: #fff4db;
+  --bad: #b42318;
+  --bad-bg: #fdecea;
+  --accent: #c4372f;
+  --on-accent: #ffffff;
+  color-scheme: light;
+}
+
+:root[data-theme="gelap-fokus"], [data-theme-scope="gelap-fokus"] {
+  --paper: #10201b;
+  --card: #172b24;
+  --ink: #ecf3ee;
+  --ink-soft: #aec0b6;
+  --pen: #8db2ff;
+  --pen-strong: #b3ccff;
+  --on-pen: #0b1b33;
+  --margin: #ff8f85;
+  --hi: #e9d96b;
+  --star: #f2cf4a;
+  --grid: #1f342c;
+  --line: #2c463c;
+  --ok: #6fd3a0;
+  --ok-bg: #123226;
+  --warn: #f2c46b;
+  --warn-bg: #3a2d10;
+  --bad: #ff9a90;
+  --bad-bg: #3a1815;
+  --accent: #ff8f85;
+  --on-accent: #10201b;
+  color-scheme: dark;
+}
+
+:root[data-theme="luar-angkasa"], [data-theme-scope="luar-angkasa"] {
+  --paper: #0e0b22;
+  --card: #1a1540;
+  --ink: #f1eeff;
+  --ink-soft: #b9b1e6;
+  --pen: #a99bff;
+  --pen-strong: #cfc6ff;
+  --on-pen: #0e0b22;
+  --margin: #ff7ad9;
+  --hi: #ffd166;
+  --star: #ffd166;
+  --grid: #1d1850;
+  --line: #3a3380;
+  --ok: #5ee0a0;
+  --ok-bg: #123a2c;
+  --warn: #ffc266;
+  --warn-bg: #3a2a0c;
+  --bad: #ff8a8a;
+  --bad-bg: #3d1620;
+  --accent: #ff7ad9;
+  --on-accent: #0e0b22;
+  color-scheme: dark;
+}
+
+:root[data-theme="hutan"], [data-theme-scope="hutan"] {
+  --paper: #eff7ea;
+  --card: #ffffff;
+  --ink: #16341f;
+  --ink-soft: #46604d;
+  --pen: #1b7a3a;
+  --pen-strong: #135a2a;
+  --on-pen: #ffffff;
+  --margin: #c2410c;
+  --hi: #ffe066;
+  --star: #d99100;
+  --grid: #d6e8cf;
+  --line: #bcd5b3;
+  --ok: #1a6b3a;
+  --ok-bg: #e0f2e4;
+  --warn: #8a5200;
+  --warn-bg: #fff4db;
+  --bad: #b42318;
+  --bad-bg: #fdecea;
+  --accent: #e8a317;
+  --on-accent: #16341f;
+  color-scheme: light;
+}
+
+:root[data-theme="laut"], [data-theme-scope="laut"] {
+  --paper: #e8f6fb;
+  --card: #ffffff;
+  --ink: #0c2f45;
+  --ink-soft: #3f6075;
+  --pen: #0b6fa4;
+  --pen-strong: #08537c;
+  --on-pen: #ffffff;
+  --margin: #e0576b;
+  --hi: #ffe27a;
+  --star: #d99100;
+  --grid: #cfe8f2;
+  --line: #b3d6e6;
+  --ok: #1a7050;
+  --ok-bg: #e0f4ec;
+  --warn: #8a5200;
+  --warn-bg: #fff4db;
+  --bad: #b42318;
+  --bad-bg: #fdecea;
+  --accent: #ff7f6b;
+  --on-accent: #0c2f45;
+  color-scheme: light;
+}
+
+:root[data-theme="kota-neon"], [data-theme-scope="kota-neon"] {
+  --paper: #0a0e1a;
+  --card: #131a2e;
+  --ink: #eaf6ff;
+  --ink-soft: #9fb4d6;
+  --pen: #22e1ff;
+  --pen-strong: #7eeeff;
+  --on-pen: #04141a;
+  --margin: #ff3d9a;
+  --hi: #f6ff4d;
+  --star: #f6ff4d;
+  --grid: #172036;
+  --line: #2a3b63;
+  --ok: #4be3a1;
+  --ok-bg: #0f3326;
+  --warn: #ffc266;
+  --warn-bg: #3a2a0c;
+  --bad: #ff8a9a;
+  --bad-bg: #3d1220;
+  --accent: #ff3d9a;
+  --on-accent: #0a0e1a;
+  color-scheme: dark;
+}
+
+:root[data-theme="pixel-retro"], [data-theme-scope="pixel-retro"] {
+  --paper: #1a1a2e;
+  --card: #232347;
+  --ink: #fef9ef;
+  --ink-soft: #c9c6e0;
+  --pen: #ffcc00;
+  --pen-strong: #ffe066;
+  --on-pen: #1a1a2e;
+  --margin: #ff4d6d;
+  --hi: #7cf7c9;
+  --star: #ffcc00;
+  --grid: #222244;
+  --line: #3d3d75;
+  --ok: #6df0b0;
+  --ok-bg: #12382b;
+  --warn: #ffc266;
+  --warn-bg: #3a2a0c;
+  --bad: #ff8a9a;
+  --bad-bg: #3d1220;
+  --accent: #ff4d6d;
+  --on-accent: #1a1a2e;
+  color-scheme: dark;
+}
+
+:root[data-theme="permen"], [data-theme-scope="permen"] {
+  --paper: #fff1f9;
+  --card: #ffffff;
+  --ink: #3b1d4a;
+  --ink-soft: #6a4a7a;
+  --pen: #b0167f;
+  --pen-strong: #860f60;
+  --on-pen: #ffffff;
+  --margin: #5f3fe0;
+  --hi: #ffe14d;
+  --star: #e09500;
+  --grid: #ffdcf0;
+  --line: #f1bfe0;
+  --ok: #1f7a4d;
+  --ok-bg: #e5f4ec;
+  --warn: #8a5200;
+  --warn-bg: #fff4db;
+  --bad: #b42318;
+  --bad-bg: #fdecea;
+  --accent: #5f3fe0;
+  --on-accent: #ffffff;
+  color-scheme: light;
+}
+
+:root[data-theme="kontras-tinggi"], [data-theme-scope="kontras-tinggi"] {
+  --paper: #ffffff;
+  --card: #ffffff;
+  --ink: #000000;
+  --ink-soft: #1f1f1f;
+  --pen: #0000b8;
+  --pen-strong: #00008a;
+  --on-pen: #ffffff;
+  --margin: #b00020;
+  --hi: #ffeb3b;
+  --star: #8a6500;
+  --grid: #e6e6e6;
+  --line: #000000;
+  --ok: #005c1f;
+  --ok-bg: #e6f6ea;
+  --warn: #6b3f00;
+  --warn-bg: #fff1cc;
+  --bad: #a00012;
+  --bad-bg: #fde6e8;
+  --accent: #b00020;
+  --on-accent: #ffffff;
+  color-scheme: light;
+}
+
+:root[data-theme="warna-sekolah"], [data-theme-scope="warna-sekolah"] {
+  --paper: #f7f8fb;
+  --card: #ffffff;
+  --ink: #15202b;
+  --ink-soft: #475465;
+  --pen: #1d3fa8;
+  --pen-strong: #152f80;
+  --on-pen: #ffffff;
+  --margin: #d8433b;
+  --hi: #ffe34d;
+  --star: #e0a100;
+  --grid: #e1e7ee;
+  --line: #ccd5df;
+  --ok: #1f7a4d;
+  --ok-bg: #e5f4ec;
+  --warn: #8a5200;
+  --warn-bg: #fff4db;
+  --bad: #b42318;
+  --bad-bg: #fdecea;
+  --accent: #c4372f;
+  --on-accent: #ffffff;
+  color-scheme: light;
+}

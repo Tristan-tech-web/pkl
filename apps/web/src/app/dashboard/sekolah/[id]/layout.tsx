@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { AppearanceApply } from "@/components/appearance-apply";
+import { lookFor } from "@/lib/look";
 import { createClient } from "@/lib/supabase/server";
 
 // Lonceng notifikasi di semua halaman sekolah. Jumlah belum dibaca dihitung di server (RLS: hanya milik sendiri).
@@ -7,8 +9,11 @@ export default async function SchoolLayout({ children, params }: { children: Rea
   const supabase = await createClient();
   const { count } = await supabase.from("notifications").select("id", { count: "exact", head: true }).eq("school_id", id).is("read_at", null);
   const n = count ?? 0;
+  const { data: { user } } = await supabase.auth.getUser();
+  const ctx = user ? await lookFor(supabase, user.id, id) : null;
   return (
     <>
+      {ctx ? <AppearanceApply look={ctx.look} /> : null}
       <div className="no-print -mt-2 mb-2 flex justify-end">
         <Link
           href={`/dashboard/sekolah/${id}/notifikasi`}

@@ -12,6 +12,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <Wordmark />
           </Link>
           <nav aria-label="Akun" className="flex items-center gap-2">
+            <Link href="/dashboard/tampilan" className="inline-flex min-h-11 items-center px-3 text-sm font-semibold text-pen underline">Tampilan</Link>
             <Link href="/dashboard/ai-saya" className="inline-flex min-h-11 items-center px-3 text-sm font-semibold text-pen underline">AI saya</Link>
           <form action={signOut}>
             <Button type="submit" variant="ghost">

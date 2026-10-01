@@ -1,72 +1,55 @@
 @import "tailwindcss";
+@import "./themes.generated.css";
 
-/* Identitas: kertas buku tulis kotak-kotak, tinta pena biru, garis margin merah, stabilo kuning.
-   Mode gelap: papan tulis hijau dengan kapur. */
+/* Tema (warna) dibangkitkan dari src/lib/themes.ts. "Pengalaman" (bentuk, huruf, jarak, gerak) di bawah ini
+   dipilih lewat atribut pada <html>: data-experience (ceria | seru | ringkas), data-fs, data-density, data-motion. */
 :root {
-  --paper: #f5f8fb;
-  --card: #ffffff;
-  --ink: #14213d;
-  --ink-soft: #46546b;
-  --pen: #1d3fa8;
-  --pen-strong: #152f80;
-  --on-pen: #ffffff;
-  --margin: #d8433b;
-  --hi: #ffe34d;
-  --star: #e0a100;
-  --grid: #dce6ef;
-  --line: #c7d3e0;
-  --ok: #1f7a4d;
-  --ok-bg: #e5f4ec;
-  --warn: #8a5200;
-  --warn-bg: #fff4db;
-  --bad: #b42318;
-  --bad-bg: #fdecea;
+  --r-box: 6px;
+  --r-btn: 6px;
+  --bw: 1px;
+  --shadow-card: none;
+  --shadow-pop: 0 8px 24px -12px rgb(0 0 0 / 0.35);
+  --fs-exp: 1;
+  --fs-user: 1;
+  --font-display: var(--ff-bricolage);
+  --font-sans: var(--ff-atkinson);
+  --font-mono: var(--ff-mono);
 }
+html { font-size: calc(100% * var(--fs-exp) * var(--fs-user)); }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --paper: #10201b;
-    --card: #172b24;
-    --ink: #ecf3ee;
-    --ink-soft: #aec0b6;
-    --pen: #8db2ff;
-    --pen-strong: #b3ccff;
-    --on-pen: #0b1b33;
-    --margin: #ff8f85;
-    --hi: #e9d96b;
-  --star: #f2cf4a;
-    --grid: #1f342c;
-    --line: #2c463c;
-    --ok: #6fd3a0;
-    --ok-bg: #123226;
-    --warn: #f2c46b;
-    --warn-bg: #3a2d10;
-    --bad: #ff9a90;
-    --bad-bg: #3a1815;
-    color-scheme: dark;
-  }
+/* Ceria: SD. Bulat, besar, "stiker" bertepi tebal dengan bayangan keras, huruf bulat. */
+html[data-experience="ceria"], [data-experience-scope="ceria"] {
+  --r-box: 22px; --r-btn: 999px; --bw: 2px;
+  --shadow-card: 0 4px 0 0 var(--line);
+  --shadow-pop: 0 10px 0 -2px var(--line);
+  --font-display: var(--ff-baloo);
+  --font-sans: var(--ff-nunito);
 }
+/* Seru: SMP-SMA. Sudut miring-tegas, tepi bercahaya, huruf tegas. */
+html[data-experience="seru"], [data-experience-scope="seru"] {
+  --r-box: 14px; --r-btn: 12px; --bw: 2px;
+  --shadow-card: 0 0 0 1px var(--line), 0 10px 30px -14px color-mix(in oklab, var(--pen) 55%, transparent);
+  --shadow-pop: 0 0 22px -4px color-mix(in oklab, var(--pen) 60%, transparent);
+  --font-display: var(--ff-rubik);
+}
+/* Ringkas: guru, kepala sekolah, staf, orang tua. Datar, rapi, huruf besar. */
+html[data-experience="ringkas"], [data-experience-scope="ringkas"] { --r-box: 8px; --r-btn: 8px; }
+html[data-experience="ceria"] { --fs-exp: 1.06; }
+html[data-experience="ringkas"] { --fs-exp: 1.1; }
 
-:root[data-theme="dark"] {
-  --paper: #10201b;
-  --card: #172b24;
-  --ink: #ecf3ee;
-  --ink-soft: #aec0b6;
-  --pen: #8db2ff;
-  --pen-strong: #b3ccff;
-  --on-pen: #0b1b33;
-  --margin: #ff8f85;
-  --hi: #e9d96b;
-  --star: #f2cf4a;
-  --grid: #1f342c;
-  --line: #2c463c;
-  --ok: #6fd3a0;
-  --ok-bg: #123226;
-  --warn: #f2c46b;
-  --warn-bg: #3a2d10;
-  --bad: #ff9a90;
-  --bad-bg: #3a1815;
-  color-scheme: dark;
+html[data-fs="besar"] { --fs-user: 1.12; }
+html[data-fs="sangat-besar"] { --fs-user: 1.25; }
+
+/* Kepadatan: menskalakan seluruh skala jarak Tailwind. */
+html[data-density="rapat"] { --spacing: 0.22rem; }
+html[data-density="longgar"] { --spacing: 0.29rem; }
+
+/* Gerak dikurangi atas pilihan pengguna (selain pengaturan sistem): animasi dimatikan, transisi warna tetap. */
+html[data-motion="kurangi"] *, html[data-motion="kurangi"] *::before, html[data-motion="kurangi"] *::after {
+  animation-duration: 0.001ms !important;
+  animation-delay: 0ms !important;
+  animation-iteration-count: 1 !important;
+  scroll-behavior: auto !important;
 }
 
 @theme inline {
@@ -90,6 +73,12 @@
   --font-display: var(--font-display);
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
+  --color-accent: var(--accent);
+  --color-on-accent: var(--on-accent);
+  --radius-box: var(--r-box);
+  --radius-btn: var(--r-btn);
+  --shadow-card: var(--shadow-card);
+  --shadow-pop: var(--shadow-pop);
 }
 
 body {
