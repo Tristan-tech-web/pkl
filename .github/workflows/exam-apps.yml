@@ -1,0 +1,27 @@
+name: exam-apps
+on:
+  push:
+    paths: ["apps/exam-android/**", "apps/exam-windows/**", ".github/workflows/exam-apps.yml"]
+  pull_request:
+    paths: ["apps/exam-android/**", "apps/exam-windows/**"]
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: apps/exam-android } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 17 }
+      - uses: android-actions/setup-android@v3
+      - run: ./gradlew --no-daemon assembleDebug
+      - uses: actions/upload-artifact@v4
+        with: { name: edusmart-ujian-debug-apk, path: apps/exam-android/app/build/outputs/apk/debug/*.apk }
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with: { dotnet-version: 8.0.x }
+      - run: dotnet build apps/exam-windows/EduSmartUjian -c Release

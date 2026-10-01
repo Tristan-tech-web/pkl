@@ -1,0 +1,32 @@
+# Proyek Xcode dibangkitkan dengan XcodeGen:  brew install xcodegen && xcodegen generate
+name: EduSmartUjian
+options:
+  bundleIdPrefix: id.edusmart
+  deploymentTarget:
+    iOS: "16.0"
+targets:
+  EduSmartUjian:
+    type: application
+    platform: iOS
+    sources: [EduSmartUjian]
+    info:
+      path: EduSmartUjian/Info.plist
+      properties:
+        CFBundleDisplayName: EduSmart Ujian
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
+        UIRequiresFullScreen: true
+        CFBundleURLTypes:
+          - CFBundleURLName: id.edusmart.ujian
+            CFBundleURLSchemes: [edusmart-ujian]
+    entitlements:
+      path: EduSmartUjian/EduSmartUjian.entitlements
+      properties:
+        # Harus diminta ke Apple (formulir "Automatic Assessment Configuration Entitlement Request").
+        com.apple.developer.automatic-assessment-configuration: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: id.edusmart.ujian
+        MARKETING_VERSION: 1.0.0
+        CURRENT_PROJECT_VERSION: 1
+        SWIFT_VERSION: "5.9"

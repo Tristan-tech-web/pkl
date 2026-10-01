@@ -1,0 +1,1 @@
+-keepclassmembers class id.edusmart.ujian.ExamActivity$NativeBridge { @android.webkit.JavascriptInterface <methods>; }
