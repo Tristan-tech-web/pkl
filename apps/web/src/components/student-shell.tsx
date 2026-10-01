@@ -12,7 +12,7 @@ export function StudentShell({ schoolId, schoolName, stats, unread, children }: 
           <span className="block font-display text-base font-extrabold">EduSmart</span>
           <span className="block truncate text-xs text-ink-soft">{schoolName}</span>
         </Link>
-        <span className="s-chip" aria-label={`Level ${stats.level}`}>Lv <b className="num">{stats.level}</b></span>
+        <span className="s-chip s-lv" aria-label={`Level ${stats.level}`}>Lv <b className="num">{stats.level}</b></span>
         <span className="s-chip" aria-label={`${stats.streak} hari beruntun`}>🔥 <b className="num">{stats.streak}</b></span>
         <span className="s-chip" aria-label={`${stats.xp} XP`}>⭐ <b className="num">{stats.xp}</b></span>
         <Link href={`/dashboard/sekolah/${schoolId}/notifikasi`} aria-label={unread > 0 ? `Notifikasi, ${unread} belum dibaca` : "Notifikasi"} className="s-chip relative !px-2.5">

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { BackLink } from "@/components/back-link";
 import { StaffHome } from "@/components/staff-home";
 import { StudentHome } from "@/components/student-home";
 import { Card } from "@/components/ui";
@@ -151,10 +151,4 @@ export async function StudentView({ supabase, schoolId, me }: { supabase: Supa; 
   );
 }
 
-export function BackLink() {
-  return (
-    <Link href="/dashboard" className="back-link text-sm font-semibold text-pen underline">
-      ← Semua sekolah
-    </Link>
-  );
-}
+export { BackLink };
