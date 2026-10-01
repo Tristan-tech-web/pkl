@@ -1,0 +1,15 @@
+node_modules
+.next
+.vercel
+.turbo
+coverage
+dist
+*.log
+.DS_Store
+
+# rahasia: tidak boleh pernah masuk git
+.env
+.env.*
+!.env.example
+*.pem
+gemini.env
