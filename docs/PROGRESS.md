@@ -18,8 +18,14 @@ Cara melanjutkan di sesi baru: baca `CLAUDE.md`, berkas ini, lalu kerjakan "Beri
 - Kekurangan yang ditemukan: pemilik belum bisa melakukan aksi apa pun (tambah rombel, undang anggota, atur mapel); siswa belum punya materi; navigasi antar sekolah hanya relevan untuk pengguna multi-sekolah (sudah diperbaiki).
 - Inventaris v1 dan peta fitur: `docs/research/R2-v1-inventory.md`.
 
+## Aksi pemilik sekolah (selesai di sesi ini)
+- Migrasi `invites`: kode undangan 8 karakter (tanpa huruf/angka yang mirip), peran dan rombel opsional, batas pemakaian dan masa berlaku; RPC `redeem_invite` (peran owner tidak bisa diundang). Tes SQL `supabase/tests/invites.test.sql`: 14/14 lulus.
+- Halaman web: `/dashboard/sekolah/[id]/rombel` (tahun ajaran + rombel), `/anggota` (daftar anggota, buat dan cabut undangan, salin kode/tautan), `/mapel` (mata pelajaran + penugasan mengajar), `/gabung` (tebus kode; tujuan semula dipertahankan lewat `?next=`). Hanya peran pemilik/admin/wakil kurikulum yang bisa membuka halaman pengelolaan (yang lain 404).
+- Uji Chromium: rombel baru, undangan, tebus kode oleh guru kedua, kode sekali pakai ditolak, penugasan tersimpan dan terlihat oleh guru, siswa dan guru tidak bisa membuka `/anggota`.
+- Temuan advisor yang hanya bisa diubah dari dashboard Supabase: "Leaked Password Protection" belum aktif (Authentication → Providers → Email).
+
 ## Berikutnya
-0. Prioritas langsung: aksi pemilik (tambah/ubah rombel, undang guru dan siswa dengan peran, atur mapel dan penugasan), lalu M2 (graf kompetensi, skill tree dengan prasyarat, kuis dinilai di server, XP/streak/level di server dengan satu konfigurasi, dashboard guru dengan intervensi).
+0. Prioritas langsung: M2 (graf kompetensi, skill tree dengan prasyarat, kuis dinilai di server, XP/streak/level di server dengan satu konfigurasi, dashboard guru dengan intervensi).
 1. (selesai) integrasi Supabase Auth di web (`@supabase/ssr`; di Next 16 pakai `proxy.ts`, bukan middleware), halaman login/daftar, wizard pembuatan sekolah lewat RPC `create_school`, landing dengan paket dan formulir enterprise (tabel `leads`).
 2. Pindahkan tes isolasi ke CI setelah secret Supabase tersedia di GitHub.
 3. Vercel: project `edusmart` sudah dibuat (root `apps/web`) dengan env sesuai matriks; `GEMINI_API_KEYS` bertipe sensitive. Cek deployment preview setelah push.

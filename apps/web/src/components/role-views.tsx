@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Card } from "@/components/ui";
+import { SchoolNav } from "@/components/school-nav";
 import { createClient } from "@/lib/supabase/server";
 
 type Supa = Awaited<ReturnType<typeof createClient>>;
@@ -38,6 +39,7 @@ export async function OwnerView({ supabase, schoolId }: { supabase: Supa; school
   const count = (codes: string[]) => rows.filter((r) => codes.includes(one(r.roles)?.code ?? "")).length;
   return (
     <>
+      <SchoolNav schoolId={schoolId} active="" />
       <section aria-label="Ringkasan" className="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-4">
         <Stat label="Siswa" value={count(["student"])} />
         <Stat label="Guru dan staf" value={count(["teacher", "homeroom", "counselor", "curriculum_lead", "admin"])} />

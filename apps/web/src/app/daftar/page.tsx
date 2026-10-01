@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { signUp } from "@/app/auth-actions";
+import { safeNext } from "@/lib/nav";
 import { Button, Card, ErrorNote, Input, Label } from "@/components/ui";
 
 export const metadata = { title: "Daftar · EduSmart" };
@@ -7,14 +8,16 @@ export const metadata = { title: "Daftar · EduSmart" };
 export default async function DaftarPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; next?: string }>;
 }) {
-  const { error } = await searchParams;
+  const { error, next } = await searchParams;
+  const nextSafe = safeNext(next);
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center px-4 py-12">
       <h1 className="mb-6 font-display text-3xl font-bold tracking-tight">Buat akun</h1>
       <Card>
         <form action={signUp} className="flex flex-col gap-4">
+          <input type="hidden" name="next" value={nextSafe} />
           <ErrorNote message={error} />
           <label>
             <Label>Nama lengkap</Label>
@@ -33,7 +36,7 @@ export default async function DaftarPage({
       </Card>
       <p className="mt-4 text-sm">
         Sudah punya akun?{" "}
-        <Link href="/masuk" className="font-medium text-pen underline">
+        <Link href={`/masuk?next=${encodeURIComponent(nextSafe)}`} className="font-medium text-pen underline">
           Masuk
         </Link>
       </p>
