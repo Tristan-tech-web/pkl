@@ -103,6 +103,9 @@ export default async function BerkasPage({ params, searchParams }: { params: Pro
                     {management && TABLE_CATS.has(f.category) && f.extracted?.table ? (
                       <Link href={`/dashboard/sekolah/${id}/berkas/${f.id}`} className="press inline-flex min-h-11 items-center rounded-[6px] bg-pen px-4 font-semibold text-on-pen hover:bg-pen-strong">{f.status === "diimpor" ? "Impor ulang" : `Tinjau dan impor (${f.extracted.table.total_rows} baris)`}</Link>
                     ) : null}
+                    {management && f.category === "keuangan" && f.extracted?.table ? (
+                      <Link href={`/dashboard/sekolah/${id}/berkas/${f.id}/keuangan`} className="press inline-flex min-h-11 items-center rounded-[6px] bg-pen px-4 font-semibold text-on-pen hover:bg-pen-strong">{f.status === "diimpor" ? "Impor ulang tagihan" : `Tinjau tagihan (${f.extracted.table.total_rows} baris)`}</Link>
+                    ) : null}
                     <a href={`/dashboard/sekolah/${id}/berkas/${f.id}/unduh`} className="inline-flex min-h-11 items-center font-semibold text-pen underline">Unduh</a>
                     <form action={reanalyze.bind(null, id, f.id)}><button type="submit" className="inline-flex min-h-11 items-center font-semibold text-pen underline">Analisis ulang</button></form>
                     <details>

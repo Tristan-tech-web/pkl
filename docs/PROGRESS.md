@@ -94,3 +94,8 @@ Permintaan pemilik: situs harus lengkap untuk siswa, guru, dan sekolah; modul (r
 - `ReportSheet` dipakai rapor siswa, wali kelas, dan orang tua. Wali kelas mengisi sikap/ekskul/prestasi/P5.
 - Diuji Playwright (m15): pemilik buat templat, wali kelas isi, siswa (mobile gelap) dan orang tua melihat hasilnya.
 - Berikutnya (fase 2): impor keuangan dari berkas (SPP/LKS), kurikulum/buku → draf materi oleh AI, tutor memakai kutipan buku sekolah.
+
+## Pusat Data fase 2a: impor keuangan (selesai)
+- Berkas kategori `keuangan` (SPP/LKS dll.) punya halaman `berkas/[id]/keuangan`: pemetaan kolom otomatis, pencocokan ke siswa berakun (NIS, atau nama unik), pratinjau, lalu tagihan dibuat; baris "Lunas" langsung jadi pembayaran. Baris tak cocok dilewati dan dijelaskan.
+- Logika murni di `lib/finance-import.ts` (+4 tes). Diuji Playwright (m16).
+- Belum: tagihan untuk siswa yang belum bergabung (perlu `invoices.roster_id`), kurikulum/buku → draf materi, tutor memakai kutipan buku.

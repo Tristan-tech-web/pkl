@@ -3,6 +3,7 @@
 import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { FIN_FIELDS, loadStudents, matchStudents, normalizeFinance, type FinField } from "@/lib/finance-import";
 import { analyzeFileById } from "@/lib/file-analysis";
 import { CATEGORIES, type Category, normalizePeople, type PersonField, PERSON_FIELDS, type PersonKind } from "@/lib/intake";
 import { parseBuffer } from "@/lib/parse-file";
@@ -143,4 +144,39 @@ export async function importRoster(schoolId: string, fileId: string, formData: F
   const msg = `${created.length} ditambahkan${updates.length ? `, ${updates.length} diperbarui` : ""}${skipped ? `, ${skipped} sudah ada (dilewati)` : ""}${results.length - valid.length ? `, ${results.length - valid.length} baris bermasalah diabaikan` : ""}.`;
   if (inviteCount > 0) redirect(`/dashboard/sekolah/${schoolId}/anggota/impor/kartu?n=${inviteCount}`);
   redirect(`/dashboard/sekolah/${schoolId}/administrasi/roster?info=${q(msg)}`);
+}
+
+export async function importFinance(schoolId: string, fileId: string, formData: FormData) {
+  const { supabase, me } = await getSchoolContext(schoolId, { management: true });
+  await requireModule(supabase, schoolId, "data_hub");
+  await requireModule(supabase, schoolId, "fees");
+  const here = `${page(schoolId)}/${fileId}/keuangan`;
+  const headerRow = Math.max(0, Number(formData.get("header_row")) || 0);
+  const mapping: Partial<Record<FinField, number>> = {};
+  for (const f of FIN_FIELDS) { const v = String(formData.get(`m_${f}`) ?? ""); if (v !== "" && Number.isInteger(Number(v))) mapping[f] = Number(v); }
+  if (mapping.amount === undefined || (mapping.name === undefined && mapping.nis === undefined)) redirect(`${here}?error=${q("Pilih kolom nama (atau NIS) dan nominal.")}`);
+  const { data: f } = await supabase.from("school_files").select("name,mime,path").eq("id", fileId).eq("school_id", schoolId).maybeSingle();
+  if (!f) redirect(`${page(schoolId)}?error=${q("Berkas tidak ditemukan.")}`);
+  const dl = await supabase.storage.from("school-files").download(f!.path as string);
+  if (dl.error || !dl.data) redirect(`${here}?error=${q("Berkas tidak bisa dibaca.")}`);
+  const parsed = await parseBuffer(f!.name as string, f!.mime as string | null, Buffer.from(await dl.data!.arrayBuffer()));
+  if (parsed.kind !== "table") redirect(`${here}?error=${q("Berkas ini bukan tabel.")}`);
+  const valid = normalizeFinance((parsed as { rows: string[][] }).rows, headerRow, mapping).flatMap((r) => (r.row ? [r.row] : []));
+
+  const { students } = await loadStudents(supabase, schoolId);
+  const { matched, unmatched } = matchStudents(valid, students);
+  if (matched.length === 0) redirect(`${here}?error=${q("Tidak ada baris yang cocok dengan siswa terdaftar.")}`);
+  const today = new Date().toISOString().slice(0, 10);
+  let made = 0, paid = 0;
+  for (let i = 0; i < matched.length; i += 100) {
+    const chunk = matched.slice(i, i + 100);
+    const { data, error } = await supabase.from("invoices").insert(chunk.map(({ row, memberId }) => ({ school_id: schoolId, member_id: memberId, title: row.title, amount: row.amount, due_on: row.due_on, created_by: me.memberId }))).select("id");
+    if (error || !data) redirect(`${here}?error=${q("Sebagian tagihan gagal disimpan.")}`);
+    made += data!.length;
+    const pays = chunk.flatMap((c, j) => (c.row.paid ? [{ school_id: schoolId, invoice_id: data![j].id as string, amount: c.row.amount, method: "lainnya", paid_on: today, note: "Diimpor dari berkas", recorded_by: me.memberId }] : []));
+    if (pays.length) { await supabase.from("payments").insert(pays); paid += pays.length; }
+  }
+  await supabase.from("school_files").update({ status: "diimpor", imported_at: new Date().toISOString() }).eq("id", fileId);
+  revalidatePath(`/dashboard/sekolah/${schoolId}/keuangan`);
+  redirect(`/dashboard/sekolah/${schoolId}/keuangan?info=${q(`${made} tagihan dibuat, ${paid} langsung lunas${unmatched.length ? `, ${unmatched.length} baris tidak cocok dengan siswa (dilewati)` : ""}.`)}`);
 }
