@@ -22,7 +22,7 @@ export async function StudentStats({ stats }: { stats: Awaited<ReturnType<typeof
       </div>
       <div className="mt-3" role="progressbar" aria-valuemin={0} aria-valuemax={stats.need} aria-valuenow={stats.into} aria-label="XP menuju level berikutnya">
         <div className="h-2.5 overflow-hidden rounded-full border border-line bg-paper">
-          <div className="h-full rounded-full bg-pen" style={{ width: `${pct}%` }} />
+          <div className="bar-grow h-full rounded-full bg-pen" style={{ width: `${pct}%` }} />
         </div>
         <p className="num mt-1 text-sm text-ink-soft">
           {stats.into} / {stats.need} XP menuju level {stats.level + 1}

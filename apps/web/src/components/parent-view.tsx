@@ -70,6 +70,9 @@ export async function ParentView({ schoolId }: { schoolId: string }) {
               </div>
             ) : null}
 
+            {o.grades ? (
+              <p className="mt-4"><Link href={`/dashboard/sekolah/${schoolId}/anak/${c.student_id}`} className="press inline-flex min-h-11 items-center rounded-[6px] border border-line bg-card px-4 font-semibold hover:border-pen">Buka rapor (cetak)</Link></p>
+            ) : null}
             {att && total > 0 ? (
               <div className="mt-6">
                 <h3 className="font-display text-xl font-bold">Kehadiran</h3>
@@ -84,7 +87,7 @@ export async function ParentView({ schoolId }: { schoolId: string }) {
         <p className="mt-4"><Link href={`/dashboard/sekolah/${schoolId}/keuangan`} className="font-semibold text-pen underline">Lihat tagihan anak</Link></p>
       ) : null}
       <p className="mt-6 text-sm text-ink-soft">
-        Rapor resmi diberikan sekolah.{" "}
+        Rapor resmi tetap diberikan sekolah.{" "}
         <Link href={`/dashboard/sekolah/${schoolId}/pengumuman`} className="font-semibold text-pen underline">Lihat semua pengumuman</Link>
       </p>
     </>

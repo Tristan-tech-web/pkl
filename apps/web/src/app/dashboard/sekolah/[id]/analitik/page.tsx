@@ -12,11 +12,11 @@ const jakartaDay = (d: Date) => new Intl.DateTimeFormat("sv-SE", { timeZone: "As
 function Bars({ rows, max, unit = "", good }: { rows: { label: string; value: number; hint?: string }[]; max: number; unit?: string; good?: (v: number) => boolean }) {
   return (
     <ul className="space-y-2">
-      {rows.map((r) => (
+      {rows.map((r, i) => (
         <li key={r.label} className="grid grid-cols-[minmax(0,9rem)_1fr_auto] items-center gap-3 sm:grid-cols-[minmax(0,14rem)_1fr_auto]">
           <span className="truncate text-sm font-semibold" title={r.label}>{r.label}</span>
           <span className="h-3 overflow-hidden rounded-full border border-line bg-paper" role="img" aria-label={`${r.label}: ${r.value}${unit}`}>
-            <span className={`block h-full ${good ? (good(r.value) ? "bg-ok" : "bg-bad") : "bg-pen"}`} style={{ width: `${Math.min(100, (r.value / Math.max(1, max)) * 100)}%` }} />
+            <span className={`bar-grow block h-full ${good ? (good(r.value) ? "bg-ok" : "bg-bad") : "bg-pen"}`} style={{ ["--i" as string]: i, width: `${Math.min(100, (r.value / Math.max(1, max)) * 100)}%` }} />
           </span>
           <span className="num min-w-14 text-right text-sm font-semibold">{r.value}{unit}{r.hint ? <span className="ml-1 font-normal text-ink-soft">{r.hint}</span> : null}</span>
         </li>
@@ -99,10 +99,10 @@ export default async function AnalitikPage({ params }: { params: Promise<{ id: s
       <section className="mt-10">
         <h2 className="font-display text-2xl font-bold tracking-tight">Aktivitas kuis per hari</h2>
         <div className="mt-4 flex h-40 items-end gap-1.5 border-b border-line" role="img" aria-label="Jumlah kuis per hari, 14 hari terakhir">
-          {days.map((d) => (
+          {days.map((d, i) => (
             <div key={d.label} className="flex h-full flex-1 flex-col items-center justify-end gap-1" title={`${d.label}: ${d.value} kuis, rata-rata ${d.avg}`}>
               <span className="num text-xs text-ink-soft">{d.value || ""}</span>
-              <span className="w-full rounded-t-[3px] bg-pen" style={{ height: `${(d.value / maxDay) * 100}%`, minHeight: d.value ? 3 : 0 }} />
+              <span className="col-grow w-full rounded-t-[3px] bg-pen" style={{ ["--i" as string]: i, height: `${(d.value / maxDay) * 100}%`, minHeight: d.value ? 3 : 0 }} />
             </div>
           ))}
         </div>

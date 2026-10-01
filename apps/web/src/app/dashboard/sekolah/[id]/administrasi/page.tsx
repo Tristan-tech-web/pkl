@@ -39,12 +39,12 @@ export default async function AdministrasiPage({ params }: { params: Promise<{ i
         <p className="rounded-[6px] border border-dashed border-line p-6 text-ink-soft">Belum ada anggota.</p>
       ) : (
         <ul className="stagger border-t border-line">
-          {rows.map((r) => (
+          {rows.map((r, i) => (
             <li key={r.id} className="border-b border-line">
               <Link href={`/dashboard/sekolah/${id}/administrasi/${r.id}`} className="flex flex-wrap items-center justify-between gap-3 py-3 hover:text-pen">
                 <span><span className="font-semibold">{r.name}</span> <span className="text-sm text-ink-soft">{r.role?.name}{r.nis ? ` · NIS ${r.nis}` : ""}</span></span>
                 <span className="flex items-center gap-2 text-sm text-ink-soft">
-                  <span className="h-2 w-24 overflow-hidden rounded-full border border-line bg-paper" aria-hidden="true"><span className="block h-full bg-pen" style={{ width: `${r.pct}%` }} /></span>
+                  <span className="h-2 w-24 overflow-hidden rounded-full border border-line bg-paper" aria-hidden="true"><span className="bar-grow block h-full bg-pen" style={{ ["--i" as string]: i, width: `${r.pct}%` }} /></span>
                   <span className="num">{r.pct}% lengkap</span>
                 </span>
               </Link>

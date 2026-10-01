@@ -85,3 +85,28 @@ export async function unlinkGuardian(schoolId: string, studentId: string, parent
   revalidatePath(`/dashboard/sekolah/${schoolId}/administrasi/${studentId}`);
   redirect(`/dashboard/sekolah/${schoolId}/administrasi/${studentId}?info=${q("Hubungan dilepas.")}`);
 }
+
+const slug = (s: string) => s.toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "").slice(0, 30) || "surat";
+
+export async function saveTemplate(schoolId: string, formData: FormData) {
+  const { supabase } = await getSchoolContext(schoolId, { management: true });
+  await requireModule(supabase, schoolId, "admin_records");
+  const page = `/dashboard/sekolah/${schoolId}/administrasi/surat/templat`;
+  const id = str(formData, "id");
+  const title = str(formData, "title");
+  const body = String(formData.get("body") ?? "").trim();
+  if (title.length < 3 || body.length < 10) redirect(`${page}?error=${q("Judul minimal 3 huruf dan isi minimal 10 huruf.")}`);
+  const res = id
+    ? await supabase.from("letter_templates").update({ title, body }).eq("id", id).eq("school_id", schoolId)
+    : await supabase.from("letter_templates").insert({ school_id: schoolId, code: `${slug(title)}_${Math.random().toString(36).slice(2, 6)}`, title, body });
+  if (res.error) redirect(`${page}?error=${q("Templat belum bisa disimpan.")}`);
+  revalidatePath(page);
+  redirect(`${page}?info=${q("Templat tersimpan.")}`);
+}
+
+export async function deleteTemplate(schoolId: string, id: string) {
+  const { supabase } = await getSchoolContext(schoolId, { management: true });
+  await supabase.from("letter_templates").delete().eq("id", id).eq("school_id", schoolId);
+  revalidatePath(`/dashboard/sekolah/${schoolId}/administrasi/surat/templat`);
+  redirect(`/dashboard/sekolah/${schoolId}/administrasi/surat/templat?info=${q("Templat dihapus.")}`);
+}

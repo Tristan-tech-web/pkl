@@ -63,6 +63,12 @@ Permintaan pemilik: situs harus lengkap untuk siswa, guru, dan sekolah; modul (r
 - Aksesibilitas: 88 halaman diperiksa dengan axe-core (WCAG 2 A/AA + best-practice) di HP terang dan desktop gelap untuk 4 peran + halaman publik: 0 pelanggaran setelah perbaikan (landmark `<main>`, tautan lompat ke isi, h1 pada rapor/surat, tabel yang bisa digulir fokusable). Temuan kontras di landing hanya terjadi saat animasi reveal berjalan; dengan kurangi-gerak bersih.
 - Data demo ekosistem: `supabase/seed/demo_ecosystem.sql` (jadwal, absensi, nilai, pengumuman, data induk, tagihan untuk Ayu Lestari).
 
+## Iterasi: rapor orang tua, templat surat, notifikasi, gerak
+- Rapor cetak untuk orang tua (`/anak/[childId]`): hanya lewat RPC `child_overview` (diperluas dengan identitas sekolah, tahun ajaran, wali kelas, daftar mapel); anak lain atau bukan wali = 404. Tes SQL 4/4.
+- Templat surat sekolah (`/administrasi/surat/templat`): buat/ubah/hapus, ruang pengisi {{nama}} {{nis}} {{kelas}} {{sekolah}} {{tanggal}}; dipakai langsung saat menerbitkan surat.
+- Notifikasi dalam aplikasi: tabel `notifications` diisi pemicu (pengumuman baru sesuai sasaran, tagihan baru, nilai baru; wali ikut diberi tahu; tanpa banjir: judul sama belum dibaca < 1 jam tidak diulang); lonceng dengan jumlah belum dibaca di semua halaman sekolah, halaman `/notifikasi`, tandai dibaca saat dibuka atau sekaligus. Penerima hanya membaca miliknya. Tes SQL 8/8.
+- Gerak halaman modul: umpan balik simpan masuk (status) dan bergetar halus (galat), batang analitik/liga/kelengkapan data/level tumbuh bertahap, detail terbuka memudar masuk, lencana lonceng membal; semuanya hanya di `prefers-reduced-motion: no-preference` (24 animasi vs 0 saat kurangi-gerak). Playwright 11/11.
+
 ## Berikutnya
 0. Prioritas langsung: M2 (graf kompetensi, skill tree dengan prasyarat, kuis dinilai di server, XP/streak/level di server dengan satu konfigurasi, dashboard guru dengan intervensi).
 1. (selesai) integrasi Supabase Auth di web (`@supabase/ssr`; di Next 16 pakai `proxy.ts`, bukan middleware), halaman login/daftar, wizard pembuatan sekolah lewat RPC `create_school`, landing dengan paket dan formulir enterprise (tabel `leads`).

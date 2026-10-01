@@ -40,12 +40,12 @@ export default async function LigaPage({ params, searchParams }: { params: Promi
         <p className="rounded-[6px] border border-dashed border-line p-6 text-ink-soft">Belum ada peserta liga.</p>
       ) : (
         <ol className="stagger border-t border-line">
-          {league.map((r) => (
+          {league.map((r, i) => (
             <li key={`${r.rank}-${r.label}`} className={`grid grid-cols-[2.5rem_1fr_auto] items-center gap-3 border-b border-line py-2.5 ${r.is_me ? "bg-pen/10 px-2" : ""}`}>
               <span className="num font-display text-2xl font-bold">{r.rank}</span>
               <div>
                 <p className={r.is_me ? "font-bold" : "font-semibold"}>{r.label}{r.is_me ? " (kamu)" : ""}</p>
-                <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-line" aria-hidden="true"><div className="h-full rounded-full bg-pen" style={{ width: `${(Number(r.xp) / top) * 100}%` }} /></div>
+                <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-line" aria-hidden="true"><div className="bar-grow h-full rounded-full bg-pen" style={{ ["--i" as string]: i, width: `${(Number(r.xp) / top) * 100}%` }} /></div>
               </div>
               <span className="num font-semibold">{Number(r.xp)} XP</span>
             </li>
