@@ -72,7 +72,7 @@ export async function advancePlan(schoolId: string, planId: string): Promise<Ste
   const pct = (done: number) => Math.min(99, Math.round((done / total()) * 100));
   try {
     if (w.stage === "map") {
-      const raw = await ai.run(PLAN_SYSTEM, mapPrompt({ subject, index: w.i, total: chunks.length, text: chunks[w.i] }));
+      const raw = await ai.run(PLAN_SYSTEM, mapPrompt({ subject, index: w.i, total: chunks.length, text: chunks[w.i] }), undefined, 12000);
       w.maps.push(sanitizeMap(parseJsonLoose(raw)));
       w.i += 1;
       if (w.i >= chunks.length) { w.stage = "outline"; w.i = 0; }
@@ -80,7 +80,7 @@ export async function advancePlan(schoolId: string, planId: string): Promise<Ste
       return { ok: true, done: false, pct: pct(w.maps.length), label: `Membaca bagian ${Math.min(w.maps.length + 1, chunks.length)} dari ${chunks.length}` };
     }
     if (w.stage === "outline") {
-      const raw = await ai.run(PLAN_SYSTEM, outlinePrompt({ subject, grade, maps: w.maps }));
+      const raw = await ai.run(PLAN_SYSTEM, outlinePrompt({ subject, grade, maps: w.maps }), undefined, 24000);
       w.outline = sanitizeOutline(parseJsonLoose(raw));
       if (w.outline.length === 0) return { ok: false, error: "AI belum menemukan bab. Coba lanjutkan lagi." };
       w.stage = "detail"; w.i = 0; w.maps = [];
@@ -89,14 +89,14 @@ export async function advancePlan(schoolId: string, planId: string): Promise<Ste
     }
     if (w.stage === "detail") {
       const ch = w.outline[w.i];
-      const raw = await ai.run(PLAN_SYSTEM, detailPrompt({ subject, grade, chapter: ch, excerpt: excerptFor(text, ch.title) }));
+      const raw = await ai.run(PLAN_SYSTEM, detailPrompt({ subject, grade, chapter: ch, excerpt: excerptFor(text, ch.title) }), undefined, 16000);
       w.chapters.push(sanitizeChapter(parseJsonLoose(raw), ch));
       w.i += 1;
       if (w.i >= w.outline.length) w.stage = "schedule";
       await save({ work: w });
       return { ok: true, done: false, pct: pct(chunks.length + 1 + w.chapters.length), label: `Menyusun cara belajar: bab ${w.chapters.length} dari ${w.outline.length}` };
     }
-    const raw = await ai.run(PLAN_SYSTEM, schedulePrompt({ subject, weeks, chapters: w.chapters }));
+    const raw = await ai.run(PLAN_SYSTEM, schedulePrompt({ subject, weeks, chapters: w.chapters }), undefined, 24000);
     const sched = sanitizeSchedule(parseJsonLoose(raw), weeks);
     await save({ status: "selesai", plan: { chapters: w.chapters, ...sched }, work: {} });
     revalidatePath(base(schoolId));
@@ -143,7 +143,7 @@ export async function draftFromChapter(schoolId: string, planId: string, index: 
   const guide = `Bab: ${ch!.title}. Elemen dan cara belajar yang dipilih: ${JSON.stringify(ch!.elements.map((e) => ({ name: e.name, type: e.type, method: e.method, activities: e.activities })))}.\nCuplikan isi:\n${excerptFor(String(f?.text_content ?? ""), ch!.title, 6000)}`;
   let nodes;
   try {
-    nodes = sanitizeDraft(parseJsonLoose(await ai.run!(DRAFT_SYSTEM, draftPrompt({ fileName: "rencana belajar", subject, grade: p!.grade as number, maxNodes: 1, text: guide }))), 1);
+    nodes = sanitizeDraft(parseJsonLoose(await ai.run!(DRAFT_SYSTEM, draftPrompt({ fileName: "rencana belajar", subject, grade: p!.grade as number, maxNodes: 1, text: guide }), undefined, 12000)), 1);
   } catch { redirect(`${here}?error=${q("AI gagal menyusun draf. Coba lagi.")}`); }
   const n = nodes?.[0];
   if (!n) redirect(`${here}?error=${q("AI tidak menghasilkan draf yang layak.")}`);

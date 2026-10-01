@@ -14,7 +14,7 @@ export type Extracted = {
   table?: { sheet: string; header_row: number; header: string[]; total_rows: number; mapping: Partial<Record<PersonField, number>> };
 };
 
-type AiRunner = (system: string, user: string, file?: InlineFile) => Promise<string>;
+type AiRunner = (system: string, user: string, file?: InlineFile, maxTokens?: number) => Promise<string>;
 
 export async function resolveAdminAi(supabase: Supa, schoolId: string): Promise<{ run: AiRunner | null; reason?: string }> {
   const { data, error } = await supabase.rpc("reserve_admin_ai", { p_school_id: schoolId });
@@ -22,9 +22,9 @@ export async function resolveAdminAi(supabase: Supa, schoolId: string): Promise<
   const r = data as { mode: string; provider?: Provider; model?: string; key_ciphertext?: string; limit?: number };
   if (r.mode === "none") return { run: null, reason: "Belum ada kunci AI (menu AI saya atau Tutor AI sekolah). Dipakai aturan dasar." };
   if (r.mode === "limit") return { run: null, reason: `Jatah AI harian habis (${r.limit}).` };
-  if (r.mode === "platform") return { run: (s, u, f) => generateJsonWithPlatform(s, u, f) };
+  if (r.mode === "platform") return { run: (s, u, f, m) => generateJsonWithPlatform(s, u, f, m) };
   const apiKey = decryptSecret(r.key_ciphertext as string);
-  return { run: (s, u, f) => generateJsonText({ provider: r.provider as Provider, model: r.model as string, apiKey, system: s, user: u, file: f }) };
+  return { run: (s, u, f, m) => generateJsonText({ provider: r.provider as Provider, model: r.model as string, apiKey, system: s, user: u, file: f, maxTokens: m }) };
 }
 
 const SYSTEM = [

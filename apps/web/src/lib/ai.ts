@@ -82,15 +82,16 @@ export async function generateWithPlatform(system: string, messages: ChatMsg[]):
 // ===== Keluaran JSON untuk analisis berkas (boleh disertai satu berkas PDF/gambar) =====
 export type InlineFile = { mime: string; base64: string };
 
-export async function generateJsonText(args: { provider: Provider; model: string; apiKey: string; system: string; user: string; file?: InlineFile }): Promise<string> {
+export async function generateJsonText(args: { provider: Provider; model: string; apiKey: string; system: string; user: string; file?: InlineFile; maxTokens?: number }): Promise<string> {
   const { provider, model, apiKey, system, user, file } = args;
+  const maxTokens = Math.min(Math.max(args.maxTokens ?? 4096, 256), 32000);
   if (provider === "gemini") {
     const parts: unknown[] = [{ text: user }];
     if (file) parts.push({ inlineData: { mimeType: file.mime, data: file.base64 } });
     const r = await post(
       `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
       { "x-goog-api-key": apiKey },
-      { systemInstruction: { parts: [{ text: system }] }, contents: [{ role: "user", parts }], generationConfig: { responseMimeType: "application/json", temperature: 0.1, maxOutputTokens: 4096 } },
+      { systemInstruction: { parts: [{ text: system }] }, contents: [{ role: "user", parts }], generationConfig: { responseMimeType: "application/json", temperature: 0.1, maxOutputTokens: maxTokens } },
     );
     if (!r.ok) throw new Error(`gemini ${r.status}`);
     const text = (r.json as GeminiOut).candidates?.[0]?.content?.parts?.map((p) => p.text ?? "").join("").trim();
@@ -100,7 +101,7 @@ export async function generateJsonText(args: { provider: Provider; model: string
   const blocks: unknown[] = [];
   if (file) blocks.push(file.mime === "application/pdf" ? { type: "document", source: { type: "base64", media_type: file.mime, data: file.base64 } } : { type: "image", source: { type: "base64", media_type: file.mime, data: file.base64 } });
   blocks.push({ type: "text", text: `${user}\n\nBalas HANYA dengan satu objek JSON valid, tanpa teks lain.` });
-  const r = await post("https://api.anthropic.com/v1/messages", { "x-api-key": apiKey, "anthropic-version": "2023-06-01" }, { model, max_tokens: 4096, temperature: 0.1, system, messages: [{ role: "user", content: blocks }] });
+  const r = await post("https://api.anthropic.com/v1/messages", { "x-api-key": apiKey, "anthropic-version": "2023-06-01" }, { model, max_tokens: maxTokens, temperature: 0.1, system, messages: [{ role: "user", content: blocks }] });
   if (!r.ok) throw new Error(`anthropic ${r.status}`);
   const text = (r.json as AnthropicOut).content?.filter((c) => c.type === "text").map((c) => c.text ?? "").join("").trim();
   if (!text) throw new Error("anthropic kosong");
@@ -116,14 +117,14 @@ export function parseJsonLoose(text: string): unknown {
 }
 
 // Platform (hanya sekolah demo): coba kunci dan model cadangan.
-export async function generateJsonWithPlatform(system: string, user: string, file?: InlineFile): Promise<string> {
+export async function generateJsonWithPlatform(system: string, user: string, file?: InlineFile, maxTokens?: number): Promise<string> {
   const keys = (process.env.GEMINI_API_KEYS ?? "").split(",").map((k) => k.trim()).filter(Boolean);
   if (keys.length === 0) throw new Error("kunci platform belum diatur");
   const start = Math.floor(Math.random() * keys.length);
   let last: unknown;
   for (const model of PLATFORM_MODELS) {
     for (let i = 0; i < Math.min(3, keys.length); i++) {
-      try { return await generateJsonText({ provider: "gemini", model, apiKey: keys[(start + i) % keys.length], system, user, file }); } catch (e) { last = e; }
+      try { return await generateJsonText({ provider: "gemini", model, apiKey: keys[(start + i) % keys.length], system, user, file, maxTokens }); } catch (e) { last = e; }
     }
   }
   throw last instanceof Error ? last : new Error("gagal");

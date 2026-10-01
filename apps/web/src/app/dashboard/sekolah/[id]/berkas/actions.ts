@@ -209,7 +209,7 @@ export async function draftMateri(schoolId: string, fileId: string, formData: Fo
   }
   let nodes;
   try {
-    const raw = await ai.run!(DRAFT_SYSTEM, draftPrompt({ fileName: f!.name as string, subject: subj!.name as string, grade, maxNodes, text }), file);
+    const raw = await ai.run!(DRAFT_SYSTEM, draftPrompt({ fileName: f!.name as string, subject: subj!.name as string, grade, maxNodes, text }), file, 16000);
     nodes = sanitizeDraft(parseJsonLoose(raw), maxNodes);
   } catch {
     redirect(`${here}?error=${q("AI gagal menyusun draf. Coba lagi sebentar lagi.")}`);

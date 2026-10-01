@@ -75,7 +75,7 @@ export function outlinePrompt(a: { subject: string; grade: number; maps: MapOut[
   const compact = JSON.stringify(a.maps.map((m, i) => ({ part: i + 1, chapters: m.map((c) => ({ t: c.title, e: c.elements.map((e) => `${e.name}|${e.type}|${e.difficulty}`), p: c.prerequisites })) }))).slice(0, 45000);
   return [
     `Mata pelajaran: ${a.subject}, kelas ${a.grade}. Berikut hasil pembacaan per potongan berkas (urut dari awal).`,
-    'Gabungkan menjadi urutan bab yang rapi tanpa duplikat (bab yang terpotong di dua bagian digabung). Skema: {"chapters":[{"title":string,"summary":string (1-2 kalimat),"elements":[{"name":string,"type":"konsep|prosedur|fakta|keterampilan|sikap","difficulty":1-3}],"prerequisites":[string]}]}. Maksimal 20 bab, urut dari dasar ke lanjut.',
+    'Gabungkan menjadi urutan bab yang rapi tanpa duplikat (bab yang terpotong di dua bagian digabung). Skema: {"chapters":[{"title":string,"summary":string (1-2 kalimat),"elements":[{"name":string,"type":"konsep|prosedur|fakta|keterampilan|sikap","difficulty":1-3}],"prerequisites":[string]}]}. Maksimal 20 bab, urut dari dasar ke lanjut. Maksimal 8 elemen per bab; nama elemen singkat (di bawah 8 kata); ringkasan satu kalimat. Jangan mengulang bab yang sama.',
     compact,
   ].join("\n");
 }
