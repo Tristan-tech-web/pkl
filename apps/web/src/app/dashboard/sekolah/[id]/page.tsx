@@ -44,7 +44,7 @@ export default async function SchoolPage({ params }: { params: Promise<{ id: str
   return (
     <>
       {(schoolCount ?? 0) > 1 ? <BackLink /> : null}
-      {me.roleCode === "student" ? null : <header className="mt-3 mb-8">
+      {me.roleCode === "student" || MANAGEMENT.has(me.roleCode) || TEACHING.has(me.roleCode) ? null : <header className="mt-3 mb-8">
         <p className="text-sm font-semibold uppercase tracking-[0.08em] text-ink-soft">{me.roleName}</p>
         <h1 className="mt-1 font-display text-4xl font-bold tracking-tight">
           {me.roleCode === "student" || me.roleCode === "parent" ? `Halo, ${first}` : school.name}
@@ -55,19 +55,18 @@ export default async function SchoolPage({ params }: { params: Promise<{ id: str
       </header>}
       {MANAGEMENT.has(me.roleCode) ? (
         <>
-          <OwnerView supabase={supabase} schoolId={id} />
+          <OwnerView supabase={supabase} schoolId={id} me={me} />
           <LatestAnnouncements schoolId={id} />
         </>
       ) : TEACHING.has(me.roleCode) ? (
         <>
           <TeacherView supabase={supabase} schoolId={id} me={me} />
-          <ModuleLinks schoolId={id} role="teacher" />
+          <details className="mt-6 rounded-box border border-line bg-card p-4"><summary className="min-h-11 cursor-pointer font-display text-lg font-bold">Semua menu</summary><ModuleLinks schoolId={id} role="teacher" /></details>
           <LatestAnnouncements schoolId={id} />
         </>
       ) : me.roleCode === "student" ? (
         <>
           <StudentView supabase={supabase} schoolId={id} me={me} />
-          <ModuleLinks schoolId={id} role="student" />
           <LatestAnnouncements schoolId={id} />
         </>
       ) : (

@@ -48,35 +48,41 @@ const GROUPS: { label: string; items: Item[] }[] = [
 export async function SchoolNav({ schoolId, active }: { schoolId: string; active: string }) {
   const supabase = await createClient();
   const on = await enabledModuleCodes(supabase, schoolId);
+  const groups = GROUPS.map((g) => ({ ...g, items: g.items.filter((i) => !i.module || on.has(i.module)) })).filter((g) => g.items.length > 0);
+  const current = groups.flatMap((g) => g.items).find((i) => i.slug === active)?.label ?? "Ringkasan";
+  const grid = (
+    <>
+      {groups.map((g) => (
+        <div key={g.label}>
+          <p className="text-xs font-semibold uppercase tracking-[0.08em] text-ink-soft">{g.label}</p>
+          <ul className="mt-1 flex flex-wrap gap-x-1 gap-y-0.5">
+            {g.items.map((i) => {
+              const cur = i.slug === active;
+              return (
+                <li key={i.slug}>
+                  <Link
+                    href={`/dashboard/sekolah/${schoolId}${i.slug ? `/${i.slug}` : ""}`}
+                    aria-current={cur ? "page" : undefined}
+                    className={`inline-flex min-h-11 items-center rounded-box px-2.5 text-sm font-semibold ${cur ? "bg-pen text-on-pen" : "text-ink-soft hover:bg-card hover:text-ink"}`}
+                  >
+                    {i.label}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      ))}
+    </>
+  );
+  // HP: satu tombol "Menu" yang membuka daftar; layar lebar: grid terbuka seperti biasa.
   return (
-    <nav aria-label="Pengelolaan sekolah" className="mb-8 grid gap-x-8 gap-y-3 border-b border-line pb-4 sm:grid-cols-2 lg:grid-cols-4">
-      {GROUPS.map((g) => {
-        const items = g.items.filter((i) => !i.module || on.has(i.module));
-        if (items.length === 0) return null;
-        return (
-          <div key={g.label}>
-            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-ink-soft">{g.label}</p>
-            <ul className="mt-1 flex flex-wrap gap-x-1 gap-y-0.5">
-              {items.map((i) => {
-                const current = i.slug === active;
-                return (
-                  <li key={i.slug}>
-                    <Link
-                      href={`/dashboard/sekolah/${schoolId}${i.slug ? `/${i.slug}` : ""}`}
-                      aria-current={current ? "page" : undefined}
-                      className={`inline-flex min-h-11 items-center rounded-box px-2.5 text-sm font-semibold ${
-                        current ? "bg-pen text-on-pen" : "text-ink-soft hover:bg-card hover:text-ink"
-                      }`}
-                    >
-                      {i.label}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        );
-      })}
-    </nav>
+    <>
+      <details className="no-print mb-6 rounded-box border-2 border-line bg-card md:hidden">
+        <summary className="flex min-h-12 cursor-pointer items-center justify-between gap-2 px-4 font-bold"><span>☰ Menu <span className="font-normal text-ink-soft">· {current}</span></span><span aria-hidden="true">▾</span></summary>
+        <nav aria-label="Pengelolaan sekolah" className="grid gap-3 border-t border-line p-3">{grid}</nav>
+      </details>
+      <nav aria-label="Pengelolaan sekolah" className="no-print mb-8 hidden gap-x-8 gap-y-3 border-b border-line pb-4 sm:grid-cols-2 md:grid lg:grid-cols-4">{grid}</nav>
+    </>
   );
 }

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { StaffHome } from "@/components/staff-home";
 import { StudentHome } from "@/components/student-home";
 import { Card } from "@/components/ui";
 import { SchoolNav } from "@/components/school-nav";
@@ -10,16 +11,6 @@ export type Membership = { memberId: string; roleCode: string; roleName: string;
 
 const one = <T,>(v: T | T[] | null | undefined): T | null => (Array.isArray(v) ? (v[0] ?? null) : (v ?? null));
 
-function Stat({ label, value, hint }: { label: string; value: number | string; hint?: string }) {
-  return (
-    <div className="border-t-2 border-ink pt-3">
-      <p className="num font-display text-4xl font-bold tracking-tight">{value}</p>
-      <p className="mt-1 text-sm font-semibold">{label}</p>
-      {hint ? <p className="text-sm text-ink-soft">{hint}</p> : null}
-    </div>
-  );
-}
-
 function Empty({ title, body }: { title: string; body: string }) {
   return (
     <div className="bg-grid rounded-box border border-dashed border-line p-6">
@@ -29,7 +20,7 @@ function Empty({ title, body }: { title: string; body: string }) {
   );
 }
 
-export async function OwnerView({ supabase, schoolId }: { supabase: Supa; schoolId: string }) {
+export async function OwnerView({ supabase, schoolId, me }: { supabase: Supa; schoolId: string; me: Membership }) {
   const [members, classes, subjects, programs] = await Promise.all([
     supabase.from("school_members").select("id,roles(code)").eq("school_id", schoolId),
     supabase.from("class_groups").select("id", { count: "exact", head: true }).eq("school_id", schoolId),
@@ -40,32 +31,24 @@ export async function OwnerView({ supabase, schoolId }: { supabase: Supa; school
   const count = (codes: string[]) => rows.filter((r) => codes.includes(one(r.roles)?.code ?? "")).length;
   return (
     <>
-      <SchoolNav schoolId={schoolId} active="" />
-      <section aria-label="Ringkasan" className="stagger grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-4">
-        <Stat label="Siswa" value={count(["student"])} />
-        <Stat label="Guru dan staf" value={count(["teacher", "homeroom", "counselor", "curriculum_lead", "admin"])} />
-        <Stat label="Rombel" value={classes.count ?? 0} />
-        <Stat label="Mata pelajaran" value={subjects.count ?? 0} />
+      <StaffHome supabase={supabase} schoolId={schoolId} memberId={me.memberId} name={(me.displayName ?? "").split(" ")[0] || "Bapak/Ibu"} kind="owner" />
+      <section aria-label="Ringkasan" className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        {[["🎒", "Siswa", count(["student"])], ["🧑‍🏫", "Guru dan staf", count(["teacher", "homeroom", "counselor", "curriculum_lead", "admin"])], ["🏫", "Rombel", classes.count ?? 0], ["📚", "Mata pelajaran", subjects.count ?? 0]].map(([icon, label, n]) => (
+          <div key={String(label)} className="rounded-box border-2 border-line bg-card p-3"><span aria-hidden="true" className="text-2xl">{icon}</span><p className="num font-display text-3xl font-extrabold leading-none">{n}</p><p className="text-sm font-semibold text-ink-soft">{label}</p></div>
+        ))}
       </section>
-      <section className="mt-10">
-        <h2 className="font-display text-2xl font-bold tracking-tight">Struktur sekolah</h2>
-        {(programs.data ?? []).length === 0 ? (
-          <div className="mt-4">
-            <Empty title="Belum ada program" body="Tambahkan bentuk pendidikan agar rombel dan mata pelajaran bisa disusun." />
-          </div>
-        ) : (
-          <ul className="stagger mt-4 border-t border-line">
-            {(programs.data as { id: string; name: string; grades: number[] }[]).map((p) => (
-              <li key={p.id} className="flex items-baseline justify-between gap-4 border-b border-line py-3">
-                <span className="font-semibold">{p.name}</span>
-                <span className="num text-sm text-ink-soft">
-                  {p.grades.length > 0 ? `Kelas ${Math.min(...p.grades)}–${Math.max(...p.grades)}` : "Kelas bebas"}
-                </span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+      <details className="mt-6 rounded-box border border-line bg-card p-4">
+        <summary className="min-h-11 cursor-pointer font-display text-lg font-bold">Struktur sekolah dan semua menu</summary>
+        <ul className="mt-3 border-t border-line">
+          {((programs.data ?? []) as { id: string; name: string; grades: number[] }[]).map((p) => (
+            <li key={p.id} className="flex items-baseline justify-between gap-4 border-b border-line py-3">
+              <span className="font-semibold">{p.name}</span>
+              <span className="num text-sm text-ink-soft">{p.grades.length > 0 ? `Kelas ${Math.min(...p.grades)}–${Math.max(...p.grades)}` : "Kelas bebas"}</span>
+            </li>
+          ))}
+        </ul>
+        <div className="mt-4"><SchoolNav schoolId={schoolId} active="" /></div>
+      </details>
     </>
   );
 }
@@ -107,19 +90,8 @@ export async function TeacherView({ supabase, schoolId, me }: { supabase: Supa; 
 
   return (
     <>
-      <p className="text-ink-soft">
-        Kelas dan mata pelajaran yang Anda ajar tahun ini.
-      </p>
-      <Link
-        href={`/dashboard/sekolah/${schoolId}/pantau`}
-        className="press mt-4 flex items-center justify-between gap-3 rounded-box border-2 border-pen bg-card p-4"
-      >
-        <span>
-          <span className="block text-xs font-semibold uppercase tracking-[0.08em] text-pen">Pantau belajar</span>
-          <span className="block text-lg font-bold">Progres siswa, siswa berisiko, dan tindak lanjut</span>
-        </span>
-        <span aria-hidden="true" className="text-2xl text-pen">→</span>
-      </Link>
+      <StaffHome supabase={supabase} schoolId={schoolId} memberId={me.memberId} name={(me.displayName ?? "").split(" ")[0] || "Bapak/Ibu"} kind="teacher" />
+      <h2 className="mt-8 font-display text-xl font-bold">Kelas saya</h2>
       {byClass.size === 0 ? (
         <div className="mt-6">
           <Empty
