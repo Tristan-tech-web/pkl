@@ -5,7 +5,7 @@ Status: **rancangan, belum dibangun**. Semua klaim tentang sistem eksternal di b
 ## 1. Dapodik (data pokok pendidikan)
 - ⚠ Dapodik dikelola Kemendikdasmen dan, sejauh yang diketahui, tidak menyediakan API publik untuk aplikasi pihak ketiga; yang lazim adalah ekspor berkas (Excel) dari aplikasi Dapodik sekolah. Verifikasi dulu apakah ada jalur resmi.
 - Jalur realistis tanpa API: **impor berkas ekspor Dapodik** lewat Pusat Data yang sudah ada (pemetaan kolom otomatis + pratinjau). Tambahan yang dibutuhkan: preset pemetaan kolom Dapodik (NISN, NIK ⚠ data sensitif, nama, tempat/tanggal lahir, rombel, nama ibu/wali), dan aturan bahwa NIK tidak disimpan kecuali sekolah memintanya.
-- Pekerjaan: preset di `lib/intake.ts` (`guessMapping`), tes dengan berkas contoh sintetis. Tidak butuh migrasi.
+- Status: pemetaan otomatis sudah mengenali judul kolom Dapodik umum (NIPD, JK, Tempat/Tanggal Lahir, Rombel Saat Ini, No HP) lewat `guessMapping` di `lib/intake.ts` (ada tesnya). Sisa: berkas contoh nyata untuk memverifikasi ⚠ nama kolom, dan penanganan NIK.
 
 ## 2. SSO (masuk dengan akun yang sudah dimiliki)
 - Supabase Auth mendukung OAuth/OIDC; kandidat: Google Workspace for Education dan Microsoft 365 Education (banyak sekolah memakainya). ⚠ Akun belajar.id (Kemendikdasmen) perlu dicek apakah menyediakan OIDC untuk pihak ketiga.
