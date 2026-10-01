@@ -11,11 +11,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <Link href="/dashboard" aria-label="EduSmart, ke dashboard">
             <Wordmark />
           </Link>
+          <nav aria-label="Akun" className="flex items-center gap-2">
+            <Link href="/dashboard/ai-saya" className="inline-flex min-h-11 items-center px-3 text-sm font-semibold text-pen underline">AI saya</Link>
           <form action={signOut}>
             <Button type="submit" variant="ghost">
               Keluar
             </Button>
           </form>
+          </nav>
         </div>
       </header>
       <main id="isi" className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">{children}</main>

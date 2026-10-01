@@ -5,7 +5,7 @@ import { generateReply, generateWithPlatform, tutorSystemPrompt, type ChatMsg, t
 import { enabledModuleCodes } from "@/lib/modules";
 import { getSchoolContext } from "@/lib/school";
 
-type Reserve = { mode: "none" | "limit" | "platform" | "school"; provider?: Provider; model?: string; key_ciphertext?: string; remaining?: number; limit?: number };
+type Reserve = { mode: "none" | "limit" | "platform" | "school" | "user"; provider?: Provider; model?: string; key_ciphertext?: string; remaining?: number; limit?: number };
 
 export async function askTutor(
   schoolId: string,
@@ -37,7 +37,7 @@ export async function askTutor(
   const { data, error } = await supabase.rpc("reserve_ai_call", { p_school_id: schoolId, p_node_id: nodeId });
   if (error || !data) return { ok: false, error: "Tutor belum bisa dipakai sekarang." };
   const r = data as Reserve;
-  if (r.mode === "none") return { ok: false, error: "Tutor AI belum diaktifkan oleh sekolah. Minta kepala sekolah mengisi kunci AI." };
+  if (r.mode === "none") return { ok: false, error: "Tutor AI belum diaktifkan oleh sekolah. Minta kepala sekolah mengisi kunci AI, atau pasang kuncimu di menu AI saya." };
   if (r.mode === "limit") return { ok: false, error: `Jatah tanya tutor hari ini sudah habis (${r.limit} pertanyaan). Coba lagi besok.` };
 
   try {

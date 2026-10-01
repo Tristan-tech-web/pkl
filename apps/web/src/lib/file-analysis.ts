@@ -20,7 +20,7 @@ export async function resolveAdminAi(supabase: Supa, schoolId: string): Promise<
   const { data, error } = await supabase.rpc("reserve_admin_ai", { p_school_id: schoolId });
   if (error || !data) return { run: null, reason: "AI belum bisa dipakai." };
   const r = data as { mode: string; provider?: Provider; model?: string; key_ciphertext?: string; limit?: number };
-  if (r.mode === "none") return { run: null, reason: "Kunci AI sekolah belum diisi (menu Tutor AI). Pemilahan memakai aturan dasar." };
+  if (r.mode === "none") return { run: null, reason: "Belum ada kunci AI (menu AI saya atau Tutor AI sekolah). Dipakai aturan dasar." };
   if (r.mode === "limit") return { run: null, reason: `Jatah AI harian habis (${r.limit}).` };
   if (r.mode === "platform") return { run: (s, u, f) => generateJsonWithPlatform(s, u, f) };
   const apiKey = decryptSecret(r.key_ciphertext as string);

@@ -2,7 +2,7 @@ import { SchoolNav } from "@/components/school-nav";
 import { Button, ErrorNote, InfoNote, Input, Label, Select } from "@/components/ui";
 import { requireModule } from "@/lib/modules";
 import { getSchoolContext } from "@/lib/school";
-import { removeAiSettings, saveAiSettings } from "./actions";
+import { removeAiSettings, saveAiSettings, setStudentKeys } from "./actions";
 
 export const metadata = { title: "Tutor AI · EduSmart" };
 
@@ -11,9 +11,10 @@ export default async function AiPage({ params, searchParams }: { params: Promise
   const { error, info } = await searchParams;
   const { supabase } = await getSchoolContext(id, { management: true });
   await requireModule(supabase, id, "ai_tutor");
-  const [{ data: cfg }, { count: used }] = await Promise.all([
+  const [{ data: cfg }, { count: used }, { data: sch }] = await Promise.all([
     supabase.from("school_ai_settings").select("provider,model,key_hint,daily_limit_per_student,updated_at").eq("school_id", id).maybeSingle(),
     supabase.from("ai_usage").select("id", { count: "exact", head: true }).eq("school_id", id),
+    supabase.from("schools").select("allow_student_keys").eq("id", id).maybeSingle(),
   ]);
   return (
     <>
@@ -47,6 +48,12 @@ export default async function AiPage({ params, searchParams }: { params: Promise
               <form action={removeAiSettings.bind(null, id)} className="mt-3"><Button type="submit" variant="ghost">Hapus kunci</Button></form>
             ) : null}
           </div>
+          <form action={setStudentKeys.bind(null, id)} className="rounded-[6px] border border-line p-4 text-sm">
+            <p className="font-semibold">Kunci pribadi</p>
+            <p className="mt-1 text-ink-soft">Guru dan staf boleh memakai kunci pribadinya (menu AI saya). Untuk siswa, aktifkan hanya bila sekolah setuju data belajar mereka melewati akun AI pribadi.</p>
+            <label className="mt-2 flex min-h-11 items-center gap-2"><input type="checkbox" name="allow" defaultChecked={Boolean(sch?.allow_student_keys)} className="size-4" /> Izinkan siswa memakai kunci pribadi</label>
+            <Button type="submit" variant="ghost">Simpan</Button>
+          </form>
           <div className="rounded-[6px] border border-line p-4 text-sm text-ink-soft">
             <p className="font-semibold text-ink">Yang dikirim ke penyedia</p>
             <ul className="mt-1 list-disc pl-5">

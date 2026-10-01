@@ -45,3 +45,13 @@ export async function removeAiSettings(schoolId: string) {
   revalidatePath(`/dashboard/sekolah/${schoolId}/ai`);
   redirect(`/dashboard/sekolah/${schoolId}/ai?info=${q("Kunci dihapus. Tutor AI nonaktif.")}`);
 }
+
+export async function setStudentKeys(schoolId: string, formData: FormData) {
+  const { supabase } = await getSchoolContext(schoolId, { management: true });
+  const on = formData.get("allow") === "on";
+  const { error } = await supabase.from("schools").update({ allow_student_keys: on }).eq("id", schoolId);
+  const page = `/dashboard/sekolah/${schoolId}/ai`;
+  if (error) redirect(`${page}?error=${q("Pengaturan belum bisa disimpan.")}`);
+  revalidatePath(page);
+  redirect(`${page}?info=${q(on ? "Siswa boleh memakai kunci AI pribadinya." : "Siswa memakai kunci sekolah saja.")}`);
+}
