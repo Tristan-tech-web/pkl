@@ -4,7 +4,7 @@ import { Button, ErrorNote, InfoNote, Input, Label } from "@/components/ui";
 import { requireModule } from "@/lib/modules";
 import { getSchoolContext } from "@/lib/school";
 import type { Plan } from "@/lib/study-plan";
-import { deleteTree, publishUnit, shiftTree, unpublishUnit } from "../actions";
+import { deleteTree, publishUnit, setNodeDate, shiftTree, unpublishUnit } from "../actions";
 
 export const metadata = { title: "Skill tree semester · EduSmart" };
 export const maxDuration = 120;
@@ -76,7 +76,15 @@ export default async function TreePage({ params, searchParams }: { params: Promi
                           <a href={`/dashboard/sekolah/${id}/materi/${n.id as string}`} className="min-w-0 flex-1 font-semibold underline decoration-line underline-offset-2">{n.title as string}</a>
                           <span className="rounded-full border border-line px-2 text-xs">{KIND[n.kind as string]}</span>
                           <span className="num text-ink-soft">+{n.xp_reward as number} XP</span>
-                          <span className="num w-44 text-right">{sch ? `buka ${fmt(sch.unlock_at)}` : "tanpa jadwal"}</span>
+                          {sch ? (
+                            <details className="w-full sm:w-auto">
+                              <summary className="num min-h-11 cursor-pointer py-2 text-right sm:w-44">buka {fmt(sch.unlock_at)} ✎</summary>
+                              <form action={setNodeDate.bind(null, id, planId, n.id as string)} className="mt-1 flex items-end gap-2">
+                                <label><Label>Buka pada (WIB)</Label><Input name="unlock" type="datetime-local" defaultValue={new Date(new Date(sch.unlock_at).getTime() + 7 * 3600_000).toISOString().slice(0, 16)} /></label>
+                                <Button type="submit" variant="ghost">Ubah</Button>
+                              </form>
+                            </details>
+                          ) : <span className="num w-44 text-right">tanpa jadwal</span>}
                         </li>
                       );
                     })}

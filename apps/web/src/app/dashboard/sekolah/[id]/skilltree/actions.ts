@@ -195,3 +195,17 @@ export async function deleteTree(schoolId: string, planId: string) {
   revalidatePath(here);
   redirect(`${here}?info=${q("Skill tree dihapus.")}`);
 }
+
+// Ubah tanggal buka satu simpul (semua rombel yang punya jadwal untuknya). Format WIB "YYYY-MM-DDTHH:mm".
+export async function setNodeDate(schoolId: string, planId: string, nodeId: string, formData: FormData) {
+  const { supabase } = await getSchoolContext(schoolId);
+  const here = `${base(schoolId)}/${planId}`;
+  const val = String(formData.get("unlock") ?? "").trim();
+  const d = new Date(`${val}:00+07:00`);
+  if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(val) || Number.isNaN(d.getTime())) redirect(`${here}?error=${q("Tanggal tidak valid.")}`);
+  const { data: node } = await supabase.from("competency_nodes").select("id").eq("id", nodeId).eq("school_id", schoolId).like("code", `${prefixOf(planId)}-%`).maybeSingle();
+  if (!node) redirect(`${here}?error=${q("Simpul tidak ditemukan.")}`);
+  const { error } = await supabase.from("node_schedule").update({ unlock_at: d.toISOString() }).eq("node_id", nodeId).eq("school_id", schoolId);
+  revalidatePath(here);
+  redirect(error ? `${here}?error=${q("Tanggal belum bisa disimpan.")}` : `${here}?info=${q("Tanggal buka diubah.")}`);
+}
