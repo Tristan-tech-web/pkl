@@ -7,6 +7,7 @@ import { Button, ErrorNote, InfoNote, Input, Select } from "@/components/ui";
 import { CATEGORIES, CATEGORY_LABEL, type Category } from "@/lib/intake";
 import { requireModule } from "@/lib/modules";
 import { getSchoolContext, MANAGEMENT_ROLES } from "@/lib/school";
+import { startPlan } from "../rencana/actions";
 import { deleteFile, draftMateri, reanalyze, setCategory } from "./actions";
 
 export const metadata = { title: "Berkas · EduSmart" };
@@ -63,6 +64,7 @@ export default async function BerkasPage({ params, searchParams }: { params: Pro
       <section className="mt-10">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <h2 className="font-display text-2xl font-bold tracking-tight">Berkas <span className="num text-ink-soft">({(all ?? []).length})</span></h2>
+          <a href={`/dashboard/sekolah/${id}/rencana`} className="inline-flex min-h-11 items-center font-semibold text-pen underline">Rencana belajar saya</a>
           <form method="get" className="flex gap-2">
             {kategori ? <input type="hidden" name="kategori" value={kategori} /> : null}
             <Input name="q" defaultValue={term} placeholder="Cari nama, ringkasan, isi" aria-label="Cari berkas" className="w-56" />
@@ -105,6 +107,18 @@ export default async function BerkasPage({ params, searchParams }: { params: Pro
                     ) : null}
                     {management && f.category === "keuangan" && f.extracted?.table ? (
                       <Link href={`/dashboard/sekolah/${id}/berkas/${f.id}/keuangan`} className="press inline-flex min-h-11 items-center rounded-[6px] bg-pen px-4 font-semibold text-on-pen hover:bg-pen-strong">{f.status === "diimpor" ? "Impor ulang tagihan" : `Tinjau tagihan (${f.extracted.table.total_rows} baris)`}</Link>
+                    ) : null}
+                    {["kurikulum", "buku_paket", "lks"].includes(f.category) && f.ai_status === "selesai" && subjectOpts.length > 0 ? (
+                      <details className="w-full">
+                        <summary className="inline-flex min-h-11 cursor-pointer items-center font-semibold text-pen underline">Rencana belajar lengkap (seluruh berkas)</summary>
+                        <form action={startPlan.bind(null, id, f.id)} className="mt-2 grid gap-2 sm:grid-cols-4">
+                          <Select name="subject_id" aria-label="Mata pelajaran">{subjectOpts.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}</Select>
+                          <Input name="grade" type="number" min={0} max={13} defaultValue={10} aria-label="Kelas" />
+                          <Input name="weeks" type="number" min={4} max={40} defaultValue={18} aria-label="Minggu efektif" />
+                          <Button type="submit">Buat rencana</Button>
+                        </form>
+                        <p className="mt-1 text-sm text-ink-soft">Membaca seluruh isi, memilih cara belajar tiap elemen, dan menyusun jadwal ulangan dan tugas dengan alasannya. Bisa pakai AI Anda sendiri.</p>
+                      </details>
                     ) : null}
                     {["kurikulum", "buku_paket", "lks"].includes(f.category) && f.ai_status === "selesai" && subjectOpts.length > 0 ? (
                       <details className="w-full">
