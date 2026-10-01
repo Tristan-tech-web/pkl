@@ -1,7 +1,9 @@
 import { SiteHeader } from "@/components/site-header";
 import { HeroMotion } from "@/components/motion/hero-motion";
-import { MathGlyphs } from "@/components/motion/math-glyphs";
-import { StoryStage } from "@/components/motion/story-stage";
+import { LandingPath } from "@/components/landing-path";
+import { FloatField } from "@/components/three/float-field";
+import { Mascot } from "@/components/three/mascot";
+import { THEMES } from "@/lib/themes";
 import { Words } from "@/components/motion/words";
 import { ParabolaDemo } from "@/components/parabola-demo";
 import { Button, Card, Input, InfoNote, ErrorNote, Label, LinkButton, Textarea } from "@/components/ui";
@@ -23,37 +25,26 @@ const FORMS = ["SD", "MI", "SMP", "MTs", "SMA", "MA", "SMK", "SLB", "Paket C", "
 
 type ModuleRow = { code: string; name: string; description: string; status: string; sort: number };
 
-const FEATURES: { title: string; body: string; ready: boolean }[] = [
-  {
-    title: "Satu struktur untuk jenis sekolah apa pun",
-    body: "Bentuk pendidikan, jenjang, dan program disusun dari data. Madrasah, SLB, dan sekolah terpadu tidak dipaksa masuk pola SD-SMP-SMA-SMK.",
-    ready: true,
-  },
-  {
-    title: "Kurikulum, mata pelajaran, dan program keahlian yang Anda atur",
-    body: "Mulai dari paket kurikulum, lalu sesuaikan mata pelajaran, peminatan, atau konsentrasi keahlian dan kalender akademik sekolah Anda.",
-    ready: true,
-  },
-  {
-    title: "Modul visual per mata pelajaran",
-    body: "Grafik fungsi, geometri, dan editor kode yang bisa diaktifkan sekolah untuk pelajaran yang membutuhkannya. Contoh di atas adalah modul pertama.",
-    ready: false,
-  },
-  {
-    title: "Tutor AI dengan kunci milik sekolah",
-    body: "Sekolah yang ingin memakai AI menyambungkan kunci API sendiri, sehingga biaya dan ketentuan data berada di tangan sekolah.",
-    ready: true,
-  },
-  {
-    title: "Belajar yang terasa seperti permainan",
-    body: "Peta belajar bercabang, kuis yang dinilai server, XP, level, lencana, dan liga mingguan per kelas.",
-    ready: true,
-  },
-  {
-    title: "Absensi, nilai, rapor, jadwal, dan surat",
-    body: "Administrasi sekolah sehari-hari dalam satu tempat, hanya modul yang masuk paket Anda yang tampil. Orang tua melihat ringkasan anak lewat portal sendiri.",
-    ready: true,
-  },
+const AUDIENCE = [
+  { icon: "🚀", title: "Murid", sub: "Seru seperti game", points: ["Jalur belajar bergaya Duolingo dengan hitung mundur", "Misi harian, streak, level, dan liga kelas", "Latihan ribuan soal, XP yang adil"] },
+  { icon: "🧑‍🏫", title: "Guru", sub: "Ringkas, tinggal klik", points: ["Beranda “Hari ini”: jadwal, absen, perlu perhatian", "AI menyusun skill tree semester dan bank soal", "Antrean integritas dengan banding yang adil"] },
+  { icon: "🏫", title: "Sekolah", sub: "Fleksibel, semua jenis sekolah", points: ["SD, MI, SMP, SMA, SMK, SLB, pesantren, kustom", "Impor data dan berkas besar, AI memilah", "Kebijakan tampilan dan integritas sendiri"] },
+];
+const SCIENCE = [
+  { title: "Bersiap sehari sebelumnya", body: "Persiapan baru terbuka H-1 pukul 15.00 dengan pratinjau singkat dan soal pemantik, supaya otak sudah “panas” saat guru mulai." },
+  { title: "Berlatih mengingat", body: "Soal latihan memaksa otak mengingat, cara belajar yang terbukti lebih awet daripada membaca ulang." },
+  { title: "Mengulang dengan jarak", body: "Soal yang sudah dikuasai muncul lagi beberapa hari kemudian, tepat sebelum lupa. Menjelang ulangan, pengulangannya dirapatkan." },
+];
+const AI_FEATURES = [
+  { icon: "🌳", title: "Skill tree semester otomatis", body: "Dari buku paket dan jadwal pelajaran, tanggal buka dihitung sistem dan isi disusun AI. Guru tinggal meninjau dan menerbitkan per unit." },
+  { icon: "🧠", title: "Bank soal ribuan butir", body: "Dibuat dari buku atau LKS, diperiksa duplikat, kutipan sumber, dan dijawab ulang tanpa kunci sebelum sampai ke murid." },
+  { icon: "🛡️", title: "Latihan yang adil", body: "Jawaban asal-cepat tidak menambah XP. Pola mencurigakan menahan XP, murid boleh banding, kamera hanya opsional dan di perangkat." },
+];
+const ADMIN = [
+  { icon: "🗓️", title: "Absensi, nilai, jadwal", body: "Administrasi harian dalam satu tempat." },
+  { icon: "📄", title: "Rapor dan surat", body: "Template yang bisa diatur, cetak rapi." },
+  { icon: "💰", title: "Keuangan", body: "Tagihan, pembayaran, dan impor dari Excel." },
+  { icon: "🔌", title: "AI Anda sendiri", body: "Hubungkan Claude, ChatGPT, atau Gemini lewat satu prompt." },
 ];
 
 const FEATURE_ORDER = ["max_students", "visual_modules", "custom_curriculum", "ai_tutor"];
@@ -89,70 +80,101 @@ export default async function Home({
     <>
       <SiteHeader />
       <main className="flex-1">
-        <section className="relative overflow-hidden border-b border-line">
-          <div className="bg-grid grid-ignite absolute inset-0" aria-hidden="true" />
-          <MathGlyphs />
-          <HeroMotion className="relative mx-auto grid w-full max-w-6xl items-center gap-10 px-4 py-10 lg:grid-cols-[1.05fr_1fr] lg:py-14">
+        <section className="relative isolate overflow-hidden border-b border-line">
+          <FloatField className="opacity-70" />
+          <HeroMotion className="relative z-10 mx-auto grid w-full max-w-6xl items-center gap-8 px-4 py-10 lg:grid-cols-[1.1fr_1fr] lg:py-16">
             <div>
-              <p data-hero="eyebrow" className="hero-item text-sm font-semibold uppercase tracking-[0.08em] text-ink-soft">
-                Untuk sekolah, madrasah, SLB, dan pesantren
-              </p>
-              <h1 className="mt-4 font-display text-4xl font-extrabold leading-[1.08] tracking-tight sm:text-6xl lg:text-[4.25rem]">
-                <Words text="Satu platform untuk" />{" "}
-                <span className="highlight">
-                  <Words text="semua jenis sekolah" />
-                </span>
+              <p data-hero="eyebrow" className="hero-item inline-flex rounded-full border-2 border-pen px-3 py-1 text-sm font-bold text-pen">Belajar seru · Sekolah rapi</p>
+              <h1 className="mt-4 font-display text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-6xl lg:text-[4rem]">
+                <Words text="Belajar jadi" />{" "}<span className="highlight"><Words text="permainan." /></span>{" "}<Words text="Sekolah jadi mudah." />
               </h1>
               <p data-hero="lede" className="hero-item mt-5 max-w-xl text-lg text-ink-soft">
-                Atur kurikulum, mata pelajaran, dan struktur sekolah Anda sendiri. Guru mengajar dan siswa belajar
-                di tempat yang sama, dengan alat visual yang cocok untuk pelajarannya.
+                Murid mendaki jalur belajar seperti game, kumpulkan XP, dan naik liga. Guru dibantu AI menyusun skill tree semester dan ribuan soal latihan. Sekolah mengatur semuanya sendiri, dari SD sampai pesantren.
               </p>
-              <div data-hero="cta" className="hero-item mt-8 flex flex-wrap gap-3">
-                <LinkButton href="/daftar">Buat akun sekolah</LinkButton>
-                <LinkButton href="#paket" variant="ghost">
-                  Lihat paket
-                </LinkButton>
+              <div data-hero="cta" className="hero-item mt-7 flex flex-wrap gap-3">
+                <LinkButton href="/daftar">Daftarkan sekolah</LinkButton>
+                <LinkButton href="#cara" variant="ghost">Lihat cara kerjanya</LinkButton>
               </div>
-              <ul className="mt-10 flex max-w-xl flex-wrap gap-2" aria-label="Bentuk pendidikan yang didukung">
-                {FORMS.map((f) => (
-                  <li
-                    key={f}
-                    className="bubble inline-flex min-h-9 items-center gap-2 rounded-full border border-line bg-card px-3 text-sm font-semibold"
-                  >
-                    <span aria-hidden="true" className="relative size-3.5 rounded-full border-2 border-pen">
-                      <i className="absolute inset-[1.5px] rounded-full bg-pen" />
-                    </span>
-                    {f}
+              <ul className="mt-8 flex max-w-xl flex-wrap gap-2" aria-label="Bentuk pendidikan yang didukung">
+                {FORMS.map((f) => <li key={f} className="bubble inline-flex min-h-9 items-center rounded-full border border-line bg-card px-3 text-sm font-semibold">{f}</li>)}
+              </ul>
+            </div>
+            <div className="relative mx-auto w-full max-w-sm">
+              <div className="absolute -left-2 -top-3 z-20 rounded-full border-2 border-line bg-card px-3 py-1 text-sm font-bold shadow-pop">🔥 7 hari beruntun</div>
+              <div className="absolute -right-2 top-24 z-20 rounded-full border-2 border-line bg-card px-3 py-1 text-sm font-bold shadow-pop">⭐ +60 XP</div>
+              <div className="absolute -left-4 bottom-24 z-20 rounded-full border-2 border-line bg-card px-3 py-1 text-sm font-bold shadow-pop">🏆 Peringkat 2</div>
+              <LandingPath />
+              <Mascot size={110} className="absolute -bottom-6 -right-4 z-20" />
+            </div>
+          </HeroMotion>
+        </section>
+
+        <section id="cara" className="mx-auto w-full max-w-6xl px-4 py-14">
+          <h2 className="font-display text-3xl font-extrabold tracking-tight">Satu platform, tiga pengalaman</h2>
+          <p className="mt-2 max-w-2xl text-ink-soft">Tampilan menyesuaikan siapa yang memakainya. Sekolah, guru, dan murid bahkan bisa memilih tema sendiri.</p>
+          <ul className="mt-8 grid gap-4 md:grid-cols-3">
+            {AUDIENCE.map((a) => (
+              <li key={a.title} className="surface p-5">
+                <span aria-hidden="true" className="text-4xl">{a.icon}</span>
+                <h3 className="mt-2 font-display text-xl font-bold">{a.title}</h3>
+                <p className="text-sm font-semibold text-pen">{a.sub}</p>
+                <ul className="mt-3 space-y-1.5 text-ink-soft">{a.points.map((p) => <li key={p} className="flex gap-2"><span aria-hidden="true" className="text-ok">✓</span>{p}</li>)}</ul>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section className="border-y border-line bg-card">
+          <div className="mx-auto w-full max-w-6xl px-4 py-14">
+            <h2 className="font-display text-3xl font-extrabold tracking-tight">Dibuat supaya ingatan awet</h2>
+            <p className="mt-2 max-w-2xl text-ink-soft">Bukan sekadar poin. Urutan belajarnya mengikuti cara otak mengingat: bersiap sebelum pelajaran, berlatih mengingat, lalu mengulang dengan jarak.</p>
+            <ol className="mt-8 grid gap-4 md:grid-cols-3">
+              {SCIENCE.map((x, i) => (
+                <li key={x.title} className="rounded-box border-2 border-line p-5">
+                  <span className="num grid size-9 place-items-center rounded-full bg-pen text-lg font-extrabold text-on-pen">{i + 1}</span>
+                  <h3 className="mt-3 font-display text-lg font-bold">{x.title}</h3>
+                  <p className="mt-1 text-ink-soft">{x.body}</p>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+
+        <section className="mx-auto w-full max-w-6xl px-4 py-14">
+          <h2 className="font-display text-3xl font-extrabold tracking-tight">AI yang membantu guru, bukan menggantikan</h2>
+          <ul className="mt-8 grid gap-4 md:grid-cols-3">
+            {AI_FEATURES.map((f) => (
+              <li key={f.title} className="surface p-5">
+                <span aria-hidden="true" className="text-3xl">{f.icon}</span>
+                <h3 className="mt-2 font-display text-lg font-bold">{f.title}</h3>
+                <p className="mt-1 text-ink-soft">{f.body}</p>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-4 text-sm text-ink-soft">Semua hasil AI berstatus draf sampai guru menyetujuinya. Kunci AI milik sekolah atau pengguna sendiri; data siswa tidak lewat kunci milik platform.</p>
+        </section>
+
+        <section className="border-y border-line bg-card">
+          <div className="mx-auto grid w-full max-w-6xl items-center gap-8 px-4 py-14 lg:grid-cols-2">
+            <div>
+              <h2 className="font-display text-3xl font-extrabold tracking-tight">Pilih tampilanmu</h2>
+              <p className="mt-2 text-ink-soft">Sepuluh tema siap pakai, tiga gaya (Ceria, Seru, Ringkas), ukuran huruf, dan mode hemat gerak. Sekolah menetapkan batasnya, murid dan guru memilih di dalamnya.</p>
+              <ul className="mt-5 flex flex-wrap gap-2" aria-label="Tema">
+                {THEMES.map((t) => (
+                  <li key={t.id} className="inline-flex min-h-11 items-center gap-2 rounded-full border border-line bg-paper py-1 pl-1 pr-3 text-sm font-semibold">
+                    <span aria-hidden="true" className="size-8 rounded-full border border-line" style={{ background: `linear-gradient(135deg, ${t.tokens.paper} 50%, ${t.tokens.pen} 50%)` }} />{t.label}
                   </li>
                 ))}
               </ul>
             </div>
             <ParabolaDemo />
-          </HeroMotion>
+          </div>
         </section>
 
-        <StoryStage />
-
-        <section className="reveal mx-auto w-full max-w-6xl px-4 py-16">
-          <h2 className="font-display text-3xl font-bold tracking-tight">Apa yang bisa dilakukan</h2>
-          <ul className="mt-8 border-t border-line">
-            {FEATURES.map((f) => (
-              <li key={f.title} className="grid grid-cols-[2.25rem_1fr] gap-4 border-b border-line py-6 sm:grid-cols-[2.25rem_1fr_9rem]">
-                <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true" className="draw-check mt-0.5">
-                  <rect x="2" y="2" width="22" height="22" rx="3" fill="none" stroke="var(--ink)" strokeWidth="2" strokeDasharray={f.ready ? "0" : "4 3"} />
-                  {f.ready ? <path d="M7 13.5l4 4 8-9" pathLength={1} fill="none" stroke="var(--ok)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /> : null}
-                </svg>
-                <div>
-                  <h3 className="text-lg font-bold">{f.title}</h3>
-                  <p className="mt-1 max-w-2xl text-ink-soft">{f.body}</p>
-                </div>
-                <p
-                  className={`col-start-2 text-sm font-semibold sm:col-start-3 sm:text-right ${f.ready ? "text-ok" : "text-ink-soft"}`}
-                >
-                  {f.ready ? "Sudah tersedia" : "Dalam pengerjaan"}
-                </p>
-              </li>
-            ))}
+        <section className="mx-auto w-full max-w-6xl px-4 py-14">
+          <h2 className="font-display text-3xl font-extrabold tracking-tight">Untuk kepala sekolah dan guru: sederhana</h2>
+          <ul className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            {ADMIN.map((x) => (<li key={x.title} className="surface p-4"><span aria-hidden="true" className="text-3xl">{x.icon}</span><h3 className="mt-1 font-bold">{x.title}</h3><p className="text-sm text-ink-soft">{x.body}</p></li>))}
           </ul>
         </section>
 

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { signIn } from "@/app/auth-actions";
 import { safeNext } from "@/lib/nav";
+import { AuthShell } from "@/components/auth-shell";
 import { Button, Card, ErrorNote, InfoNote, Input, Label } from "@/components/ui";
 
 export const metadata = { title: "Masuk · EduSmart" };
@@ -13,8 +14,7 @@ export default async function MasukPage({
   const { error, info, next } = await searchParams;
   const nextSafe = safeNext(next);
   return (
-    <main className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center px-4 py-12">
-      <h1 className="mb-6 font-display text-3xl font-bold tracking-tight">Masuk ke EduSmart</h1>
+    <AuthShell title="Halo, selamat datang!" lead="Masuk untuk melanjutkan jalur belajarmu, atau mengelola kelas dan sekolah Anda.">
       <Card>
         <form action={signIn} className="flex flex-col gap-4">
           <input type="hidden" name="next" value={nextSafe} />
@@ -28,7 +28,7 @@ export default async function MasukPage({
             <Label>Kata sandi</Label>
             <Input name="password" type="password" autoComplete="current-password" required />
           </label>
-          <Button type="submit">Masuk</Button>
+          <Button type="submit" className="min-h-12 text-lg">Masuk</Button>
         </form>
       </Card>
       <p className="mt-4 text-sm">
@@ -37,6 +37,6 @@ export default async function MasukPage({
           Daftar
         </Link>
       </p>
-    </main>
+    </AuthShell>
   );
 }

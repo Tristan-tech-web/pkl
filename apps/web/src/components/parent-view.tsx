@@ -11,11 +11,12 @@ type Overview = {
 };
 const ATT = [["hadir", "Hadir"], ["terlambat", "Terlambat"], ["izin", "Izin"], ["sakit", "Sakit"], ["alpa", "Tanpa keterangan"]] as const;
 
-function Tile({ label, value, hint }: { label: string; value: string | number; hint?: string }) {
+function Tile({ icon, label, value, hint }: { icon: string; label: string; value: string | number; hint?: string }) {
   return (
-    <div className="border-t-2 border-ink pt-3">
-      <p className="num font-display text-3xl font-bold">{value}</p>
-      <p className="text-sm font-semibold">{label}</p>
+    <div className="rounded-box border-2 border-line bg-card p-3">
+      <span aria-hidden="true" className="text-2xl">{icon}</span>
+      <p className="num font-display text-3xl font-extrabold leading-tight">{value}</p>
+      <p className="text-sm font-bold">{label}</p>
       {hint ? <p className="text-sm text-ink-soft">{hint}</p> : null}
     </div>
   );
@@ -44,26 +45,29 @@ export async function ParentView({ schoolId }: { schoolId: string }) {
         return (
           <section key={c.student_id} className="mt-2 mb-10" aria-label={`Ringkasan ${o.name}`}>
             <div className="flex flex-wrap items-baseline gap-x-3">
-              <h2 className="font-display text-3xl font-bold tracking-tight">{o.name}</h2>
+              <h2 className="font-display text-3xl font-extrabold tracking-tight"><span aria-hidden="true">🧒 </span>{o.name}</h2>
               <p className="text-ink-soft">{o.class ?? "Belum masuk rombel"}{o.term ? ` · ${o.term.name}` : ""}</p>
             </div>
-            <div className="stagger mt-4 grid grid-cols-2 gap-x-6 gap-y-6 sm:grid-cols-4">
-              {att ? <Tile label="Kehadiran" value={total ? `${Math.round((present / total) * 100)}%` : "–"} hint={`${total} hari tercatat`} /> : null}
-              {o.learning ? <Tile label="Materi selesai" value={`${o.learning.done}/${o.learning.total}`} hint={`Level ${o.learning.level} · ${o.learning.streak} hari beruntun`} /> : null}
-              {o.grades ? <Tile label="Mapel dinilai" value={o.grades.length} /> : null}
+            <div className="stagger mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+              {att ? <Tile icon="✅" label="Kehadiran" value={total ? `${Math.round((present / total) * 100)}%` : "–"} hint={`${total} hari tercatat`} /> : null}
+              {o.learning ? <Tile icon="🗺️" label="Materi selesai" value={`${o.learning.done}/${o.learning.total}`} hint={`Level ${o.learning.level} · ${o.learning.streak} hari beruntun`} /> : null}
+              {o.grades ? <Tile icon="📊" label="Mapel dinilai" value={o.grades.length} /> : null}
             </div>
 
             {o.grades ? (
               <div className="mt-6">
                 <h3 className="font-display text-xl font-bold">Nilai semester ini</h3>
                 {o.grades.length === 0 ? <p className="mt-2 text-ink-soft">Belum ada nilai.</p> : (
-                  <ul className="mt-2 border-t border-line">
-                    {o.grades.map((g) => (
-                      <li key={g.subject} className="flex items-baseline justify-between gap-3 border-b border-line py-2">
-                        <span className="font-semibold">{g.subject}</span>
-                        <span className="num"><span className={`font-bold ${o.pass_mark !== null && g.grade < o.pass_mark ? "text-bad" : ""}`}>{g.grade}</span> <span className="text-sm text-ink-soft">({predicate(g.grade)})</span></span>
-                      </li>
-                    ))}
+                  <ul className="mt-2 grid gap-2">
+                    {o.grades.map((g) => {
+                      const low = o.pass_mark !== null && g.grade < o.pass_mark;
+                      return (
+                        <li key={g.subject} className="rounded-box border-2 bg-card p-3" style={{ borderColor: low ? "var(--bad)" : "var(--line)" }}>
+                          <div className="flex items-baseline justify-between gap-3"><span className="font-bold">{g.subject}</span><span className="num"><span className={`text-xl font-extrabold ${low ? "text-bad" : ""}`}>{g.grade}</span> <span className="text-sm text-ink-soft">({predicate(g.grade)})</span></span></div>
+                          <div className="mt-2 h-2 overflow-hidden rounded-full bg-line" role="presentation"><div className="h-full rounded-full" style={{ width: `${Math.min(100, g.grade)}%`, background: low ? "var(--bad)" : "var(--ok)" }} /></div>
+                        </li>
+                      );
+                    })}
                   </ul>
                 )}
                 {o.note ? <p className="mt-3 surface p-3"><span className="text-sm font-semibold">Catatan wali kelas: </span>{o.note}</p> : null}
@@ -71,7 +75,7 @@ export async function ParentView({ schoolId }: { schoolId: string }) {
             ) : null}
 
             {o.grades ? (
-              <p className="mt-4"><Link href={`/dashboard/sekolah/${schoolId}/anak/${c.student_id}`} className="press inline-flex min-h-11 items-center surface px-4 font-semibold hover:border-pen">Buka rapor (cetak)</Link></p>
+              <p className="mt-4"><Link href={`/dashboard/sekolah/${schoolId}/anak/${c.student_id}`} className="press inline-flex min-h-12 items-center surface px-5 font-bold hover:border-pen">📄 Buka rapor (cetak)</Link></p>
             ) : null}
             {att && total > 0 ? (
               <div className="mt-6">
@@ -84,7 +88,7 @@ export async function ParentView({ schoolId }: { schoolId: string }) {
       })}
       <LatestAnnouncements schoolId={schoolId} />
       {(await enabledModuleCodes(supabase, schoolId)).has("fees") ? (
-        <p className="mt-4"><Link href={`/dashboard/sekolah/${schoolId}/keuangan`} className="font-semibold text-pen underline">Lihat tagihan anak</Link></p>
+        <p className="mt-4"><Link href={`/dashboard/sekolah/${schoolId}/keuangan`} className="press inline-flex min-h-12 items-center surface px-5 font-bold hover:border-pen">💳 Lihat tagihan anak</Link></p>
       ) : null}
       <p className="mt-6 text-sm text-ink-soft">
         Rapor resmi tetap diberikan sekolah.{" "}
