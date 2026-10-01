@@ -81,7 +81,7 @@ export function ParabolaDemo() {
         : `akar x = ${formatNumber(r[0])} dan ${formatNumber(r[1])}`;
 
   return (
-    <figure className="rounded-[6px] border border-line bg-card">
+    <figure className="anim-rise rounded-[6px] border border-line bg-card" style={{ "--d": "200ms" } as React.CSSProperties}>
       <figcaption className="border-b border-line px-4 py-3">
         <p className="text-xs font-semibold uppercase tracking-[0.08em] text-ink-soft">
           Contoh modul visual · Matematika, fungsi kuadrat
@@ -121,14 +121,14 @@ export function ParabolaDemo() {
         <line x1={sx(0)} x2={sx(0)} y1={PAD.t} y2={H - PAD.b} stroke="var(--ink)" strokeWidth="1.5" />
         <line x1={PAD.l} x2={W - PAD.r} y1={sy(0)} y2={sy(0)} stroke="var(--ink)" strokeWidth="1.5" />
 
-        <path d={pts.join(" ")} clipPath={`url(#${uid}-clip)`} fill="none" stroke="var(--pen)" strokeWidth="3" strokeLinejoin="round" />
+        <path d={pts.join(" ")} pathLength={1} className="draw-in morph-path" clipPath={`url(#${uid}-clip)`} fill="none" stroke="var(--pen)" strokeWidth="3" strokeLinejoin="round" />
 
         {r.filter((x) => inView(x, 0)).map((x) => (
-          <circle key={`r${x}`} cx={sx(x)} cy={sy(0)} r="5.5" fill="var(--hi)" stroke="var(--ink)" strokeWidth="1.5" />
+          <circle key={`r${x}`} className="anim-pop" style={{ "--d": "1000ms", transformOrigin: `${sx(x)}px ${sy(0)}px` } as React.CSSProperties} cx={sx(x)} cy={sy(0)} r="5.5" fill="var(--hi)" stroke="var(--ink)" strokeWidth="1.5" />
         ))}
         {v && inView(v.x, v.y) ? (
           <g>
-            <circle cx={sx(v.x)} cy={sy(v.y)} r="6" fill="var(--margin)" stroke="var(--card)" strokeWidth="2" />
+            <circle className="anim-pop" style={{ "--d": "1100ms", transformOrigin: `${sx(v.x)}px ${sy(v.y)}px` } as React.CSSProperties} cx={sx(v.x)} cy={sy(v.y)} r="6" fill="var(--margin)" stroke="var(--card)" strokeWidth="2" />
           </g>
         ) : null}
       </svg>

@@ -69,7 +69,7 @@ export default async function MapelPage({
           {subjectRows.length === 0 ? (
             <p className="mt-3 text-ink-soft">Belum ada mata pelajaran.</p>
           ) : (
-            <ul className="mt-4 border-t border-line">
+            <ul className="stagger mt-4 border-t border-line">
               {subjectRows.map((s) => (
                 <li key={s.id} className="flex items-baseline justify-between gap-4 border-b border-line py-3">
                   <div>
@@ -132,7 +132,7 @@ export default async function MapelPage({
           {assignmentRows.length === 0 ? (
             <p className="mt-3 text-ink-soft">Belum ada penugasan.</p>
           ) : (
-            <ul className="mt-4 border-t border-line">
+            <ul className="stagger mt-4 border-t border-line">
               {assignmentRows.map((a) => {
                 const remove = removeAssignment.bind(null, id, a.id);
                 return (

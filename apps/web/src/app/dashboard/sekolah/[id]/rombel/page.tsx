@@ -57,7 +57,7 @@ export default async function RombelPage({
       {rows.length === 0 ? (
         <p className="mt-3 text-ink-soft">Belum ada rombel. Tambahkan yang pertama di bawah.</p>
       ) : (
-        <ul className="mt-4 border-t border-line">
+        <ul className="stagger mt-4 border-t border-line">
           {rows.map((c) => (
             <li key={c.id} className="grid grid-cols-[1fr_auto] items-baseline gap-x-4 border-b border-line py-3">
               <div>

@@ -40,7 +40,7 @@ export async function OwnerView({ supabase, schoolId }: { supabase: Supa; school
   return (
     <>
       <SchoolNav schoolId={schoolId} active="" />
-      <section aria-label="Ringkasan" className="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-4">
+      <section aria-label="Ringkasan" className="stagger grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-4">
         <Stat label="Siswa" value={count(["student"])} />
         <Stat label="Guru dan staf" value={count(["teacher", "homeroom", "counselor", "curriculum_lead", "admin"])} />
         <Stat label="Rombel" value={classes.count ?? 0} />
@@ -53,7 +53,7 @@ export async function OwnerView({ supabase, schoolId }: { supabase: Supa; school
             <Empty title="Belum ada program" body="Tambahkan bentuk pendidikan agar rombel dan mata pelajaran bisa disusun." />
           </div>
         ) : (
-          <ul className="mt-4 border-t border-line">
+          <ul className="stagger mt-4 border-t border-line">
             {(programs.data as { id: string; name: string; grades: number[] }[]).map((p) => (
               <li key={p.id} className="flex items-baseline justify-between gap-4 border-b border-line py-3">
                 <span className="font-semibold">{p.name}</span>
@@ -117,7 +117,7 @@ export async function TeacherView({ supabase, schoolId, me }: { supabase: Supa; 
           />
         </div>
       ) : (
-        <div className="mt-6 grid gap-4 md:grid-cols-2">
+        <div className="stagger mt-6 grid gap-4 md:grid-cols-2">
           {[...byClass.entries()].map(([id, c]) => (
             <Card key={id}>
               <div className="flex items-baseline justify-between gap-3">
@@ -179,7 +179,7 @@ export async function StudentView({ supabase, schoolId, me }: { supabase: Supa; 
               <Empty title="Belum ada mata pelajaran" body="Guru belum ditugaskan ke rombelmu." />
             </div>
           ) : (
-            <ul className="mt-4 border-t border-line">
+            <ul className="stagger mt-4 border-t border-line">
               {subjects.map((s) => (
                 <li key={s.id} className="flex items-baseline justify-between gap-4 border-b border-line py-3">
                   <span className="text-lg font-semibold">{s.subject.name}</span>

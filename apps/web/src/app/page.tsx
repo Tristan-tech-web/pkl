@@ -70,29 +70,31 @@ export default async function Home({
         <section className="bg-grid border-b border-line">
           <div className="mx-auto grid w-full max-w-6xl items-center gap-10 px-4 py-14 lg:grid-cols-[1.05fr_1fr] lg:py-20">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.08em] text-ink-soft">
+              <p className="anim-rise text-sm font-semibold uppercase tracking-[0.08em] text-ink-soft" style={{ "--d": "0ms" } as React.CSSProperties}>
                 Untuk sekolah, madrasah, SLB, dan pesantren
               </p>
-              <h1 className="mt-4 font-display text-4xl font-extrabold leading-[1.08] tracking-tight sm:text-6xl lg:text-[4.25rem]">
+              <h1 className="anim-rise mt-4 font-display text-4xl font-extrabold leading-[1.08] tracking-tight sm:text-6xl lg:text-[4.25rem]" style={{ "--d": "80ms" } as React.CSSProperties}>
                 Satu platform untuk <span className="highlight">semua jenis sekolah</span>
               </h1>
-              <p className="mt-5 max-w-xl text-lg text-ink-soft">
+              <p className="anim-rise mt-5 max-w-xl text-lg text-ink-soft" style={{ "--d": "160ms" } as React.CSSProperties}>
                 Atur kurikulum, mata pelajaran, dan struktur sekolah Anda sendiri. Guru mengajar dan siswa belajar
                 di tempat yang sama, dengan alat visual yang cocok untuk pelajarannya.
               </p>
-              <div className="mt-8 flex flex-wrap gap-3">
+              <div className="anim-rise mt-8 flex flex-wrap gap-3" style={{ "--d": "240ms" } as React.CSSProperties}>
                 <LinkButton href="/daftar">Buat akun sekolah</LinkButton>
                 <LinkButton href="#paket" variant="ghost">
                   Lihat paket
                 </LinkButton>
               </div>
-              <ul className="mt-10 flex max-w-xl flex-wrap gap-2" aria-label="Bentuk pendidikan yang didukung">
+              <ul className="stagger mt-10 flex max-w-xl flex-wrap gap-2" aria-label="Bentuk pendidikan yang didukung">
                 {FORMS.map((f) => (
                   <li
                     key={f}
-                    className="inline-flex min-h-9 items-center gap-2 rounded-full border border-line bg-card px-3 text-sm font-semibold"
+                    className="bubble inline-flex min-h-9 items-center gap-2 rounded-full border border-line bg-card px-3 text-sm font-semibold"
                   >
-                    <span aria-hidden="true" className="size-3 rounded-full border-2 border-pen" />
+                    <span aria-hidden="true" className="relative size-3.5 rounded-full border-2 border-pen">
+                      <i className="absolute inset-[1.5px] rounded-full bg-pen" />
+                    </span>
                     {f}
                   </li>
                 ))}
@@ -102,14 +104,14 @@ export default async function Home({
           </div>
         </section>
 
-        <section className="mx-auto w-full max-w-6xl px-4 py-16">
+        <section className="reveal mx-auto w-full max-w-6xl px-4 py-16">
           <h2 className="font-display text-3xl font-bold tracking-tight">Apa yang bisa dilakukan</h2>
           <ul className="mt-8 border-t border-line">
             {FEATURES.map((f) => (
               <li key={f.title} className="grid grid-cols-[2.25rem_1fr] gap-4 border-b border-line py-6 sm:grid-cols-[2.25rem_1fr_9rem]">
-                <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true" className="mt-0.5">
+                <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true" className="draw-check mt-0.5">
                   <rect x="2" y="2" width="22" height="22" rx="3" fill="none" stroke="var(--ink)" strokeWidth="2" strokeDasharray={f.ready ? "0" : "4 3"} />
-                  {f.ready ? <path d="M7 13.5l4 4 8-9" fill="none" stroke="var(--ok)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /> : null}
+                  {f.ready ? <path d="M7 13.5l4 4 8-9" pathLength={1} fill="none" stroke="var(--ok)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /> : null}
                 </svg>
                 <div>
                   <h3 className="text-lg font-bold">{f.title}</h3>
@@ -126,7 +128,7 @@ export default async function Home({
         </section>
 
         <section id="paket" className="border-y border-line bg-card">
-          <div className="mx-auto w-full max-w-6xl px-4 py-16">
+          <div className="reveal mx-auto w-full max-w-6xl px-4 py-16">
             <h2 className="font-display text-3xl font-bold tracking-tight">Paket</h2>
             <p className="mt-2 text-ink-soft">Nama dan batas paket masih sementara. Harga menyusul.</p>
             <div className="mt-8 overflow-x-auto">
@@ -180,7 +182,7 @@ export default async function Home({
           </div>
         </section>
 
-        <section id="kontak" className="mx-auto grid w-full max-w-6xl gap-10 px-4 py-16 lg:grid-cols-[1fr_1.1fr]">
+        <section id="kontak" className="reveal mx-auto grid w-full max-w-6xl gap-10 px-4 py-16 lg:grid-cols-[1fr_1.1fr]">
           <div>
             <h2 className="font-display text-3xl font-bold tracking-tight">Butuh konfigurasi khusus?</h2>
             <p className="mt-3 max-w-md text-ink-soft">

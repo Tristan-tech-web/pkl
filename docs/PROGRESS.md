@@ -24,6 +24,13 @@ Cara melanjutkan di sesi baru: baca `CLAUDE.md`, berkas ini, lalu kerjakan "Beri
 - Uji Chromium: rombel baru, undangan, tebus kode oleh guru kedua, kode sekali pakai ditolak, penugasan tersimpan dan terlihat oleh guru, siswa dan guru tidak bisa membuka `/anggota`.
 - Temuan advisor yang hanya bisa diubah dari dashboard Supabase: "Leaked Password Protection" belum aktif (Authentication → Providers → Email).
 
+## Sistem gerak (motion design)
+- Prinsip dari riset: hanya `transform` dan `opacity`; 150-480 ms; satu momen terorkestrasi per halaman; keadaan akhir selalu terlihat; mati total saat `prefers-reduced-motion`.
+- Bahasa gerak bertema buku tulis: kurva digambar pena (`.draw-in`), stabilo disapu (`.highlight`), gelembung LJK terisi saat disentuh (`.bubble`), centang digambar (`.draw-check`), daftar muncul bergantian (`.stagger`), bagian muncul saat digulir lewat CSS scroll-driven animation (`.reveal`, dengan fallback tanpa animasi), transisi antarhalaman lewat React `<ViewTransition>` di layout.
+- Token: `--ease-out`, `--ease-spring`, `--dur-fast/base/slow` di `globals.css`.
+- Diuji Chromium: 26 animasi berjalan saat dimuat, selesai < 3 detik, konten penuh setelah digulir, 0 animasi di mode kurangi gerakan.
+- Skill pihak ketiga untuk motion (mis. "Design Motion Principles", "Impeccable animate") ditemukan di riset tetapi tidak dipasang; prinsipnya diterapkan langsung.
+
 ## Berikutnya
 0. Prioritas langsung: M2 (graf kompetensi, skill tree dengan prasyarat, kuis dinilai di server, XP/streak/level di server dengan satu konfigurasi, dashboard guru dengan intervensi).
 1. (selesai) integrasi Supabase Auth di web (`@supabase/ssr`; di Next 16 pakai `proxy.ts`, bukan middleware), halaman login/daftar, wizard pembuatan sekolah lewat RPC `create_school`, landing dengan paket dan formulir enterprise (tabel `leads`).

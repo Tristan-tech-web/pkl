@@ -28,7 +28,7 @@ export function Label({ children, hint }: { children: React.ReactNode; hint?: st
 const solid = "bg-pen text-on-pen hover:bg-pen-strong";
 const ghost = "border border-line bg-card text-ink hover:border-pen";
 const base =
-  "inline-flex min-h-11 items-center justify-center rounded-[6px] px-5 font-semibold transition-colors";
+  "press inline-flex min-h-11 items-center justify-center rounded-[6px] px-5 font-semibold";
 
 export function Button({
   className = "",

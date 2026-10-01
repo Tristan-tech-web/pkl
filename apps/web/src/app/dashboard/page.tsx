@@ -42,11 +42,11 @@ export default async function DashboardPage() {
           </div>
         </Card>
       ) : (
-        <ul className="grid gap-4 sm:grid-cols-2">
+        <ul className="stagger grid gap-4 sm:grid-cols-2">
           {schools.map((s) => (
             <li key={s.id}>
               <Link href={`/dashboard/sekolah/${s.id}`} className="block rounded-2xl focus-visible:outline-3 focus-visible:outline-pen">
-                <Card className="transition hover:border-pen">
+                <Card className="lift hover:border-pen">
                   <h2 className="text-lg font-semibold">{s.name}</h2>
                   <p className="mt-1 text-sm text-ink-soft">
                     {[s.city, s.province].filter(Boolean).join(", ") || "Lokasi belum diisi"} ·{" "}

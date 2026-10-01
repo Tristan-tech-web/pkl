@@ -76,7 +76,7 @@ export default async function AnggotaPage({
       <div className="grid gap-8 lg:grid-cols-[1.1fr_1fr]">
         <section>
           <h2 className="font-display text-2xl font-bold tracking-tight">Anggota</h2>
-          <ul className="mt-4 border-t border-line">
+          <ul className="stagger mt-4 border-t border-line">
             {memberRows.map((m) => (
               <li key={m.id} className="flex items-baseline justify-between gap-4 border-b border-line py-3">
                 <span className="font-semibold">{m.display_name ?? "Tanpa nama"}</span>
@@ -89,7 +89,7 @@ export default async function AnggotaPage({
           {inviteRows.length === 0 ? (
             <p className="mt-3 text-ink-soft">Belum ada undangan.</p>
           ) : (
-            <ul className="mt-4 border-t border-line">
+            <ul className="stagger mt-4 border-t border-line">
               {inviteRows.map((i) => {
                 const expired = isInviteInactive(i);
                 const revoke = revokeInvite.bind(null, id, i.id);
