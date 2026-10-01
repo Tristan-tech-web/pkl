@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 
 type Item = { slug: string; label: string; module: string };
 const STUDENT: Item[] = [
+  { slug: "liga", label: "Liga dan lencana", module: "learning" },
   { slug: "jadwal", label: "Jadwal kelasku", module: "schedule" },
   { slug: "absensi", label: "Kehadiranku", module: "attendance" },
   { slug: "nilai", label: "Nilaiku", module: "gradebook" },
@@ -16,6 +17,8 @@ const TEACHER: Item[] = [
   { slug: "absensi", label: "Absensi", module: "attendance" },
   { slug: "nilai", label: "Nilai", module: "gradebook" },
   { slug: "rapor", label: "Rapor", module: "gradebook" },
+  { slug: "analitik", label: "Analitik", module: "analytics" },
+  { slug: "liga", label: "Liga kelas", module: "learning" },
   { slug: "materi", label: "Materi dan soal", module: "learning" },
   { slug: "pengumuman", label: "Pengumuman", module: "announcements" },
 ];
