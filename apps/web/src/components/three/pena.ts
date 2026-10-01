@@ -164,7 +164,13 @@ export function createPena(canvas: HTMLCanvasElement, opts: { still: boolean; qu
     cap.rotation.z = 0.1 + Math.sin(t * 1.5) * 0.01;
     renderer.render(scene, cam);
   };
-  const loop = (ms: number) => { raf = requestAnimationFrame(loop); if (!visible || document.hidden || ms - last < 30) return; last = ms; draw(ms / 1000); };
+  // Perangkat lambat: bila banyak bingkai terlalu lama, berhenti beranimasi dan tampilkan satu gambar diam (hemat baterai/CPU).
+  let slowFrames = 0;
+  const loop = (ms: number) => {
+    raf = requestAnimationFrame(loop); if (!visible || document.hidden || ms - last < 30) return;
+    if (last && ms - last > 90 && ++slowFrames > 25) { cancelAnimationFrame(raf); draw(0.7); return; }
+    last = ms; draw(ms / 1000);
+  };
   const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; }, { threshold: 0.01 }); io.observe(canvas);
   if (opts.still) draw(0.7); else raf = requestAnimationFrame(loop);
 
