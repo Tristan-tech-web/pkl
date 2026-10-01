@@ -65,7 +65,7 @@ Sinyal perilaku (selalu), kamera di perangkat (opsional), skor risiko, tahan/bat
 | B3 ☑ | Kit 3D prosedural (maskot, benda melayang, adegan latar, permata XP) + gerbang kemampuan | muatan three hanya di halaman yang meminta; ≥ 30 fps pada CPU throttle 4×; mode Ringkas tanpa three; `reduced-motion` statis |
 | C1 ☑ | Jalur belajar + aturan buka terjadwal + simpul ulang | Playwright: simpul besok terkunci dengan hitung mundur; terbuka setelah waktunya (waktu disimulasikan); tidak mengunci balik |
 | C2 ☑ | AI penyusun skill tree semester + editor + pratinjau murid | uji dengan buku 70 ribu karakter + jadwal nyata → pohon bertanggal valid, tanggal di hari pelajaran |
-| C3 | Bank soal AI + tinjau + mode Latihan + penjadwal ulang + kalibrasi | ≥ 300 butir terverifikasi dari buku uji; tingkat butir yang gagal verifikasi dilaporkan; sesi latihan berjalan |
+| C3 ☑ | Bank soal AI + tinjau + mode Latihan + penjadwal ulang + kalibrasi | ≥ 300 butir terverifikasi dari buku uji; tingkat butir yang gagal verifikasi dilaporkan; sesi latihan berjalan |
 | C4 | Integritas: sinyal, skor, buku besar XP, kamera on-device, antrean guru, banding | tes SQL; uji skenario (cepat-asal, salin, tab keluar, tanpa wajah/dua wajah dengan video uji); tidak ada gambar terkirim (periksa lalu lintas) |
 | D1 | Redesign murid | semua halaman murid di 3 pengalaman × (HP, desktop) ditinjau tangkapan layar |
 | D2 | Redesign guru dan kepala sekolah | uji "tugas utama dalam ≤ 3 klik"; teks 150% tanpa patah |
@@ -100,3 +100,10 @@ Urutan: B1 → B2 → B3 → C1 → C2 → C3 → C4 → D1 → D2 → D3 → E.
 - AI hanya mengisi konten per bab (pratinjau, pretes, latihan, cek, ulang) dengan satu panggilan; percobaan kedua meminta JSON ringkas bila jawaban rusak. Keluaran dibatasi 7000 token.
 - `skilltree/actions.ts`: `generateTreeChapter` (idempoten, hanya mengganti draf berawalan `ST-<plan8>-`), `shiftTree`, `publishUnit`/`unpublishUnit`, `deleteTree`. Halaman `/dashboard/sekolah/[id]/skilltree/[planId]` + `TreeRunner` (dapat dijeda/dilanjutkan, ulang otomatis saat 429/503).
 - Uji Playwright dengan AI nyata: 26 simpul dalam 3 unit, libur dilewati, geser +7 hari, terbit per unit. Batas: satu rombel per penyusunan; model gratis sering 429/503/JSON rusak (ditangani ulang).
+
+## 12. Catatan implementasi C3 (selesai)
+- DB (`question_bank` + `question_bank_fix_flags`): `bank_items` (+`bank_keys` terpisah, hanya penulis), `bank_reports`, `bank_progress` (kotak Leitner 1/3/7/14/30 hari), `practice_ability` + `rating` butir (Elo sederhana), `practice_sessions`/`practice_answers` (waktu dihitung di server dari saat soal diberikan), `bank_jobs`. RPC: `practice_overview/start/next/answer`, `bank_report`. 21 tes SQL lulus (`supabase/tests/question_bank.test.sql`).
+- Aturan XP latihan (R3-B): dasar 5–15 menurut tingkat butir; benar-tapi-terlalu-cepat 0 XP dan ditandai; butir yang sudah benar dalam 7 hari ×0,5 per pengulangan; belum waktunya diulang ×0,5; bangkit setelah salah ×1,5; batas 300 XP latihan per hari (WIB). Setiap jawaban menyimpan bendera dan meta (jumlah pindah tab) sebagai bahan C4.
+- Pipeline (`lib/bank.ts`, 10 tes; `bank/actions.ts`): per putaran ±8 butir dari satu potongan buku → skema + opsi diacak (kunci tidak condong) → duplikat (kemiripan bigram ≥0,72) → kutipan harus ada di sumber → dijawab ulang tanpa kunci. Lolos semua = draf (atau siap bila otomatis); solver beda/kutipan lemah = perlu ditinjau. Guru: "Setujui semua yang lolos", setujui/tarik per butir; 3 laporan murid menarik butir ke peninjauan.
+- Uji AI nyata: 16 butir dari buku sintetis, semuanya lolos 3 pemeriksaan; sesi latihan 10 soal berjalan, bendera terlalu_cepat/ulang_cepat/belum_waktunya terbukti terpicu.
+- Batas: pemecah independen memakai model yang sama dengan penyusun (panggilan terpisah tanpa kunci); model berbeda menyusul. Skala ribuan butir belum diuji (butuh kunci AI berbayar/BYOK).

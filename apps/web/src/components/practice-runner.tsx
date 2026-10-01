@@ -34,7 +34,7 @@ export function PracticeRunner({ schoolId, sessionId, backHref, initial }: { sch
   }, []);
 
   async function load() {
-    setBusy(true); setError(null); setPicked(null); setRes(null); setReported(false); blurs.current = 0;
+    setBusy(true); setError(null); setPicked(null); setRes(null); setItem(null); setReported(false); blurs.current = 0;
     const r = await practiceNext(schoolId, sessionId);
     setBusy(false);
     if (!r.ok) { setError(r.error); return; }
@@ -89,7 +89,7 @@ export function PracticeRunner({ schoolId, sessionId, backHref, initial }: { sch
             })}
           </ul>
           {res ? (
-            <div role="status" className={`mt-4 rounded-box border-2 p-4 ${res.correct ? "border-ok" : "border-bad"}`}>
+            <div aria-live="polite" className={`mt-4 rounded-box border-2 p-4 ${res.correct ? "border-ok" : "border-bad"}`}>
               <p className="text-lg font-bold">{res.correct ? (res.xp > 0 ? `Benar! +${res.xp} XP` : "Benar!") : "Belum tepat"}</p>
               {res.explanation ? <p className="mt-1 text-sm">{res.explanation}</p> : null}
               {res.flags.map((f) => FLAG_TEXT[f] ? <p key={f} className="mt-1 text-sm text-ink-soft">{FLAG_TEXT[f]}</p> : null)}
@@ -100,7 +100,7 @@ export function PracticeRunner({ schoolId, sessionId, backHref, initial }: { sch
             </div>
           ) : null}
         </div>
-      ) : !error ? <p className="mt-6 text-ink-soft" role="status">Memuat soal…</p> : null}
+      ) : !error ? <p className="mt-6 text-ink-soft" aria-live="polite">Memuat soal…</p> : null}
     </div>
   );
 }
