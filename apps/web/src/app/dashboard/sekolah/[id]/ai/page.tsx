@@ -1,5 +1,6 @@
 import { SchoolNav } from "@/components/school-nav";
 import { Button, ErrorNote, InfoNote, Input, Label, Select } from "@/components/ui";
+import { requireModule } from "@/lib/modules";
 import { getSchoolContext } from "@/lib/school";
 import { removeAiSettings, saveAiSettings } from "./actions";
 
@@ -9,6 +10,7 @@ export default async function AiPage({ params, searchParams }: { params: Promise
   const { id } = await params;
   const { error, info } = await searchParams;
   const { supabase } = await getSchoolContext(id, { management: true });
+  await requireModule(supabase, id, "ai_tutor");
   const [{ data: cfg }, { count: used }] = await Promise.all([
     supabase.from("school_ai_settings").select("provider,model,key_hint,daily_limit_per_student,updated_at").eq("school_id", id).maybeSingle(),
     supabase.from("ai_usage").select("id", { count: "exact", head: true }).eq("school_id", id),

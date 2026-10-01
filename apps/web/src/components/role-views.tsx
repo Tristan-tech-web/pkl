@@ -3,6 +3,7 @@ import { Card } from "@/components/ui";
 import { SchoolNav } from "@/components/school-nav";
 import { StudentStats } from "@/components/student-stats";
 import { loadMap, loadStats } from "@/lib/learning";
+import { enabledModuleCodes } from "@/lib/modules";
 import { createClient } from "@/lib/supabase/server";
 
 type Supa = Awaited<ReturnType<typeof createClient>>;
@@ -85,6 +86,7 @@ export async function TeacherView({ supabase, schoolId, me }: { supabase: Supa; 
     .eq("school_id", schoolId)
     .eq("teacher_member_id", me.memberId);
   const assignments = (data ?? []) as unknown as Assignment[];
+  const mods = await enabledModuleCodes(supabase, schoolId);
 
   const byClass = new Map<string, { name: string; grade: number; subjects: { name: string; hours: number | null }[] }>();
   for (const a of assignments) {
@@ -121,9 +123,18 @@ export async function TeacherView({ supabase, schoolId, me }: { supabase: Supa; 
         </span>
         <span aria-hidden="true" className="text-2xl text-pen">→</span>
       </Link>
-      <Link href={`/dashboard/sekolah/${schoolId}/materi`} className="mt-3 inline-flex min-h-11 items-center font-semibold text-pen underline">
-        Kelola materi dan soal
-      </Link>
+      <p className="mt-3 flex flex-wrap gap-x-6">
+        {mods.has("learning") ? (
+          <Link href={`/dashboard/sekolah/${schoolId}/materi`} className="inline-flex min-h-11 items-center font-semibold text-pen underline">
+            Kelola materi dan soal
+          </Link>
+        ) : null}
+        {mods.has("attendance") ? (
+          <Link href={`/dashboard/sekolah/${schoolId}/absensi`} className="inline-flex min-h-11 items-center font-semibold text-pen underline">
+            Absensi harian
+          </Link>
+        ) : null}
+      </p>
       {byClass.size === 0 ? (
         <div className="mt-6">
           <Empty
@@ -212,6 +223,7 @@ export async function StudentView({ supabase, schoolId, me }: { supabase: Supa; 
 
 async function LearnPanel({ supabase, schoolId, memberId }: { supabase: Supa; schoolId: string; memberId: string }) {
   const [map, stats] = await Promise.all([loadMap(supabase, schoolId, memberId), loadStats(supabase, schoolId, memberId)]);
+  const mods = await enabledModuleCodes(supabase, schoolId);
   const done = map.filter((n) => n.state === "selesai").length;
   const next = map.find((n) => n.state === "tersedia");
   return (
@@ -234,6 +246,11 @@ async function LearnPanel({ supabase, schoolId, memberId }: { supabase: Supa; sc
           <span aria-hidden="true" className="text-2xl text-pen">→</span>
         </Link>
       )}
+      {mods.has("attendance") ? (
+        <Link href={`/dashboard/sekolah/${schoolId}/absensi`} className="inline-flex min-h-11 items-center font-semibold text-pen underline">
+          Lihat kehadiranku
+        </Link>
+      ) : null}
     </div>
   );
 }

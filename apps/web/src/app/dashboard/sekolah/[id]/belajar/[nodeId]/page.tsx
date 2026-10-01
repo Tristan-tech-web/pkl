@@ -5,6 +5,7 @@ import { ParabolaDemo } from "@/components/parabola-demo";
 import { TutorChat } from "@/components/tutor-chat";
 import { Stars } from "@/components/stars";
 import { loadMap } from "@/lib/learning";
+import { enabledModuleCodes } from "@/lib/modules";
 import { Markdown } from "@/lib/md";
 import { getSchoolContext } from "@/lib/school";
 
@@ -13,7 +14,7 @@ export const metadata = { title: "Pelajaran · EduSmart" };
 export default async function LessonPage({ params }: { params: Promise<{ id: string; nodeId: string }> }) {
   const { id, nodeId } = await params;
   const { supabase, me } = await getSchoolContext(id);
-  const map = await loadMap(supabase, id, me.memberId);
+  const [map, mods] = await Promise.all([loadMap(supabase, id, me.memberId), enabledModuleCodes(supabase, id)]);
   const node = map.find((n) => n.id === nodeId);
   if (!node) notFound();
   const [{ data: lesson }, { count }] = await Promise.all([
@@ -59,7 +60,7 @@ export default async function LessonPage({ params }: { params: Promise<{ id: str
           </div>
           <div className="space-y-6 lg:sticky lg:top-6 lg:self-start">
             {lesson?.visual_module === "parabola" ? <ParabolaDemo hero={false} /> : null}
-            {me.roleCode === "student" ? <TutorChat schoolId={id} nodeId={nodeId} /> : null}
+            {me.roleCode === "student" && mods.has("ai_tutor") ? <TutorChat schoolId={id} nodeId={nodeId} /> : null}
           </div>
         </div>
       )}

@@ -42,6 +42,13 @@ Cara melanjutkan di sesi baru: baca `CLAUDE.md`, berkas ini, lalu kerjakan "Beri
 - Tutor AI (BYOK): `school_ai_settings` (kunci terenkripsi AES-256-GCM di aplikasi, rahasia `AI_KEY_ENCRYPTION_SECRET` sudah di Vercel sensitive), `ai_usage`, RPC `reserve_ai_call` (keanggotaan + jatah harian di server, mode school/platform/limit/none). Sekolah demo (`schools.is_demo`) boleh memakai kunci platform (data sintetis); sekolah lain wajib kunci sendiri. Halaman `/ai` untuk pemilik (uji kunci sebelum simpan, kunci tak pernah ditampilkan), chat tutor Sokratik di halaman pelajaran siswa. Tes SQL 11/11, Vitest crypto 6, Playwright 5.
 - Belum: analitik (BYOK), analitik, ringkasan orang tua, liga/pencapaian.
 
+## Ekosistem sekolah (modul per paket)
+Permintaan pemilik: situs harus lengkap untuk siswa, guru, dan sekolah; modul (rapor, absensi, administrasi, dst.) muncul sesuai paket.
+- Mekanisme (data, bukan kode): tabel `modules`, `plan_modules`, `schools.plan_code`, penimpaan `school_modules` (Enterprise kustom), fungsi `app_private.module_enabled`; RLS tabel modul ikut memeriksa modul aktif; navigasi dan halaman memakai `lib/modules.ts` (`requireModule`). Halaman pemilik `/paket` menampilkan paket dan status tiap modul (aktif / tidak di paket / segera). Penggantian paket lewat tim dev (Enterprise = hubungi tim dev), bukan swalayan.
+- Katalog: Belajar, Tutor AI, Analitik, Absensi, Nilai dan rapor, Jadwal, Administrasi (data induk, surat), Pengumuman, Portal orang tua, Keuangan, Integrasi. Starter: belajar, absensi, pengumuman. Sekolah: + tutor AI, analitik, nilai dan rapor, jadwal, administrasi, portal orang tua. Enterprise: semua + keuangan + integrasi.
+- Selesai: absensi harian (`attendance_records`; hanya guru penugasan/wali kelas/pengelola yang boleh mencatat; siswa hanya membaca miliknya; rekap bulanan; tes SQL 16/16; Playwright 8/8).
+- Urutan berikutnya (status modul di tabel `modules` diubah ke `tersedia` saat selesai): nilai dan rapor (penilaian berbobot per mapel dan semester, rapor cetak) → pengumuman → jadwal → administrasi (data induk siswa/guru, surat) → portal orang tua → analitik → liga dan pencapaian → keuangan.
+
 ## Berikutnya
 0. Prioritas langsung: M2 (graf kompetensi, skill tree dengan prasyarat, kuis dinilai di server, XP/streak/level di server dengan satu konfigurasi, dashboard guru dengan intervensi).
 1. (selesai) integrasi Supabase Auth di web (`@supabase/ssr`; di Next 16 pakai `proxy.ts`, bukan middleware), halaman login/daftar, wizard pembuatan sekolah lewat RPC `create_school`, landing dengan paket dan formulir enterprise (tabel `leads`).

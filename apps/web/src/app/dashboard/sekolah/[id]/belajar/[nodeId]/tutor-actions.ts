@@ -2,6 +2,7 @@
 
 import { decryptSecret } from "@/lib/crypto";
 import { generateReply, generateWithPlatform, tutorSystemPrompt, type ChatMsg, type Provider } from "@/lib/ai";
+import { enabledModuleCodes } from "@/lib/modules";
 import { getSchoolContext } from "@/lib/school";
 
 type Reserve = { mode: "none" | "limit" | "platform" | "school"; provider?: Provider; model?: string; key_ciphertext?: string; remaining?: number; limit?: number };
@@ -12,6 +13,7 @@ export async function askTutor(
   history: ChatMsg[],
 ): Promise<{ ok: true; reply: string; remaining: number | null } | { ok: false; error: string }> {
   const { supabase } = await getSchoolContext(schoolId);
+  if (!(await enabledModuleCodes(supabase, schoolId)).has("ai_tutor")) return { ok: false, error: "Tutor AI tidak termasuk paket sekolah ini." };
   const msgs = history
     .filter((m) => (m.role === "user" || m.role === "assistant") && typeof m.content === "string" && m.content.trim())
     .slice(-8)

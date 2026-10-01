@@ -1,20 +1,27 @@
 import Link from "next/link";
+import { enabledModuleCodes } from "@/lib/modules";
+import { createClient } from "@/lib/supabase/server";
 
-const ITEMS = [
+// `module`: item hanya tampil bila modul itu aktif di paket sekolah.
+const ITEMS: { slug: string; label: string; module?: string }[] = [
   { slug: "", label: "Ringkasan" },
   { slug: "rombel", label: "Rombel" },
   { slug: "anggota", label: "Anggota" },
   { slug: "mapel", label: "Mata pelajaran" },
-  { slug: "materi", label: "Materi" },
-  { slug: "pantau", label: "Pantau belajar" },
-  { slug: "ai", label: "Tutor AI" },
+  { slug: "materi", label: "Materi", module: "learning" },
+  { slug: "pantau", label: "Pantau belajar", module: "learning" },
+  { slug: "absensi", label: "Absensi", module: "attendance" },
+  { slug: "ai", label: "Tutor AI", module: "ai_tutor" },
+  { slug: "paket", label: "Paket dan modul" },
 ];
 
-export function SchoolNav({ schoolId, active }: { schoolId: string; active: string }) {
+export async function SchoolNav({ schoolId, active }: { schoolId: string; active: string }) {
+  const supabase = await createClient();
+  const on = await enabledModuleCodes(supabase, schoolId);
   return (
     <nav aria-label="Pengelolaan sekolah" className="mb-8 overflow-x-auto border-b border-line">
       <ul className="flex min-w-max gap-1">
-        {ITEMS.map((i) => {
+        {ITEMS.filter((i) => !i.module || on.has(i.module)).map((i) => {
           const current = i.slug === active;
           return (
             <li key={i.slug}>
