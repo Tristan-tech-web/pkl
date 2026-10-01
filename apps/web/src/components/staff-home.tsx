@@ -32,6 +32,7 @@ async function loadToday(supabase: Supa, schoolId: string, memberId: string, tea
   const wib = new Date(Date.now() + 7 * 3600_000);
   const hour = wib.getUTCHours();
   const weekday = ((wib.getUTCDay() + 6) % 7) + 1;
+  await supabase.rpc("integrity_expire_held", { p_school: schoolId });
   const [{ data: slots }, { count: cases }, { count: review }, { count: drafts }] = await Promise.all([
     teacher ? supabase.rpc("schedule_for", { p_school: schoolId, p_class: null, p_teacher: memberId }) : Promise.resolve({ data: [] }),
     supabase.from("integrity_cases").select("id", { count: "exact", head: true }).eq("school_id", schoolId).in("status", ["ditahan", "dibatalkan", "banding"]),

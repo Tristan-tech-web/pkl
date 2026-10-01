@@ -22,6 +22,7 @@ export default async function IntegrityPage({ params, searchParams }: { params: 
   await requireModule(supabase, id, "learning");
   const canManage = MANAGEMENT_ROLES.has(me.roleCode);
   const open = sp.s !== "selesai";
+  await supabase.rpc("integrity_expire_held", { p_school: id });
   const [{ data: pol }, { data: cases }, { data: exempt }, { data: students }] = await Promise.all([
     supabase.from("school_integrity").select("*").eq("school_id", id).maybeSingle(),
     supabase.from("integrity_cases").select("id,score,level,signals,xp_reversed,xp_penalty,status,appeal_text,note,created_at,school_members(display_name)").eq("school_id", id)
