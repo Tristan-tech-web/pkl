@@ -1,7 +1,9 @@
 import { Button, ErrorNote, InfoNote, Input, Label, Select } from "@/components/ui";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { removeMyAiKey, saveMyAiKey } from "./actions";
+import { McpConnect } from "@/components/mcp-connect";
+import { headers } from "next/headers";
+import { removeMyAiKey, revokeMcpToken, saveMyAiKey } from "./actions";
 
 export const metadata = { title: "AI saya · EduSmart" };
 
@@ -10,6 +12,11 @@ export default async function MyAiPage({ searchParams }: { searchParams: Promise
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/masuk");
+  const h = await headers();
+  const host = h.get("x-forwarded-host") ?? h.get("host") ?? "localhost:3000";
+  const proto = h.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
+  const endpoint = `${proto}://${host}/api/mcp`;
+  const { data: tokens } = await supabase.from("mcp_tokens").select("id,name,token_hint,can_write,created_at,last_used_at,expires_at,revoked_at").eq("user_id", user.id).is("revoked_at", null).order("created_at", { ascending: false });
   const { data: cfg } = await supabase.from("user_ai_keys").select("provider,model,key_hint,updated_at").eq("user_id", user.id).maybeSingle();
   return (
     <>
@@ -43,6 +50,21 @@ export default async function MyAiPage({ searchParams }: { searchParams: Promise
           </div>
         </aside>
       </div>
+      <section className="mt-12" aria-labelledby="mcp-h">
+        <h2 id="mcp-h" className="font-display text-2xl font-bold tracking-tight">Sambungkan AI lewat MCP</h2>
+        <p className="mt-1 max-w-2xl text-ink-soft">Hubungkan Claude Code, Cowork, atau AI lain yang mendukung MCP ke EduSmart. Guru bisa bertanya “hari ini aku mengajar apa?”, siswa “hari ini ada apa?”, dan pengelola bisa meminta AI memasukkan berkas besar. Akses AI selalu sebatas hak peran Anda.</p>
+        <div className="mt-4"><McpConnect endpoint={endpoint} /></div>
+        <h3 className="mt-8 font-semibold">Token aktif</h3>
+        <ul className="mt-2 divide-y divide-line rounded-[6px] border border-line bg-card">
+          {(tokens ?? []).length === 0 ? <li className="p-3 text-sm text-ink-soft">Belum ada token.</li> : null}
+          {(tokens ?? []).map((t) => (
+            <li key={t.id as string} className="flex flex-wrap items-center justify-between gap-2 p-3 text-sm">
+              <span><span className="font-semibold">{t.name as string}</span> <span className="num text-ink-soft">{t.token_hint as string}</span> · {t.can_write ? "baca + unggah" : "baca saja"} · {t.last_used_at ? `terakhir dipakai ${new Date(t.last_used_at as string).toLocaleDateString("id-ID")}` : "belum dipakai"}</span>
+              <form action={revokeMcpToken.bind(null, t.id as string)}><Button type="submit" variant="ghost">Cabut</Button></form>
+            </li>
+          ))}
+        </ul>
+      </section>
     </>
   );
 }

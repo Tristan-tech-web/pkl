@@ -4,6 +4,8 @@ import { readPublicEnv } from "@/lib/env";
 
 // Menyegarkan sesi Supabase di setiap permintaan dan melindungi /dashboard.
 export async function proxy(request: NextRequest) {
+  // API MCP memakai token pribadi, bukan sesi cookie.
+  if (request.nextUrl.pathname.startsWith("/api/mcp")) return NextResponse.next();
   let response = NextResponse.next({ request });
   const { supabaseUrl, supabasePublishableKey } = readPublicEnv();
 

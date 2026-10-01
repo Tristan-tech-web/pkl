@@ -1,5 +1,7 @@
 "use server";
 
+import { randomBytes } from "node:crypto";
+import { createHash } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { DEFAULT_MODELS, generateReply, type Provider } from "@/lib/ai";
@@ -44,4 +46,35 @@ export async function removeMyAiKey() {
   await supabase.from("user_ai_keys").delete().eq("user_id", user.id);
   revalidatePath(page);
   redirect(`${page}?info=${q("Kunci dihapus.")}`);
+}
+
+export type TokenState = { token?: string; error?: string };
+
+export async function createMcpToken(_prev: TokenState, formData: FormData): Promise<TokenState> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect("/masuk");
+  const name = str(formData, "name").slice(0, 60);
+  if (name.length < 2) return { error: "Beri nama token (mis. Claude di laptop)." };
+  const days = Math.min(365, Math.max(1, Number(str(formData, "days")) || 90));
+  const canWrite = formData.get("can_write") === "on";
+  const token = `esm_${randomBytes(32).toString("base64url")}`;
+  const { count } = await supabase.from("mcp_tokens").select("id", { count: "exact", head: true }).eq("user_id", user.id).is("revoked_at", null);
+  if ((count ?? 0) >= 10) return { error: "Maksimal 10 token aktif. Cabut yang tidak dipakai." };
+  const { error } = await supabase.from("mcp_tokens").insert({
+    user_id: user.id, name, token_hash: createHash("sha256").update(token).digest("hex"), token_hint: `…${token.slice(-4)}`,
+    can_write: canWrite, expires_at: new Date(Date.now() + days * 86400000).toISOString(),
+  });
+  if (error) return { error: "Token belum bisa dibuat." };
+  revalidatePath(page);
+  return { token };
+}
+
+export async function revokeMcpToken(id: string) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect("/masuk");
+  await supabase.from("mcp_tokens").update({ revoked_at: new Date().toISOString() }).eq("id", id).eq("user_id", user.id);
+  revalidatePath(page);
+  redirect(`${page}?info=${q("Token dicabut.")}`);
 }
