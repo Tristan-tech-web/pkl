@@ -1,69 +1,167 @@
-import Image from "next/image";
+import { SiteHeader } from "@/components/site-header";
+import { Button, Card, Input, Label, LinkButton, Textarea } from "@/components/ui";
+import { submitLead } from "@/app/leads-actions";
+import { featureLabel, formatEntitlement } from "@/lib/format";
+import { createClient } from "@/lib/supabase/server";
 
-export default function Home() {
+type Plan = {
+  code: string;
+  name: string;
+  description: string | null;
+  is_enterprise: boolean;
+  sort: number;
+  plan_entitlements: { feature: string; enabled: boolean; limit_value: number | null }[];
+};
+
+const FEATURES = [
+  {
+    title: "Cocok untuk jenis sekolah apa pun",
+    body: "SD, MI, SMP, MTs, SMA, MA, SMK, SLB, kesetaraan, pesantren, atau bentuk kustom. Struktur disusun dari data, bukan dipaksa ke satu pola.",
+    status: "Tersedia",
+  },
+  {
+    title: "Kurikulum yang bisa Anda atur",
+    body: "Pilih paket kurikulum, mata pelajaran, program keahlian, dan kalender akademik sesuai kebutuhan sekolah.",
+    status: "Tersedia",
+  },
+  {
+    title: "Visualisasi untuk matematika, coding, dan lainnya",
+    body: "Modul interaktif yang bisa diaktifkan per mata pelajaran.",
+    status: "Segera hadir",
+  },
+  {
+    title: "Tutor AI opsional",
+    body: "Sekolah yang ingin memakai AI menyambungkan kunci API milik sendiri, jadi biaya dan data tetap di tangan sekolah.",
+    status: "Segera hadir",
+  },
+];
+
+const CONTACT_MESSAGES: Record<string, { text: string; tone: "ok" | "bad" }> = {
+  terkirim: { text: "Terima kasih. Tim kami akan menghubungi Anda.", tone: "ok" },
+  gagal: { text: "Pesan belum terkirim. Coba lagi sebentar lagi.", tone: "bad" },
+  "tidak-valid": { text: "Isi nama dan email yang valid.", tone: "bad" },
+};
+
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{ kontak?: string }>;
+}) {
+  const { kontak } = await searchParams;
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("plans")
+    .select("code,name,description,is_enterprise,sort,plan_entitlements(feature,enabled,limit_value)")
+    .order("sort");
+  const plans = (data ?? []) as Plan[];
+  const note = kontak ? CONTACT_MESSAGES[kontak] : undefined;
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
+    <>
+      <SiteHeader />
+      <main className="flex-1">
+        <section className="mx-auto w-full max-w-5xl px-4 py-16 sm:py-24">
+          <h1 className="max-w-3xl text-4xl font-semibold tracking-tight sm:text-5xl">
+            Satu platform untuk semua jenis sekolah
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="mt-5 max-w-2xl text-lg text-black/70 dark:text-white/70">
+            Atur kurikulum, mata pelajaran, dan struktur sekolah Anda sendiri, lalu belajar dan
+            mengajar dari satu tempat.
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <LinkButton href="/daftar">Mulai gratis</LinkButton>
+            <LinkButton href="#paket" variant="ghost">
+              Lihat paket
+            </LinkButton>
+          </div>
+        </section>
+
+        <section className="mx-auto w-full max-w-5xl px-4 pb-16">
+          <div className="grid gap-4 sm:grid-cols-2">
+            {FEATURES.map((f) => (
+              <Card key={f.title}>
+                <p className="mb-2 text-xs font-medium uppercase tracking-wide text-indigo-600 dark:text-indigo-400">
+                  {f.status}
+                </p>
+                <h2 className="text-lg font-semibold">{f.title}</h2>
+                <p className="mt-2 text-black/70 dark:text-white/70">{f.body}</p>
+              </Card>
+            ))}
+          </div>
+        </section>
+
+        <section id="paket" className="mx-auto w-full max-w-5xl px-4 pb-16">
+          <h2 className="text-2xl font-semibold">Paket</h2>
+          <p className="mt-1 text-sm text-black/60 dark:text-white/60">
+            Nama dan batas paket masih sementara; harga menyusul.
+          </p>
+          <div className="mt-6 grid gap-4 md:grid-cols-3">
+            {plans.map((plan) => (
+              <Card key={plan.code} className="flex flex-col">
+                <h3 className="text-lg font-semibold">{plan.name}</h3>
+                <p className="mt-1 text-sm text-black/65 dark:text-white/65">{plan.description}</p>
+                <dl className="mt-4 flex-1 space-y-2 text-sm">
+                  {plan.plan_entitlements.map((e) => (
+                    <div key={e.feature} className="flex justify-between gap-3">
+                      <dt className="text-black/65 dark:text-white/65">{featureLabel(e.feature)}</dt>
+                      <dd className="font-medium">{formatEntitlement(e.enabled, e.limit_value)}</dd>
+                    </div>
+                  ))}
+                </dl>
+                <div className="mt-5">
+                  {plan.is_enterprise ? (
+                    <LinkButton href="#kontak" variant="ghost">
+                      Hubungi tim dev
+                    </LinkButton>
+                  ) : (
+                    <LinkButton href="/daftar">Pilih {plan.name}</LinkButton>
+                  )}
+                </div>
+              </Card>
+            ))}
+          </div>
+        </section>
+
+        <section id="kontak" className="mx-auto w-full max-w-5xl px-4 pb-24">
+          <Card className="max-w-xl">
+            <h2 className="text-xl font-semibold">Butuh konfigurasi khusus?</h2>
+            <p className="mt-1 text-sm text-black/65 dark:text-white/65">
+              Ceritakan kebutuhan sekolah Anda untuk paket Enterprise.
+            </p>
+            {note ? (
+              <p
+                role="status"
+                className={`mt-4 rounded-lg px-3 py-2 text-sm ${
+                  note.tone === "ok"
+                    ? "bg-emerald-50 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200"
+                    : "bg-red-50 text-red-800 dark:bg-red-950 dark:text-red-200"
+                }`}
+              >
+                {note.text}
+              </p>
+            ) : null}
+            <form action={submitLead} className="mt-4 flex flex-col gap-4">
+              <label>
+                <Label>Nama</Label>
+                <Input name="name" required minLength={2} maxLength={120} autoComplete="name" />
+              </label>
+              <label>
+                <Label>Email</Label>
+                <Input name="email" type="email" required maxLength={200} autoComplete="email" />
+              </label>
+              <label>
+                <Label hint="opsional">Nama sekolah</Label>
+                <Input name="school_name" maxLength={200} />
+              </label>
+              <label>
+                <Label hint="opsional">Kebutuhan</Label>
+                <Textarea name="message" rows={4} maxLength={2000} />
+              </label>
+              <Button type="submit">Kirim</Button>
+            </form>
+          </Card>
+        </section>
       </main>
-    </div>
+    </>
   );
 }

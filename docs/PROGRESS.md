@@ -9,7 +9,7 @@ Cara melanjutkan di sesi baru: baca `CLAUDE.md`, berkas ini, lalu kerjakan "Beri
 
 ## Status milestone
 - **M0 fondasi**: kerangka monorepo, CI, pemindai rahasia, hook sesi, CLAUDE.md. ✅ (lint, typecheck, test, build hijau)
-- **M1 model sekolah + auth + RLS**: skema inti sudah ter-apply ke Supabase dev (`supabase/migrations/`, 4 migrasi): bentuk pendidikan, paket kurikulum, sekolah, program, mapel, track (`ltree`), kalender, rombel, penugasan, peran berbasis kapabilitas, paket/entitlement/langganan, leads. RLS aktif di semua tabel. Tes isolasi `supabase/tests/rls_isolation.test.sql`: **28/28 lulus** (dijalankan via execute_sql; transaksi selalu dibatalkan). Advisor security: hanya 1 peringatan yang disengaja (`create_school` SECURITY DEFINER). Belum: Supabase Auth di aplikasi web dan wizard sekolah.
+- **M1 model sekolah + auth + RLS**: skema inti sudah ter-apply ke Supabase dev (`supabase/migrations/`, 4 migrasi): bentuk pendidikan, paket kurikulum, sekolah, program, mapel, track (`ltree`), kalender, rombel, penugasan, peran berbasis kapabilitas, paket/entitlement/langganan, leads. RLS aktif di semua tabel. Tes isolasi `supabase/tests/rls_isolation.test.sql`: **28/28 lulus** (dijalankan via execute_sql; transaksi selalu dibatalkan). Advisor security: hanya 1 peringatan yang disengaja (`create_school` SECURITY DEFINER). Aplikasi web: landing dengan paket dari DB + formulir enterprise (`leads`), masuk/daftar (Supabase Auth via `@supabase/ssr`, `proxy.ts`), dashboard, wizard `Buat sekolah` (RPC `create_school`), detail sekolah. Diuji e2e dengan Chromium (formulir kontak, penjagaan `/dashboard`, galat login). Belum teruji: daftar+masuk sungguhan (butuh email konfirmasi/pengaturan Auth), editor program/mapel/track.
 - M2–M7: belum.
 
 ## Berikutnya
