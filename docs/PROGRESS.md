@@ -12,8 +12,15 @@ Cara melanjutkan di sesi baru: baca `CLAUDE.md`, berkas ini, lalu kerjakan "Beri
 - **M1 model sekolah + auth + RLS**: skema inti sudah ter-apply ke Supabase dev (`supabase/migrations/`, 4 migrasi): bentuk pendidikan, paket kurikulum, sekolah, program, mapel, track (`ltree`), kalender, rombel, penugasan, peran berbasis kapabilitas, paket/entitlement/langganan, leads. RLS aktif di semua tabel. Tes isolasi `supabase/tests/rls_isolation.test.sql`: **28/28 lulus** (dijalankan via execute_sql; transaksi selalu dibatalkan). Advisor security: hanya 1 peringatan yang disengaja (`create_school` SECURITY DEFINER). Aplikasi web: landing dengan paket dari DB + formulir enterprise (`leads`), masuk/daftar (Supabase Auth via `@supabase/ssr`, `proxy.ts`), dashboard, wizard `Buat sekolah` (RPC `create_school`), detail sekolah. Diuji e2e dengan Chromium (formulir kontak, penjagaan `/dashboard`, galat login). Belum teruji: daftar+masuk sungguhan (butuh email konfirmasi/pengaturan Auth), editor program/mapel/track.
 - M2–M7: belum.
 
+## Hasil uji pengalaman (sesi ini)
+- Akun demo sintetis ada di proyek dev (kepala sekolah, guru, siswa pada `SMK Nusantara Contoh`); kata sandi hanya di scratchpad sesi, bukan di repo. Pembuatannya: `supabase/seed/demo.sql` belum disimpan, ulangi bila perlu.
+- Tampilan per peran sudah ada (pemilik: ringkasan dan struktur; guru: kelas dan siswa; siswa: kelas dan mata pelajaran). Uji Chromium 20/20 lulus, termasuk bahwa siswa tidak melihat nama guru dan kepala sekolah.
+- Kekurangan yang ditemukan: pemilik belum bisa melakukan aksi apa pun (tambah rombel, undang anggota, atur mapel); siswa belum punya materi; navigasi antar sekolah hanya relevan untuk pengguna multi-sekolah (sudah diperbaiki).
+- Inventaris v1 dan peta fitur: `docs/research/R2-v1-inventory.md`.
+
 ## Berikutnya
-1. M1 sisa: integrasi Supabase Auth di web (`@supabase/ssr`; di Next 16 pakai `proxy.ts`, bukan middleware), halaman login/daftar, wizard pembuatan sekolah lewat RPC `create_school`, landing dengan paket dan formulir enterprise (tabel `leads`).
+0. Prioritas langsung: aksi pemilik (tambah/ubah rombel, undang guru dan siswa dengan peran, atur mapel dan penugasan), lalu M2 (graf kompetensi, skill tree dengan prasyarat, kuis dinilai di server, XP/streak/level di server dengan satu konfigurasi, dashboard guru dengan intervensi).
+1. (selesai) integrasi Supabase Auth di web (`@supabase/ssr`; di Next 16 pakai `proxy.ts`, bukan middleware), halaman login/daftar, wizard pembuatan sekolah lewat RPC `create_school`, landing dengan paket dan formulir enterprise (tabel `leads`).
 2. Pindahkan tes isolasi ke CI setelah secret Supabase tersedia di GitHub.
 3. Vercel: project `edusmart` sudah dibuat (root `apps/web`) dengan env sesuai matriks; `GEMINI_API_KEYS` bertipe sensitive. Cek deployment preview setelah push.
 

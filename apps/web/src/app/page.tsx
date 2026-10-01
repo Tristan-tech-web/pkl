@@ -73,7 +73,7 @@ export default async function Home({
               <p className="text-sm font-semibold uppercase tracking-[0.08em] text-ink-soft">
                 Untuk sekolah, madrasah, SLB, dan pesantren
               </p>
-              <h1 className="mt-4 font-display text-4xl font-extrabold leading-[1.08] tracking-tight sm:text-6xl">
+              <h1 className="mt-4 font-display text-4xl font-extrabold leading-[1.08] tracking-tight sm:text-6xl lg:text-[4.25rem]">
                 Satu platform untuk <span className="highlight">semua jenis sekolah</span>
               </h1>
               <p className="mt-5 max-w-xl text-lg text-ink-soft">

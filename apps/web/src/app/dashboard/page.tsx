@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Card, LinkButton } from "@/components/ui";
 import { authorityLabel } from "@/lib/format";
 import { createClient } from "@/lib/supabase/server";
@@ -21,6 +22,7 @@ export default async function DashboardPage() {
     .select("id,name,city,province,authority,school_programs(id,name)")
     .order("created_at", { ascending: false });
   const schools = (data ?? []) as SchoolRow[];
+  if (schools.length === 1) redirect(`/dashboard/sekolah/${schools[0].id}`);
 
   return (
     <>
