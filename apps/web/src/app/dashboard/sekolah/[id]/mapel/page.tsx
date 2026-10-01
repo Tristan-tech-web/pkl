@@ -78,7 +78,7 @@ export default async function MapelPage({
                       <span className="num">{s.code}</span> · {groupLabel(s.group_code)} · {first(s.school_programs)?.name}
                     </p>
                   </div>
-                  <span className="num text-sm text-ink-soft">{s.hours_per_week ?? "–"} jam</span>
+                  <span className="num shrink-0 whitespace-nowrap text-sm text-ink-soft">{s.hours_per_week ?? "–"} jam</span>
                 </li>
               ))}
             </ul>
