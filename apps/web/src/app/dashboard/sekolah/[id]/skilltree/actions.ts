@@ -96,7 +96,7 @@ export async function generateTreeChapter(schoolId: string, planId: string, cfg:
     const preps = specs.filter((s) => s.kind === "persiapan");
     let content;
     try {
-      const raw = await ai.run(TREE_SYSTEM, chapterPrompt({ subject, grade: p.grade as number, title: ch.title, summary: ch.summary, elements: ch.elements.map((e) => ({ name: e.name, method: e.method })), meetings, excerpt: excerptFor(String(f?.text_content ?? ""), ch.title, 4000) }), undefined, 16000);
+      const raw = await ai.run(TREE_SYSTEM, chapterPrompt({ subject, grade: p.grade as number, title: ch.title, summary: ch.summary, elements: ch.elements.map((e) => ({ name: e.name, method: e.method })), meetings, excerpt: excerptFor(String(f?.text_content ?? ""), ch.title, 4000) }), undefined, 7000);
       content = sanitizeChapterContent(parseJsonLoose(raw), preps.length);
     } catch (e) {
       console.error("generateTreeChapter gagal", e instanceof Error ? e.message.slice(0, 200) : "?");

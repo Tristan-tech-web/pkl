@@ -85,7 +85,7 @@ export type InlineFile = { mime: string; base64: string };
 export async function generateJsonText(args: { provider: Provider; model: string; apiKey: string; system: string; user: string; file?: InlineFile; maxTokens?: number }): Promise<string> {
   const { provider, model, apiKey, system, user, file } = args;
   const maxTokens = Math.min(Math.max(args.maxTokens ?? 4096, 256), 32000);
-  const timeoutMs = maxTokens > 8000 ? 100_000 : 25_000;
+  const timeoutMs = maxTokens >= 6000 ? 100_000 : 25_000;
   if (provider === "gemini") {
     const parts: unknown[] = [{ text: user }];
     if (file) parts.push({ inlineData: { mimeType: file.mime, data: file.base64 } });
