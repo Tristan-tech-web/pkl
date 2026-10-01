@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { submitQuizAction, type QuizResult } from "@/app/dashboard/sekolah/[id]/belajar/[nodeId]/kuis/actions";
 import { gsap, NO_REDUCE, useGSAP } from "@/lib/motion";
+import { IntegrityNotice } from "@/components/integrity-notice";
 import { RewardBurst } from "@/components/motion/reward-burst";
 import { XpCounter } from "@/components/motion/xp-counter";
 import { Button, ErrorNote, Input, LinkButton } from "@/components/ui";
@@ -31,6 +32,12 @@ export function QuizRunner({
   const [error, setError] = useState<string>();
   const [pending, start] = useTransition();
   const stage = useRef<HTMLDivElement>(null);
+  const blurs = useRef(0);
+  useEffect(() => {
+    const onHide = () => { if (document.visibilityState === "hidden") blurs.current += 1; };
+    document.addEventListener("visibilitychange", onHide);
+    return () => document.removeEventListener("visibilitychange", onHide);
+  }, []);
   const q = questions[i];
   const cur = answers[q?.id];
   const answered = q?.kind === "short" ? typeof cur === "string" && cur.trim() !== "" : q?.kind === "multi" ? Array.isArray(cur) && cur.length > 0 : typeof cur === "number";
@@ -70,7 +77,7 @@ export function QuizRunner({
   const submit = () =>
     start(async () => {
       setError(undefined);
-      const res = await submitQuizAction(schoolId, nodeId, answers);
+      const res = await submitQuizAction(schoolId, nodeId, answers, blurs.current);
       if (res.ok) setResult(res.data);
       else setError(res.error);
     });
@@ -100,6 +107,7 @@ export function QuizRunner({
             </span>
           ))}
         </div>
+        <IntegrityNotice schoolId={schoolId} integrity={result.integrity ?? null} />
         <p className="mt-3 text-lg font-semibold">
           {result.stars === 3 ? "Sempurna!" : result.stars === 2 ? "Bagus sekali." : result.stars === 1 ? "Lulus. Masih bisa lebih baik." : "Belum lulus. Baca materi lagi, lalu coba ulang."}
         </p>

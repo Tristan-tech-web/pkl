@@ -8,7 +8,7 @@ export const metadata = { title: "Integritas latihan · EduSmart" };
 
 const SIGNAL: Record<string, string> = {
   jawab_terlalu_cepat: "Banyak jawaban terlalu cepat", jawab_cepat: "Beberapa jawaban cepat", pindah_tab: "Pindah tab/aplikasi", waktu_seragam: "Waktu jawab nyaris sama (mirip skrip)",
-  benar_semua_terlalu_cepat: "Hampir semua benar dan terlalu cepat", kamera_tanpa_wajah: "Kamera: wajah tidak terlihat (detik)", kamera_banyak_wajah: "Kamera: lebih dari satu wajah",
+  benar_semua_terlalu_cepat: "Hampir semua benar dan terlalu cepat", kuis_terlalu_cepat: "Kuis dikirim terlalu cepat (detik)", sempurna_cepat: "Nilai sempurna dengan waktu sangat singkat (detik)", kamera_tanpa_wajah: "Kamera: wajah tidak terlihat (detik)", kamera_banyak_wajah: "Kamera: lebih dari satu wajah",
 };
 const STATUS: Record<string, string> = { ditahan: "XP ditahan", dibatalkan: "XP dibatalkan + denda", banding: "Murid banding", dibebaskan: "Dibebaskan", dikukuhkan: "Dikukuhkan" };
 type Sig = { type: string; value?: number; of?: number };

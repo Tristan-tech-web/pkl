@@ -23,6 +23,7 @@ export default async function QuizPage({ params }: { params: Promise<{ id: strin
     prompt: q.prompt as string,
     options: (q.options as string[]) ?? [],
   }));
+  if (me.roleCode === "student") await supabase.rpc("quiz_begin", { p_school: id, p_node: nodeId });
   if (questions.length === 0) redirect(`/dashboard/sekolah/${id}/belajar/${nodeId}`);
   return <QuizRunner schoolId={id} nodeId={nodeId} title={node.title} questions={questions} nextHref={`/dashboard/sekolah/${id}/belajar`} lessonHref={`/dashboard/sekolah/${id}/belajar/${nodeId}`} />;
 }
