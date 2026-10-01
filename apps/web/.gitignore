@@ -42,3 +42,4 @@ next-env.d.ts
 
 # contoh env boleh dilacak
 !.env.example
+public/mediapipe/wasm/

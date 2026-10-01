@@ -23,6 +23,7 @@ const GROUPS: { label: string; items: Item[] }[] = [
       { slug: "materi", label: "Materi", module: "learning" },
       { slug: "rencana", label: "Rencana belajar", module: "data_hub" },
       { slug: "bank", label: "Bank soal", module: "learning" },
+      { slug: "integritas", label: "Integritas", module: "learning" },
       { slug: "pantau", label: "Pantau", module: "learning" },
       { slug: "analitik", label: "Analitik", module: "analytics" },
       { slug: "liga", label: "Liga", module: "learning" },

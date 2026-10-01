@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { practiceAnswer, practiceNext, reportItem, type Answered, type Next, type PracticeItem } from "@/app/dashboard/sekolah/[id]/latihan/actions";
+import { appealCase, practiceAnswer, practiceNext, reportItem, type Answered, type Integrity, type Next, type PracticeItem } from "@/app/dashboard/sekolah/[id]/latihan/actions";
+import { FaceGuard, type FaceHandle } from "@/components/face-guard";
 
 const FLAG_TEXT: Record<string, string> = {
   terlalu_cepat: "Terlalu cepat, baca soalnya dulu ya. XP tidak dihitung.",
@@ -13,7 +14,7 @@ const FLAG_TEXT: Record<string, string> = {
 };
 const LETTER = ["A", "B", "C", "D", "E", "F"];
 
-export function PracticeRunner({ schoolId, sessionId, backHref, initial }: { schoolId: string; sessionId: string; backHref: string; initial: Next }) {
+export function PracticeRunner({ schoolId, sessionId, backHref, initial, camera }: { schoolId: string; sessionId: string; backHref: string; initial: Next; camera: boolean }) {
   const first = initial.ok ? initial : null;
   const [item, setItem] = useState<PracticeItem | null>(first?.item ?? null);
   const [index, setIndex] = useState(first?.index ?? 1);
@@ -26,6 +27,11 @@ export function PracticeRunner({ schoolId, sessionId, backHref, initial }: { sch
   const [busy, setBusy] = useState(false);
   const [reported, setReported] = useState(false);
   const blurs = useRef(0);
+  const face = useRef<FaceHandle | null>(null);
+  const [camOn, setCamOn] = useState<boolean | null>(camera ? null : false);
+  const [integrity, setIntegrity] = useState<Integrity>(initial.ok ? (initial.integrity ?? null) : null);
+  const [appeal, setAppeal] = useState("");
+  const [appealState, setAppealState] = useState<"" | "kirim" | "terkirim" | string>("");
 
   useEffect(() => {
     const onHide = () => { if (document.visibilityState === "hidden") blurs.current += 1; };
@@ -39,6 +45,7 @@ export function PracticeRunner({ schoolId, sessionId, backHref, initial }: { sch
     setBusy(false);
     if (!r.ok) { setError(r.error); return; }
     setTotal(r.total); setXp(r.xp);
+    if (r.integrity) setIntegrity(r.integrity);
     if (r.done) { setFinished(true); setItem(null); return; }
     setItem(r.item ?? null); setIndex(r.index ?? 1);
   }
@@ -46,26 +53,66 @@ export function PracticeRunner({ schoolId, sessionId, backHref, initial }: { sch
   async function choose(i: number) {
     if (!item || picked !== null || busy) return;
     setPicked(i); setBusy(true);
-    const r = await practiceAnswer(schoolId, sessionId, item.id, i, { blurs: blurs.current });
+    const r = await practiceAnswer(schoolId, sessionId, item.id, i, { blurs: blurs.current, cam: face.current?.drain() });
     setBusy(false);
     if (!r.ok) { setError(r.error); setPicked(null); return; }
-    setRes(r); setXp(r.sessionXp);
+    setRes(r); setXp(r.sessionXp); if (r.integrity) setIntegrity(r.integrity);
+  }
+
+  async function sendAppeal() {
+    if (!integrity?.case_id) return;
+    setAppealState("kirim");
+    const r = await appealCase(schoolId, integrity.case_id, appeal);
+    setAppealState(r.ok ? "terkirim" : (r.error ?? "Gagal"));
   }
 
   if (finished) {
+    const held = integrity && integrity.level !== "rendah";
     return (
       <div className="surface p-6 text-center">
-        <p className="text-5xl" aria-hidden>🎉</p>
+        <p className="text-5xl" aria-hidden>{held ? "🔎" : "🎉"}</p>
         <h2 className="mt-2 font-display text-2xl font-bold">Sesi selesai!</h2>
-        <p className="num mt-1 text-xl font-bold text-pen">+{xp} XP</p>
-        <p className="mt-1 text-ink-soft">Soal yang salah akan muncul lagi lebih cepat, yang benar diulang beberapa hari lagi. Itu cara otak mengingat lebih lama.</p>
+        {held ? (
+          <div className="mt-2 text-left">
+            <p className="font-bold">{integrity.level === "tinggi" ? "XP sesi ini dibatalkan." : "XP sesi ini sedang dicek guru."}</p>
+            <p className="mt-1 text-sm text-ink-soft">Pola jawabanmu terlihat tidak biasa (misalnya terlalu cepat atau sering pindah halaman). Ini hanya dugaan komputer, bukan tuduhan. Kalau kamu merasa keliru, tulis alasannya; guru akan memeriksa dan XP bisa dikembalikan penuh.</p>
+            {appealState === "terkirim" ? <p className="mt-3 rounded-box border border-ok p-3 text-sm font-semibold">Banding terkirim. Guru akan memeriksanya.</p> : (
+              <div className="mt-3">
+                <label className="block text-sm font-semibold" htmlFor="appeal">Alasan banding</label>
+                <textarea id="appeal" rows={3} value={appeal} onChange={(e) => setAppeal(e.target.value)} className="field mt-1 w-full" placeholder="Contoh: soal pertama mudah, saya sudah hafal materinya." />
+                {appealState && appealState !== "kirim" ? <p role="alert" className="mt-1 text-sm text-bad">{appealState}</p> : null}
+                <button type="button" onClick={sendAppeal} disabled={appealState === "kirim"} className="btn-solid mt-2 inline-flex min-h-11 items-center rounded-box px-5 font-bold">Kirim banding</button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <>
+            <p className="num mt-1 text-xl font-bold text-pen">+{xp} XP</p>
+            <p className="mt-1 text-ink-soft">Soal yang salah akan muncul lagi lebih cepat, yang benar diulang beberapa hari lagi. Itu cara otak mengingat lebih lama.</p>
+          </>
+        )}
         <div className="mt-4 flex flex-wrap justify-center gap-3"><Link href={backHref} className="btn-solid inline-flex min-h-11 items-center rounded-box px-5 font-bold">Pilih latihan lain</Link></div>
+      </div>
+    );
+  }
+
+  if (camOn === null) {
+    return (
+      <div className="surface p-5">
+        <h2 className="font-display text-xl font-bold">Latihan dengan kamera?</h2>
+        <p className="mt-2 text-sm">Sekolahmu mengizinkan kamera sebagai pengaman supaya latihan adil. Kamera menyala hanya selama sesi ini. <strong>Tidak ada gambar atau video yang dikirim atau disimpan</strong>; komputermu hanya menghitung apakah wajah terlihat. Kamera tidak pernah menjadi satu-satunya alasan XP dikurangi.</p>
+        <p className="mt-2 text-sm text-ink-soft">Kamu boleh menolak dan tetap berlatih tanpa kamera.</p>
+        <div className="mt-4 flex flex-wrap gap-3">
+          <button type="button" onClick={() => setCamOn(true)} className="btn-solid inline-flex min-h-11 items-center rounded-box px-5 font-bold">Pakai kamera</button>
+          <button type="button" onClick={() => setCamOn(false)} className="btn-ghost inline-flex min-h-11 items-center rounded-box px-5 font-bold">Tanpa kamera</button>
+        </div>
       </div>
     );
   }
 
   return (
     <div>
+      {camOn ? <FaceGuard handleRef={face} /> : null}
       <div className="flex items-center justify-between text-sm font-semibold"><span className="num">Soal {index} dari {total}</span><span className="num text-pen">+{xp} XP</span></div>
       <div className="mt-2 h-3 overflow-hidden rounded-full bg-line" role="progressbar" aria-valuenow={index - 1} aria-valuemin={0} aria-valuemax={total} aria-label="Kemajuan sesi">
         <div className="h-full bg-pen transition-[width] duration-300" style={{ width: `${((index - 1 + (res ? 1 : 0)) / total) * 100}%` }} />
