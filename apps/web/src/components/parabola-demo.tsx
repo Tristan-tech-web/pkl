@@ -57,7 +57,7 @@ function Slider({
   );
 }
 
-export function ParabolaDemo() {
+export function ParabolaDemo({ hero = true }: { hero?: boolean }) {
   const uid = useId();
   const [a, setA] = useState(1);
   const [b, setB] = useState(-2);
@@ -184,7 +184,7 @@ export function ParabolaDemo() {
         : `akar x = ${formatNumber(r[0])} dan ${formatNumber(r[1])}`;
 
   return (
-    <figure ref={figure} data-hero="card" className="hero-item rounded-[6px] border border-line bg-card">
+    <figure ref={figure} {...(hero ? { "data-hero": "card" } : {})} className={`${hero ? "hero-item " : ""}rounded-[6px] border border-line bg-card`}>
       <figcaption className="border-b border-line px-4 py-3">
         <p className="text-xs font-semibold uppercase tracking-[0.08em] text-ink-soft">
           Contoh modul visual · Matematika, fungsi kuadrat

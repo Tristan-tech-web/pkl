@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { Card } from "@/components/ui";
 import { SchoolNav } from "@/components/school-nav";
+import { StudentStats } from "@/components/student-stats";
+import { loadMap, loadStats } from "@/lib/learning";
 import { createClient } from "@/lib/supabase/server";
 
 type Supa = Awaited<ReturnType<typeof createClient>>;
@@ -109,6 +111,16 @@ export async function TeacherView({ supabase, schoolId, me }: { supabase: Supa; 
       <p className="text-ink-soft">
         Kelas dan mata pelajaran yang Anda ajar tahun ini.
       </p>
+      <Link
+        href={`/dashboard/sekolah/${schoolId}/pantau`}
+        className="press mt-4 flex items-center justify-between gap-3 rounded-[6px] border-2 border-pen bg-card p-4"
+      >
+        <span>
+          <span className="block text-xs font-semibold uppercase tracking-[0.08em] text-pen">Pantau belajar</span>
+          <span className="block text-lg font-bold">Progres siswa, siswa berisiko, dan tindak lanjut</span>
+        </span>
+        <span aria-hidden="true" className="text-2xl text-pen">→</span>
+      </Link>
       {byClass.size === 0 ? (
         <div className="mt-6">
           <Empty
@@ -188,15 +200,38 @@ export async function StudentView({ supabase, schoolId, me }: { supabase: Supa; 
               ))}
             </ul>
           )}
-          <div className="mt-8">
-            <Empty
-              title="Materi dan latihan belum tersedia"
-              body="Guru sedang menyiapkan pelajaran. Begitu ada, latihan dan peta belajarmu muncul di sini."
-            />
-          </div>
+          <LearnPanel supabase={supabase} schoolId={schoolId} memberId={me.memberId} />
         </section>
       ) : null}
     </>
+  );
+}
+
+async function LearnPanel({ supabase, schoolId, memberId }: { supabase: Supa; schoolId: string; memberId: string }) {
+  const [map, stats] = await Promise.all([loadMap(supabase, schoolId, memberId), loadStats(supabase, schoolId, memberId)]);
+  const done = map.filter((n) => n.state === "selesai").length;
+  const next = map.find((n) => n.state === "tersedia");
+  return (
+    <div className="mt-8 space-y-4">
+      <StudentStats stats={stats} />
+      {map.length === 0 ? (
+        <Empty title="Materi belum tersedia" body="Guru sedang menyiapkan pelajaran. Begitu ada, peta belajarmu muncul di sini." />
+      ) : (
+        <Link
+          href={`/dashboard/sekolah/${schoolId}/belajar`}
+          className="press flex items-center justify-between gap-3 rounded-[6px] border-2 border-pen bg-card p-4"
+        >
+          <span>
+            <span className="block text-xs font-semibold uppercase tracking-[0.08em] text-pen">Peta belajar</span>
+            <span className="block text-lg font-bold">{next ? `Lanjut: ${next.title}` : "Lihat semua materi"}</span>
+            <span className="num block text-sm text-ink-soft">
+              {done} dari {map.length} materi selesai
+            </span>
+          </span>
+          <span aria-hidden="true" className="text-2xl text-pen">→</span>
+        </Link>
+      )}
+    </div>
   );
 }
 

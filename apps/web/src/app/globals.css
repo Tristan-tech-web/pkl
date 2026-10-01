@@ -12,6 +12,7 @@
   --on-pen: #ffffff;
   --margin: #d8433b;
   --hi: #ffe34d;
+  --star: #e0a100;
   --grid: #dce6ef;
   --line: #c7d3e0;
   --ok: #1f7a4d;
@@ -33,6 +34,7 @@
     --on-pen: #0b1b33;
     --margin: #ff8f85;
     --hi: #e9d96b;
+  --star: #f2cf4a;
     --grid: #1f342c;
     --line: #2c463c;
     --ok: #6fd3a0;
@@ -55,6 +57,7 @@
   --on-pen: #0b1b33;
   --margin: #ff8f85;
   --hi: #e9d96b;
+  --star: #f2cf4a;
   --grid: #1f342c;
   --line: #2c463c;
   --ok: #6fd3a0;

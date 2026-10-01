@@ -33,6 +33,13 @@ Cara melanjutkan di sesi baru: baca `CLAUDE.md`, berkas ini, lalu kerjakan "Beri
 - Lapis 2 (koreografi kode, GSAP, grid 60 fps; spesifikasi di `docs/design/motion-spec.md`): kata judul mendarat berurutan dengan antisipasi dan overshoot, stabilo menyapu setelah kata terakhir, pena menulis kurva parabola dengan blur sebanding kecepatan, penanda squash/stretch + riak, slider `a` menyapu sebagai petunjuk, dan panggung scroll "Satu kurva, tiga mata pelajaran" (`story-stage.tsx`, di-scrub ScrollTrigger; label jujur bahwa baru Matematika yang berjalan).
 - Diuji lewat "playblast" (`NEXT_PUBLIC_MOTION_DEBUG=1` membuka `window.__gsap`; timeline dijeda lalu di-seek per bingkai, contact sheet ditinjau). Temuan: properti CSS `transform` awal bentrok dengan `yPercent` GSAP (kata tertahan turun); diganti properti `translate`. Mode kurangi gerak: panggung statis, 0 animasi; HP 390px: tanpa scroll horizontal, simbol dekoratif disembunyikan.
 
+## M2 UI (belajar dan pantau)
+- Seed demo `supabase/seed/fungsi_kuadrat_demo.sql`: 5 materi Fungsi Kuadrat (Matematika kelas 10), prasyarat bercabang, 16 soal beserta kunci terpisah.
+- Siswa: statistik level/XP/beruntun, peta belajar bertingkat (terkunci/tersedia/selesai + bintang), pelajaran (markdown mini + grafik parabola), kuis satu soal per layar, penilaian lewat RPC `submit_quiz`, hasil dengan bintang menghentak, hitung naik XP, konfeti kanvas, pembahasan.
+- Guru/manajemen: `/pantau` dengan progres per siswa, tanda risiko (belum mulai, tidak aktif 7 hari, materi belum lulus, rata-rata < 60), pembuatan dan pembaruan tindak lanjut.
+- Diuji Playwright (siswa desktop+HP, guru): 14 pemeriksaan lulus; siswa tidak bisa membuka `/pantau` (404); ulang kuis tidak memberi XP ganda.
+- Belum: penulisan konten oleh guru, tutor AI (BYOK), analitik, ringkasan orang tua, liga/pencapaian.
+
 ## Berikutnya
 0. Prioritas langsung: M2 (graf kompetensi, skill tree dengan prasyarat, kuis dinilai di server, XP/streak/level di server dengan satu konfigurasi, dashboard guru dengan intervensi).
 1. (selesai) integrasi Supabase Auth di web (`@supabase/ssr`; di Next 16 pakai `proxy.ts`, bukan middleware), halaman login/daftar, wizard pembuatan sekolah lewat RPC `create_school`, landing dengan paket dan formulir enterprise (tabel `leads`).

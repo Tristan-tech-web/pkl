@@ -5,6 +5,7 @@ const ITEMS = [
   { slug: "rombel", label: "Rombel" },
   { slug: "anggota", label: "Anggota" },
   { slug: "mapel", label: "Mata pelajaran" },
+  { slug: "pantau", label: "Pantau belajar" },
 ];
 
 export function SchoolNav({ schoolId, active }: { schoolId: string; active: string }) {
