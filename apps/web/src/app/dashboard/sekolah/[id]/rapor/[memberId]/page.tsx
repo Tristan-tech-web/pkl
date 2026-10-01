@@ -1,10 +1,12 @@
 import { notFound } from "next/navigation";
 import { PrintButton } from "@/components/print-button";
-import { Button, ErrorNote, InfoNote, Label, Select, Textarea } from "@/components/ui";
-import { currentTerm, finalGrade, predicate } from "@/lib/grades";
+import { ReportSheet, type Extras } from "@/components/report-sheet";
+import { Button, ErrorNote, InfoNote, Input, Label, Select, Textarea } from "@/components/ui";
+import { currentTerm, finalGrade } from "@/lib/grades";
 import { enabledModuleCodes, requireModule } from "@/lib/modules";
+import { DEFAULT_REPORT_CONFIG, sanitizeConfig } from "@/lib/report-config";
 import { first, getSchoolContext, MANAGEMENT_ROLES } from "@/lib/school";
-import { saveReportNote } from "../actions";
+import { saveExtras, saveReportNote } from "../actions";
 
 export const metadata = { title: "Rapor · EduSmart" };
 const today = () => new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Jakarta" }).format(new Date());
@@ -18,49 +20,48 @@ export default async function ReportCard({ params, searchParams }: { params: Pro
   const mods = await enabledModuleCodes(supabase, id);
 
   const { data: termRows } = await supabase.from("terms").select("id,name,starts_on,ends_on,academic_years(name)").eq("school_id", id).order("starts_on");
-  const terms = ((termRows ?? []) as unknown as { id: string; name: string; starts_on: string; ends_on: string; academic_years: One<{ name: string }> }[]);
+  const terms = (termRows ?? []) as unknown as { id: string; name: string; starts_on: string; ends_on: string; academic_years: One<{ name: string }> }[];
   const term = terms.find((t) => t.id === sp.term) ?? currentTerm(terms, today());
-  const { data: member } = await supabase.from("school_members").select("id,display_name,roles(code)").eq("id", memberId).eq("school_id", id).maybeSingle();
+  const { data: member } = await supabase.from("school_members").select("id,display_name").eq("id", memberId).eq("school_id", id).maybeSingle();
   if (!member || !term) notFound();
   if (me.roleCode === "student" && me.memberId !== memberId) notFound();
 
-  const [{ data: enr }, { data: school }, { data: gs }] = await Promise.all([
-    supabase.from("class_group_students").select("class_groups(id,name,grade,homeroom_member_id)").eq("school_id", id).eq("member_id", memberId).limit(1).maybeSingle(),
+  const [{ data: enr }, { data: school }, { data: gs }, { data: tpl }, { data: prof }] = await Promise.all([
+    supabase.from("class_group_students").select("class_groups(id,name,homeroom_member_id)").eq("school_id", id).eq("member_id", memberId).limit(1).maybeSingle(),
     supabase.from("schools").select("name,city,province").eq("id", id).maybeSingle(),
     supabase.from("gradebook_settings").select("pass_mark").eq("school_id", id).maybeSingle(),
+    supabase.from("report_templates").select("config").eq("school_id", id).eq("is_default", true).maybeSingle(),
+    mods.has("admin_records") ? supabase.from("member_profiles").select("nis,nisn").eq("member_id", memberId).maybeSingle() : Promise.resolve({ data: null }),
   ]);
-  const cg = first((enr?.class_groups ?? null) as One<{ id: string; name: string; grade: number; homeroom_member_id: string | null }>);
-  const { data: hr } = cg?.homeroom_member_id
-    ? await supabase.from("school_members").select("display_name").eq("id", cg.homeroom_member_id).maybeSingle()
-    : { data: null };
+  const cg = first((enr?.class_groups ?? null) as One<{ id: string; name: string; homeroom_member_id: string | null }>);
+  const { data: hr } = cg?.homeroom_member_id ? await supabase.from("school_members").select("display_name").eq("id", cg.homeroom_member_id).maybeSingle() : { data: null };
   const pass = (gs?.pass_mark as number | undefined) ?? 70;
+  const config = tpl?.config ? sanitizeConfig(tpl.config) : DEFAULT_REPORT_CONFIG;
 
-  const [subs, sc, att, note] = await Promise.all([
-    cg ? supabase.from("teaching_assignments").select("school_subjects(id,name,group_code)").eq("class_group_id", cg.id) : Promise.resolve({ data: [] }),
-    supabase.from("assessment_scores").select("score,assessments!inner(weight,max_score,term_id,school_subject_id)").eq("member_id", memberId).eq("assessments.term_id", term.id),
-    mods.has("attendance")
-      ? supabase.from("attendance_records").select("status").eq("member_id", memberId).gte("on_date", term.starts_on).lte("on_date", term.ends_on)
-      : Promise.resolve({ data: [] as { status: string }[] }),
+  const [subs, sc, att, note, ex] = await Promise.all([
+    cg ? supabase.from("teaching_assignments").select("school_subjects(id,name)").eq("class_group_id", cg.id) : Promise.resolve({ data: [] }),
+    supabase.from("assessment_scores").select("score,assessments!inner(title,weight,max_score,term_id,school_subject_id)").eq("member_id", memberId).eq("assessments.term_id", term.id),
+    mods.has("attendance") ? supabase.from("attendance_records").select("status").eq("member_id", memberId).gte("on_date", term.starts_on).lte("on_date", term.ends_on) : Promise.resolve({ data: [] as { status: string }[] }),
     supabase.from("report_notes").select("note").eq("term_id", term.id).eq("member_id", memberId).maybeSingle(),
+    supabase.from("report_extras").select("section,data").eq("term_id", term.id).eq("member_id", memberId),
   ]);
-  const subjects = new Map<string, string>();
-  for (const r of (subs.data ?? []) as unknown as { school_subjects: One<{ id: string; name: string }> }[]) {
-    const s = first(r.school_subjects);
-    if (s) subjects.set(s.id, s.name);
+  const names = new Map<string, string>();
+  for (const r of (subs.data ?? []) as unknown as { school_subjects: One<{ id: string; name: string }> }[]) { const s = first(r.school_subjects); if (s) names.set(s.id, s.name); }
+  const by = new Map<string, { weight: number; maxScore: number; score: number | null; title: string }[]>();
+  for (const r of (sc.data ?? []) as unknown as { score: number | null; assessments: One<{ title: string; weight: number; max_score: number; school_subject_id: string }> }[]) {
+    const a = first(r.assessments); if (!a) continue;
+    by.set(a.school_subject_id, [...(by.get(a.school_subject_id) ?? []), { weight: a.weight, maxScore: Number(a.max_score), score: r.score === null ? null : Number(r.score), title: a.title }]);
   }
-  const by = new Map<string, { weight: number; maxScore: number; score: number | null }[]>();
-  for (const r of (sc.data ?? []) as unknown as { score: number | null; assessments: One<{ weight: number; max_score: number; school_subject_id: string }> }[]) {
-    const a = first(r.assessments);
-    if (!a) continue;
-    by.set(a.school_subject_id, [...(by.get(a.school_subject_id) ?? []), { weight: a.weight, maxScore: Number(a.max_score), score: r.score === null ? null : Number(r.score) }]);
-  }
-  const rows = [...subjects.entries()].map(([sid, name]) => ({ name, grade: finalGrade(by.get(sid) ?? []) })).sort((a, b) => a.name.localeCompare(b.name));
+  const subjects = [...names.entries()].map(([sid, name]) => {
+    const list = by.get(sid) ?? [];
+    return { name, grade: finalGrade(list), items: list.filter((x) => x.score !== null).map((x) => ({ title: x.title, pct: Math.round(((x.score as number) / x.maxScore) * 1000) / 10 })) };
+  }).sort((a, b) => a.name.localeCompare(b.name));
   const counts: Record<string, number> = {};
   for (const r of att.data ?? []) counts[r.status as string] = (counts[r.status as string] ?? 0) + 1;
-  const homeroom = (hr?.display_name as string | null | undefined) ?? "";
+  const extras: Extras = {};
+  for (const r of (ex.data ?? []) as { section: string; data: unknown }[]) (extras as Record<string, unknown>)[r.section] = r.data;
   const canWrite = MANAGEMENT_ROLES.has(me.roleCode) || (cg?.homeroom_member_id != null && cg.homeroom_member_id === me.memberId);
   const year = first(term.academic_years)?.name ?? "";
-  const where = [school?.city, school?.province].filter(Boolean).join(", ");
 
   return (
     <article className="report">
@@ -75,64 +76,58 @@ export default async function ReportCard({ params, searchParams }: { params: Pro
         </div>
       </div>
       <div className="no-print space-y-3"><ErrorNote message={sp.error} /><InfoNote message={sp.info} /></div>
-
-      <div className="mt-4 rounded-[6px] border border-line bg-card p-6 sm:p-8">
-        <header className="border-b-2 border-ink pb-3 text-center">
-          <p className="font-display text-2xl font-bold">{school?.name as string}</p>
-          {where ? <p className="text-sm text-ink-soft">{where}</p> : null}
-          <h1 className="mt-2 font-display text-xl font-bold tracking-wide">LAPORAN HASIL BELAJAR (RAPOR)</h1>
-        </header>
-        <dl className="mt-4 grid gap-x-8 gap-y-1 sm:grid-cols-2">
-          <div className="flex gap-2"><dt className="w-28 text-ink-soft">Nama</dt><dd className="font-semibold">{member.display_name as string}</dd></div>
-          <div className="flex gap-2"><dt className="w-28 text-ink-soft">Kelas</dt><dd className="font-semibold">{cg?.name ?? "–"}</dd></div>
-          <div className="flex gap-2"><dt className="w-28 text-ink-soft">Semester</dt><dd className="font-semibold">{term.name}</dd></div>
-          <div className="flex gap-2"><dt className="w-28 text-ink-soft">Tahun ajaran</dt><dd className="font-semibold">{year}</dd></div>
-        </dl>
-
-        <h2 className="mt-6 font-display text-lg font-bold">A. Nilai mata pelajaran</h2>
-        <table className="mt-2 w-full text-left">
-          <thead><tr className="border-b-2 border-ink text-sm"><th className="w-10 py-2">No</th><th>Mata pelajaran</th><th className="num text-right">Nilai akhir</th><th className="px-3 text-center">Predikat</th><th className="text-right">Keterangan</th></tr></thead>
-          <tbody>
-            {rows.length === 0 ? <tr><td colSpan={5} className="py-4 text-ink-soft">Belum ada mata pelajaran untuk rombel ini.</td></tr> : rows.map((r, i) => (
-              <tr key={r.name} className="border-b border-line">
-                <td className="num py-2">{i + 1}</td><td className="font-semibold">{r.name}</td>
-                <td className="num text-right font-bold">{r.grade ?? "–"}</td><td className="px-3 text-center font-semibold">{predicate(r.grade)}</td>
-                <td className={`text-right text-sm ${r.grade !== null && r.grade < pass ? "font-semibold text-bad" : "text-ink-soft"}`}>{r.grade === null ? "Belum dinilai" : r.grade >= pass ? "Tuntas" : "Belum tuntas"}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <p className="mt-1 text-xs text-ink-soft">Nilai akhir = rata-rata berbobot penilaian semester ini. Ambang ketuntasan sekolah: {pass}. Predikat memakai skala bawaan EduSmart (A ≥ 90, B ≥ 80, C ≥ 70, D lainnya).</p>
-
-        {mods.has("attendance") ? (
-          <>
-            <h2 className="mt-6 font-display text-lg font-bold">B. Kehadiran</h2>
-            <table className="mt-2 w-full max-w-md text-left">
-              <tbody>
-                {[["hadir", "Hadir"], ["terlambat", "Terlambat"], ["izin", "Izin"], ["sakit", "Sakit"], ["alpa", "Tanpa keterangan"]].map(([k, l]) => (
-                  <tr key={k} className="border-b border-line"><td className="py-1.5">{l}</td><td className="num text-right font-semibold">{counts[k] ?? 0} hari</td></tr>
-                ))}
-              </tbody>
-            </table>
-          </>
-        ) : null}
-
-        <h2 className="mt-6 font-display text-lg font-bold">{mods.has("attendance") ? "C" : "B"}. Catatan wali kelas</h2>
-        <p className="mt-2 min-h-12 whitespace-pre-wrap rounded-[6px] border border-line p-3">{(note.data?.note as string | undefined) ?? "–"}</p>
-
-        <div className="mt-10 grid grid-cols-3 gap-4 text-center text-sm">
-          {[["Orang tua/wali", ""], ["Wali kelas", homeroom], ["Kepala sekolah", ""]].map(([role, name]) => (
-            <div key={role}><p>{role}</p><div className="h-16" /><p className="border-t border-ink pt-1 font-semibold">{name || " "}</p></div>
-          ))}
-        </div>
+      <div className="mt-4">
+        <ReportSheet
+          school={{ name: school?.name as string, city: (school?.city as string | null) ?? null, province: (school?.province as string | null) ?? null }}
+          student={{ name: (member.display_name as string) ?? "Siswa", className: cg?.name ?? null, nis: (prof?.nis as string | null) ?? null, nisn: (prof?.nisn as string | null) ?? null }}
+          termName={term.name} year={year} homeroom={(hr?.display_name as string | undefined) ?? ""} pass={pass}
+          subjects={subjects} attendance={mods.has("attendance") ? counts : null} note={(note.data?.note as string | undefined) ?? null} extras={extras} config={config}
+        />
       </div>
 
       {canWrite ? (
-        <form action={saveReportNote.bind(null, id, memberId, term.id)} className="no-print mt-6 rounded-[6px] border border-line bg-card p-4">
-          <label><Label>Catatan wali kelas</Label>
-            <Textarea name="note" rows={3} maxLength={1000} defaultValue={(note.data?.note as string | undefined) ?? ""} placeholder="Perkembangan, kekuatan, dan saran untuk semester berikutnya" /></label>
-          <div className="mt-3"><Button type="submit">Simpan catatan</Button></div>
-        </form>
+        <div className="no-print mt-6 space-y-4">
+          {config.sections.catatan ? (
+            <form action={saveReportNote.bind(null, id, memberId, term.id)} className="rounded-[6px] border border-line bg-card p-4">
+              <label><Label>Catatan wali kelas</Label><Textarea name="note" rows={3} maxLength={1000} defaultValue={(note.data?.note as string | undefined) ?? ""} placeholder="Perkembangan, kekuatan, dan saran untuk semester berikutnya" /></label>
+              <div className="mt-3"><Button type="submit">Simpan catatan</Button></div>
+            </form>
+          ) : null}
+          {config.sections.sikap ? (
+            <form action={saveExtras.bind(null, id, memberId, term.id, "sikap")} className="grid gap-3 rounded-[6px] border border-line bg-card p-4 sm:grid-cols-2">
+              <h2 className="font-display text-lg font-bold sm:col-span-2">Sikap</h2>
+              <label><Label>Spiritual</Label><Input name="spiritual" defaultValue={extras.sikap?.spiritual ?? ""} placeholder="mis. Baik" maxLength={30} /></label>
+              <label><Label>Sosial</Label><Input name="sosial" defaultValue={extras.sikap?.sosial ?? ""} placeholder="mis. Sangat baik" maxLength={30} /></label>
+              <label className="sm:col-span-2"><Label>Deskripsi</Label><Textarea name="deskripsi" rows={2} defaultValue={extras.sikap?.deskripsi ?? ""} maxLength={600} /></label>
+              <div className="sm:col-span-2"><Button type="submit">Simpan sikap</Button></div>
+            </form>
+          ) : null}
+          {config.sections.ekskul ? (
+            <form action={saveExtras.bind(null, id, memberId, term.id, "ekskul")} className="rounded-[6px] border border-line bg-card p-4">
+              <h2 className="font-display text-lg font-bold">Ekstrakurikuler</h2>
+              {[0, 1, 2, 3].map((i) => (
+                <div key={i} className="mt-2 grid gap-2 sm:grid-cols-[2fr_1fr_3fr]">
+                  <Input name={`nama_${i}`} defaultValue={extras.ekskul?.items?.[i]?.nama ?? ""} placeholder="Kegiatan" aria-label={`Kegiatan ${i + 1}`} />
+                  <Input name={`predikat_${i}`} defaultValue={extras.ekskul?.items?.[i]?.predikat ?? ""} placeholder="Predikat" aria-label={`Predikat ${i + 1}`} />
+                  <Input name={`keterangan_${i}`} defaultValue={extras.ekskul?.items?.[i]?.keterangan ?? ""} placeholder="Keterangan" aria-label={`Keterangan ${i + 1}`} />
+                </div>
+              ))}
+              <div className="mt-3"><Button type="submit">Simpan ekstrakurikuler</Button></div>
+            </form>
+          ) : null}
+          {config.sections.p5 ? (
+            <form action={saveExtras.bind(null, id, memberId, term.id, "p5")} className="rounded-[6px] border border-line bg-card p-4">
+              <label><Label hint="satu per baris: Tema: deskripsi capaian">Projek penguatan profil pelajar</Label><Textarea name="items" rows={3} defaultValue={(extras.p5?.items ?? []).map((x) => `${x.tema}: ${x.deskripsi ?? ""}`).join("\n")} /></label>
+              <div className="mt-3"><Button type="submit">Simpan projek</Button></div>
+            </form>
+          ) : null}
+          {config.sections.prestasi ? (
+            <form action={saveExtras.bind(null, id, memberId, term.id, "prestasi")} className="rounded-[6px] border border-line bg-card p-4">
+              <label><Label hint="satu per baris">Prestasi</Label><Textarea name="items" rows={3} defaultValue={(extras.prestasi?.items ?? []).join("\n")} /></label>
+              <div className="mt-3"><Button type="submit">Simpan prestasi</Button></div>
+            </form>
+          ) : null}
+        </div>
       ) : null}
     </article>
   );

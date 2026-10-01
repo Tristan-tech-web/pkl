@@ -87,3 +87,10 @@ Permintaan pemilik: situs harus lengkap untuk siswa, guru, dan sekolah; modul (r
 ## Catatan lingkungan
 - Docker tidak berjalan di sesi cloud; tes RLS memakai pgTAP langsung di proyek Supabase dev.
 - Berkas `test` di root berasal dari commit awal `main`, bukan dari pekerjaan ini.
+
+## Pusat Data fase 3: templat rapor (selesai)
+- Tabel `report_templates` (satu default per sekolah) dan `report_extras` (sikap, ekskul, prestasi, P5); RPC `child_report_extra` untuk orang tua. Tes pgTAP-style: `supabase/tests/report_templates.test.sql` (10 lulus).
+- Templat bisa diatur: judul, kelompok mapel, kolom, bagian, tanda tangan, skala predikat, catatan kaki; pratinjau langsung; usulan AI dari berkas kategori `rapor_contoh`.
+- `ReportSheet` dipakai rapor siswa, wali kelas, dan orang tua. Wali kelas mengisi sikap/ekskul/prestasi/P5.
+- Diuji Playwright (m15): pemilik buat templat, wali kelas isi, siswa (mobile gelap) dan orang tua melihat hasilnya.
+- Berikutnya (fase 2): impor keuangan dari berkas (SPP/LKS), kurikulum/buku → draf materi oleh AI, tutor memakai kutipan buku sekolah.
