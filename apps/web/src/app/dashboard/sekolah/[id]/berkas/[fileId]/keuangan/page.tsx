@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { SchoolNav } from "@/components/school-nav";
 import { Button, ErrorNote, Label, Select } from "@/components/ui";
-import { FIN_FIELDS, FIN_LABEL, guessFinMapping, loadStudents, matchStudents, normalizeFinance, type FinField } from "@/lib/finance-import";
+import { FIN_FIELDS, FIN_LABEL, guessFinMapping, loadRoster, loadStudents, matchRoster, matchStudents, normalizeFinance, type FinField } from "@/lib/finance-import";
 import { rupiah } from "@/lib/format";
 import { findHeaderRow } from "@/lib/intake";
 import { requireModule } from "@/lib/modules";
@@ -36,10 +36,14 @@ export default async function FinanceReview({ params, searchParams }: { params: 
   const rows = results.flatMap((r) => (r.row ? [r.row] : []));
   const bad = results.filter((r) => !r.row);
   const { students } = await loadStudents(supabase, id);
-  const { matched, unmatched } = matchStudents(rows, students);
-  const paidCount = matched.filter((m) => m.row.paid).length;
-  const total = matched.reduce((a, m) => a + m.row.amount, 0);
+  const { matched, unmatched: rest } = matchStudents(rows, students);
+  const { roster } = await loadRoster(supabase, id);
+  const { matched: viaRoster, unmatched } = matchRoster(rest, roster);
+  const all = [...matched.map((m) => m.row), ...viaRoster.map((m) => m.row)];
+  const paidCount = all.filter((r) => r.paid).length;
+  const total = all.reduce((a, r) => a + r.amount, 0);
   const memberOf = new Map(matched.map((m) => [m.row.line, m.memberId]));
+  const rosterOf = new Set(viaRoster.map((m) => m.row.line));
   const colOpt = header.map((c, i) => <option key={i} value={i}>{`${i + 1}. ${c || "(kosong)"}`}</option>);
 
   return (
@@ -47,7 +51,7 @@ export default async function FinanceReview({ params, searchParams }: { params: 
       <SchoolNav schoolId={id} active="berkas" />
       <a href={`/dashboard/sekolah/${id}/berkas`} className="text-sm font-semibold text-pen underline">← Berkas</a>
       <h1 className="mt-3 mb-1 font-display text-3xl font-bold tracking-tight">Tinjau tagihan</h1>
-      <p className="text-ink-soft">{f.name as string} · {parsed.rows.length} baris. Setiap baris dicocokkan ke siswa yang sudah punya akun (NIS, atau nama yang unik). Tidak ada data masuk sebelum Anda menekan Buat tagihan.</p>
+      <p className="text-ink-soft">{f.name as string} · {parsed.rows.length} baris. Setiap baris dicocokkan ke siswa berakun, lalu ke roster siswa yang belum bergabung (NIS, atau nama yang unik). Tidak ada data masuk sebelum Anda menekan Buat tagihan.</p>
       {sp.error ? <div className="mt-3"><ErrorNote message={sp.error} /></div> : null}
 
       <form method="get" className="mt-6 surface p-4">
@@ -66,12 +70,12 @@ export default async function FinanceReview({ params, searchParams }: { params: 
       <section className="mt-6" aria-label="Pratinjau">
         <h2 className="font-display text-lg font-bold">2. Pratinjau</h2>
         <p className="mt-1 flex flex-wrap gap-x-6 gap-y-1 text-sm">
-          <span className="font-semibold text-ok">{matched.length} cocok · {rupiah(total)}</span>
+          <span className="font-semibold text-ok">{matched.length + viaRoster.length} cocok · {rupiah(total)}{viaRoster.length ? ` (${viaRoster.length} untuk siswa yang belum bergabung)` : ""}</span>
           <span className="text-ink-soft">{paidCount} langsung dicatat lunas</span>
           <span className={unmatched.length ? "font-semibold text-bad" : "text-ink-soft"}>{unmatched.length} tidak cocok siswa</span>
           <span className={bad.length ? "font-semibold text-bad" : "text-ink-soft"}>{bad.length} bermasalah</span>
         </p>
-        {unmatched.length > 0 ? <p className="mt-2 rounded-box border border-warn/40 p-3 text-sm">Baris yang tidak cocok biasanya siswa yang belum bergabung. Impor roster siswa dan bagikan kodenya dulu. Setelah mereka masuk, unggah ulang berkas yang hanya berisi baris tersebut agar tagihan tidak ganda.</p> : null}
+        {unmatched.length > 0 ? <p className="mt-2 rounded-box border border-warn/40 p-3 text-sm">Baris yang tidak cocok dengan siswa berakun maupun roster akan dilewati. Impor roster siswa dulu (menu Berkas) supaya tagihannya ikut dibuat dan pindah otomatis ke akun saat siswa bergabung.</p> : null}
         <div className="mt-3 overflow-x-auto" tabIndex={0} role="region" aria-label="Pratinjau baris">
           <table className="w-full min-w-[40rem] text-left text-sm">
             <thead><tr className="border-b-2 border-ink"><th className="py-2 pr-2">Baris</th><th className="pr-2">Nama</th><th className="pr-2">Tagihan</th><th className="pr-2 text-right">Nominal</th><th className="pr-2">Bayar</th><th>Cocok</th></tr></thead>
@@ -83,7 +87,7 @@ export default async function FinanceReview({ params, searchParams }: { params: 
                   <td className="pr-2">{r.row?.title ?? "–"}</td>
                   <td className="num pr-2 text-right">{r.row ? rupiah(r.row.amount) : "–"}</td>
                   <td className="pr-2">{r.row ? (r.row.paid ? "Lunas" : "Belum") : "–"}</td>
-                  <td className={!r.row ? "font-semibold text-bad" : memberOf.has(r.line) ? "text-ok" : "font-semibold text-bad"}>{!r.row ? r.error : memberOf.has(r.line) ? "Siswa ditemukan" : "Tidak ditemukan"}</td>
+                  <td className={!r.row ? "font-semibold text-bad" : memberOf.has(r.line) || rosterOf.has(r.line) ? "text-ok" : "font-semibold text-bad"}>{!r.row ? r.error : memberOf.has(r.line) ? "Siswa ditemukan" : rosterOf.has(r.line) ? "Roster (belum bergabung)" : "Tidak ditemukan"}</td>
                 </tr>
               ))}
             </tbody>
@@ -97,7 +101,7 @@ export default async function FinanceReview({ params, searchParams }: { params: 
         <input type="hidden" name="header_row" value={headerRow} />
         {FIN_FIELDS.map((k) => (mapping[k] === undefined ? null : <input key={k} type="hidden" name={`m_${k}`} value={mapping[k]} />))}
         <p className="mt-2 text-sm text-ink-soft">Baris berstatus “Lunas” akan dicatat sebagai pembayaran penuh (metode: lainnya).</p>
-        <div className="mt-3"><Button type="submit" disabled={matched.length === 0}>Buat {matched.length} tagihan</Button></div>
+        <div className="mt-3"><Button type="submit" disabled={matched.length + viaRoster.length === 0}>Buat {matched.length + viaRoster.length} tagihan</Button></div>
       </form>
     </>
   );

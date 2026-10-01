@@ -76,3 +76,14 @@ export async function loadStudents(supabase: SupabaseClient, schoolId: string) {
   const nis = new Map((p ?? []).map((x) => [x.member_id as string, (x.nis as string | null) ?? null]));
   return { students: (m ?? []).map((x) => ({ id: x.id as string, name: String(x.display_name ?? ""), nis: nis.get(x.id as string) ?? null })) };
 }
+
+/** Baris yang tidak cocok dengan siswa berakun dicocokkan ke roster (siswa terdaftar, belum bergabung): NIS, atau nama yang unik. */
+export function matchRoster(rows: FinRow[], roster: Student[]): { matched: { row: FinRow; rosterId: string }[]; unmatched: FinRow[] } {
+  const { matched, unmatched } = matchStudents(rows, roster);
+  return { matched: matched.map((m) => ({ row: m.row, rosterId: m.memberId })), unmatched };
+}
+
+export async function loadRoster(supabase: SupabaseClient, schoolId: string) {
+  const { data } = await supabase.from("roster_people").select("id,full_name,nis").eq("school_id", schoolId).eq("kind", "siswa").is("member_id", null);
+  return { roster: (data ?? []).map((x) => ({ id: x.id as string, name: String(x.full_name ?? ""), nis: (x.nis as string | null) ?? null })) };
+}

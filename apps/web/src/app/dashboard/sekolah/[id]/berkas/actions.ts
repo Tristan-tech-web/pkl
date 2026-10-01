@@ -3,7 +3,7 @@
 import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { FIN_FIELDS, loadStudents, matchStudents, normalizeFinance, type FinField } from "@/lib/finance-import";
+import { FIN_FIELDS, loadRoster, loadStudents, matchRoster, matchStudents, normalizeFinance, type FinField } from "@/lib/finance-import";
 import { DRAFT_SYSTEM, draftPrompt, sanitizeDraft } from "@/lib/curriculum-draft";
 import { aiAttachableMime } from "@/lib/parse-file";
 import { parseJsonLoose } from "@/lib/ai";
@@ -167,8 +167,10 @@ export async function importFinance(schoolId: string, fileId: string, formData: 
   const valid = normalizeFinance((parsed as { rows: string[][] }).rows, headerRow, mapping).flatMap((r) => (r.row ? [r.row] : []));
 
   const { students } = await loadStudents(supabase, schoolId);
-  const { matched, unmatched } = matchStudents(valid, students);
-  if (matched.length === 0) redirect(`${here}?error=${q("Tidak ada baris yang cocok dengan siswa terdaftar.")}`);
+  const { matched, unmatched: rest } = matchStudents(valid, students);
+  const { roster } = await loadRoster(supabase, schoolId);
+  const { matched: viaRoster, unmatched } = matchRoster(rest, roster);
+  if (matched.length === 0 && viaRoster.length === 0) redirect(`${here}?error=${q("Tidak ada baris yang cocok dengan siswa terdaftar.")}`);
   const today = new Date().toISOString().slice(0, 10);
   let made = 0, paid = 0;
   for (let i = 0; i < matched.length; i += 100) {
@@ -179,9 +181,18 @@ export async function importFinance(schoolId: string, fileId: string, formData: 
     const pays = chunk.flatMap((c, j) => (c.row.paid ? [{ school_id: schoolId, invoice_id: data![j].id as string, amount: c.row.amount, method: "lainnya", paid_on: today, note: "Diimpor dari berkas", recorded_by: me.memberId }] : []));
     if (pays.length) { await supabase.from("payments").insert(pays); paid += pays.length; }
   }
+  // siswa yang belum bergabung: tagihan menempel ke roster dan pindah otomatis ke akun saat mereka bergabung
+  for (let i = 0; i < viaRoster.length; i += 100) {
+    const chunk = viaRoster.slice(i, i + 100);
+    const { data, error } = await supabase.from("invoices").insert(chunk.map(({ row, rosterId }) => ({ school_id: schoolId, roster_id: rosterId, title: row.title, amount: row.amount, due_on: row.due_on, created_by: me.memberId }))).select("id");
+    if (error || !data) redirect(`${here}?error=${q("Sebagian tagihan untuk siswa belum bergabung gagal disimpan.")}`);
+    made += data!.length;
+    const pays = chunk.flatMap((c, j) => (c.row.paid ? [{ school_id: schoolId, invoice_id: data![j].id as string, amount: c.row.amount, method: "lainnya", paid_on: today, note: "Diimpor dari berkas", recorded_by: me.memberId }] : []));
+    if (pays.length) { await supabase.from("payments").insert(pays); paid += pays.length; }
+  }
   await supabase.from("school_files").update({ status: "diimpor", imported_at: new Date().toISOString() }).eq("id", fileId);
   revalidatePath(`/dashboard/sekolah/${schoolId}/keuangan`);
-  redirect(`/dashboard/sekolah/${schoolId}/keuangan?info=${q(`${made} tagihan dibuat, ${paid} langsung lunas${unmatched.length ? `, ${unmatched.length} baris tidak cocok dengan siswa (dilewati)` : ""}.`)}`);
+  redirect(`/dashboard/sekolah/${schoolId}/keuangan?info=${q(`${made} tagihan dibuat (${viaRoster.length} untuk siswa yang belum bergabung), ${paid} langsung lunas${unmatched.length ? `, ${unmatched.length} baris tidak cocok dengan siswa (dilewati)` : ""}.`)}`);
 }
 
 export async function draftMateri(schoolId: string, fileId: string, formData: FormData) {

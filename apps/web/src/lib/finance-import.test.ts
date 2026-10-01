@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { guessFinMapping, matchStudents, normalizeFinance, parseAmount } from "./finance-import";
+import { guessFinMapping, matchRoster, matchStudents, normalizeFinance, parseAmount } from "./finance-import";
 
 describe("finance-import", () => {
   const rows = [["Nama Siswa", "Kelas", "Tagihan", "Nominal", "Status Bayar"], ["Dewi Anggraini", "X PPLG 1", "SPP Oktober", "250.000", "Lunas"], ["Putu Sedana", "X PPLG 1", "LKS", "Rp 45.000", "Belum"], ["", "", "", "", ""], ["Budi", "X", "SPP", "abc", ""]];
@@ -13,5 +13,13 @@ describe("finance-import", () => {
     const f = normalizeFinance(rows, 0, guessFinMapping(rows[0])).flatMap((x) => (x.row ? [x.row] : []));
     const res = matchStudents(f, [{ id: "a", name: "DEWI anggraini", nis: null }, { id: "b", name: "Putu Sedana", nis: "1" }, { id: "c", name: "Putu Sedana", nis: "2" }]);
     expect(res.matched.map((m) => m.memberId)).toEqual(["a"]); expect(res.unmatched).toHaveLength(1);
+  });
+});
+
+describe("matchRoster", () => {
+  it("mencocokkan sisa baris ke roster lewat NIS atau nama unik", () => {
+    const row = (name: string, nis: string) => ({ line: 2, name, nis, class_name: "", title: "SPP", amount: 1000, paid: false, due_on: null });
+    const r = matchRoster([row("Ni Luh Sari", ""), row("", "77"), row("Tidak Ada", "")], [{ id: "r1", name: "ni luh sari", nis: null }, { id: "r2", name: "Gede", nis: "77" }]);
+    expect(r.matched.map((m) => m.rosterId)).toEqual(["r1", "r2"]); expect(r.unmatched).toHaveLength(1);
   });
 });

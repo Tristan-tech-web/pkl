@@ -8,7 +8,7 @@ import { cancelInvoice, issueInvoices, recordPayment } from "./actions";
 
 export const metadata = { title: "Keuangan · EduSmart" };
 const today = () => new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Jakarta" }).format(new Date());
-type Inv = { id: string; member_id: string; title: string; amount: number; due_on: string | null; status: string; created_at: string };
+type Inv = { id: string; member_id: string | null; roster_id: string | null; title: string; amount: number; due_on: string | null; status: string; created_at: string };
 type Pay = { invoice_id: string; amount: number; method: string; paid_on: string };
 
 function state(i: Inv, paid: number, now: string) {
@@ -28,7 +28,7 @@ export default async function KeuanganPage({ params, searchParams }: { params: P
   const now = today();
 
   const [invRes, payRes] = await Promise.all([
-    supabase.from("invoices").select("id,member_id,title,amount,due_on,status,created_at").eq("school_id", id).order("created_at", { ascending: false }).limit(300),
+    supabase.from("invoices").select("id,member_id,roster_id,title,amount,due_on,status,created_at").eq("school_id", id).order("created_at", { ascending: false }).limit(300),
     supabase.from("payments").select("invoice_id,amount,method,paid_on").eq("school_id", id),
   ]);
   const invoices = (invRes.data ?? []) as Inv[];
@@ -38,8 +38,10 @@ export default async function KeuanganPage({ params, searchParams }: { params: P
   // Nama pemilik tagihan: pengelola lewat tabel anggota, orang tua lewat daftar anak.
   const names = new Map<string, string>();
   if (management) {
-    const { data } = await supabase.from("school_members").select("id,display_name").eq("school_id", id).in("id", [...new Set(invoices.map((i) => i.member_id))]);
+    const { data } = await supabase.from("school_members").select("id,display_name").eq("school_id", id).in("id", [...new Set(invoices.map((i) => i.member_id).filter((x): x is string => !!x))]);
     for (const m of data ?? []) names.set(m.id as string, (m.display_name as string | null) ?? "Tanpa nama");
+    const rosterIds = [...new Set(invoices.filter((i) => !i.member_id && i.roster_id).map((i) => i.roster_id as string))];
+    if (rosterIds.length) { const { data: rp } = await supabase.from("roster_people").select("id,full_name").eq("school_id", id).in("id", rosterIds); for (const r of rp ?? []) names.set(r.id as string, `${r.full_name as string} (belum bergabung)`); }
   } else if (me.roleCode === "parent") {
     const { data } = await supabase.rpc("my_children", { p_school_id: id });
     for (const c of (data ?? []) as { student_id: string; name: string }[]) names.set(c.student_id, c.name);
@@ -104,7 +106,7 @@ export default async function KeuanganPage({ params, searchParams }: { params: P
               return (
                 <li key={i.id} className="border-b border-line py-3">
                   <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-                    <p className="font-semibold">{i.title}{names.get(i.member_id) && (management || me.roleCode === "parent") ? <span className="font-normal text-ink-soft"> · {names.get(i.member_id)}</span> : null}</p>
+                    <p className="font-semibold">{i.title}{names.get(i.member_id ?? i.roster_id ?? "") && (management || me.roleCode === "parent") ? <span className="font-normal text-ink-soft"> · {names.get(i.member_id ?? i.roster_id ?? "")}</span> : null}</p>
                     <p className="num"><span className="font-bold">{rupiah(Number(i.amount))}</span> <span className={`ml-2 text-sm font-semibold ${st.tone}`}>{st.label}</span></p>
                   </div>
                   <p className="num text-sm text-ink-soft">{i.due_on ? `Jatuh tempo ${i.due_on}` : "Tanpa jatuh tempo"}{p > 0 ? ` · terbayar ${rupiah(p)}` : ""}{left > 0 && i.status !== "dibatalkan" && p > 0 ? ` · sisa ${rupiah(left)}` : ""}</p>
