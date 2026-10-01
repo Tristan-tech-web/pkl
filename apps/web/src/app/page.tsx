@@ -104,7 +104,7 @@ export default async function Home({
               <div className="absolute -right-2 top-24 z-20 rounded-full border-2 border-line bg-card px-3 py-1 text-sm font-bold shadow-pop">⭐ +60 XP</div>
               <div className="absolute -left-4 bottom-24 z-20 rounded-full border-2 border-line bg-card px-3 py-1 text-sm font-bold shadow-pop">🏆 Peringkat 2</div>
               <LandingPath />
-              <Mascot size={110} className="absolute -bottom-6 -right-4 z-20" />
+              <Mascot size={200} className="absolute -bottom-14 -right-12 z-20" />
             </div>
           </HeroMotion>
         </section>

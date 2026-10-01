@@ -12,7 +12,16 @@ export function readPalette(el: Element = document.documentElement): Palette {
   return { pen: c("--pen", "#1d3fa8"), accent: c("--accent", "#d8433b"), hi: c("--hi", "#ffe34d"), card: c("--card", "#ffffff"), ink: c("--ink", "#14213d"), ok: c("--ok", "#1f7a4d") };
 }
 
-const mat = (color: THREE.ColorRepresentation, extra: THREE.MeshLambertMaterialParameters = {}) => new THREE.MeshLambertMaterial({ color, flatShading: true, ...extra });
+let gradientMap: THREE.DataTexture | null = null;
+const gradient = () => (gradientMap ??= (() => { const t = new THREE.DataTexture(new Uint8Array([96, 96, 96, 255, 170, 170, 170, 255, 225, 225, 225, 255, 255, 255, 255, 255]), 4, 1, THREE.RGBAFormat); t.minFilter = t.magFilter = THREE.NearestFilter; t.needsUpdate = true; return t; })());
+const mat = (color: THREE.ColorRepresentation, extra: THREE.MeshToonMaterialParameters = {}) => new THREE.MeshToonMaterial({ color, gradientMap: gradient(), ...extra });
+const hullMat = new THREE.MeshBasicMaterial({ color: 0x1b1a3a, side: THREE.BackSide });
+/** Garis tepi kartun (cangkang terbalik) untuk setiap bentuk padat, serasi dengan maskot. */
+const outline = (obj: THREE.Object3D) => {
+  const solids: THREE.Mesh[] = [];
+  obj.traverse((o) => { const m = o as THREE.Mesh; if (m.isMesh && !(m.material as THREE.Material).transparent) solids.push(m); });
+  for (const m of solids) { const h = new THREE.Mesh(m.geometry, hullMat); h.scale.setScalar(1.07); m.add(h); }
+};
 const rng = (seed: number) => () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296);
 
 type Floater = { obj: THREE.Object3D; base: THREE.Vector3; nx: number; ny: number; amp: number; speed: number; spin: THREE.Vector3; phase: number };
@@ -23,6 +32,7 @@ function buildFloaters(scene: SceneId, p: Palette, quality: 1 | 2): { group: THR
   const r = rng(7 + scene.length * 13);
   const n = quality === 2 ? 14 : 8;
   const add = (obj: THREE.Object3D, spin = 0.6) => {
+    outline(obj);
     // Posisi diatur sebagai fraksi kanvas (kanan saja: kiri dipakai teks); dihitung ulang tiap ukuran berubah.
     const base = new THREE.Vector3(0, 0, -1 - r() * 4);
     const nx = 0.52 + r() * 0.46, ny = (r() - 0.5) * 1.7;
