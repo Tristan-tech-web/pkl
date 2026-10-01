@@ -38,11 +38,11 @@ export default async function SchoolPage({ params }: { params: Promise<{ id: str
 
   return (
     <>
-      <Link href="/dashboard" className="text-sm text-indigo-600 underline dark:text-indigo-400">
+      <Link href="/dashboard" className="text-sm text-pen underline">
         ← Semua sekolah
       </Link>
-      <h1 className="mt-3 text-2xl font-semibold">{school.name}</h1>
-      <p className="mt-1 text-black/65 dark:text-white/65">
+      <h1 className="mt-3 font-display text-3xl font-bold tracking-tight">{school.name}</h1>
+      <p className="mt-1 text-ink-soft">
         {[school.city, school.province].filter(Boolean).join(", ") || "Lokasi belum diisi"} ·{" "}
         {authorityLabel(school.authority)} · {school.ownership === "negeri" ? "Negeri" : "Swasta"}
       </p>
@@ -51,13 +51,13 @@ export default async function SchoolPage({ params }: { params: Promise<{ id: str
         <Card>
           <h2 className="text-lg font-semibold">Program</h2>
           {school.school_programs.length === 0 ? (
-            <p className="mt-2 text-sm text-black/65 dark:text-white/65">Belum ada program.</p>
+            <p className="mt-2 text-sm text-ink-soft">Belum ada program.</p>
           ) : (
             <ul className="mt-3 space-y-2">
               {school.school_programs.map((p) => (
                 <li key={p.id} className="flex justify-between gap-3 text-sm">
                   <span>{p.name}</span>
-                  <span className="text-black/60 dark:text-white/60">
+                  <span className="text-ink-soft">
                     {p.grades.length > 0 ? `Kelas ${Math.min(...p.grades)}–${Math.max(...p.grades)}` : "Kelas bebas"}
                   </span>
                 </li>
@@ -71,11 +71,11 @@ export default async function SchoolPage({ params }: { params: Promise<{ id: str
             <p className="mt-2 text-sm">
               {pack.name} ({pack.version})
               {!pack.verified ? (
-                <span className="ml-2 text-xs text-amber-700 dark:text-amber-300">draf, belum diverifikasi</span>
+                <span className="ml-2 text-xs text-warn">draf, belum diverifikasi</span>
               ) : null}
             </p>
           ) : (
-            <p className="mt-2 text-sm text-black/65 dark:text-white/65">Belum dipilih.</p>
+            <p className="mt-2 text-sm text-ink-soft">Belum dipilih.</p>
           )}
           <h2 className="mt-5 text-lg font-semibold">Paket</h2>
           <p className="mt-2 text-sm">

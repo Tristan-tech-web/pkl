@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { signIn } from "@/app/auth-actions";
-import { Button, Card, ErrorNote, Input, Label } from "@/components/ui";
+import { Button, Card, ErrorNote, InfoNote, Input, Label } from "@/components/ui";
 
 export const metadata = { title: "Masuk · EduSmart" };
 
@@ -12,15 +12,11 @@ export default async function MasukPage({
   const { error, info } = await searchParams;
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center px-4 py-12">
-      <h1 className="mb-6 text-2xl font-semibold">Masuk ke EduSmart</h1>
+      <h1 className="mb-6 font-display text-3xl font-bold tracking-tight">Masuk ke EduSmart</h1>
       <Card>
         <form action={signIn} className="flex flex-col gap-4">
           <ErrorNote message={error} />
-          {info ? (
-            <p role="status" className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200">
-              {info}
-            </p>
-          ) : null}
+          <InfoNote message={info} />
           <label>
             <Label>Email</Label>
             <Input name="email" type="email" autoComplete="email" required />
@@ -34,7 +30,7 @@ export default async function MasukPage({
       </Card>
       <p className="mt-4 text-sm">
         Belum punya akun?{" "}
-        <Link href="/daftar" className="font-medium text-indigo-600 underline dark:text-indigo-400">
+        <Link href="/daftar" className="font-medium text-pen underline">
           Daftar
         </Link>
       </p>

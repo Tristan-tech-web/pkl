@@ -27,7 +27,7 @@ export default async function NewSchoolPage({
 
   return (
     <>
-      <h1 className="mb-6 text-2xl font-semibold">Buat sekolah</h1>
+      <h1 className="mb-6 font-display text-3xl font-bold tracking-tight">Buat sekolah</h1>
       <form action={createSchool} className="flex max-w-2xl flex-col gap-6">
         <ErrorNote message={error} />
         <Card className="flex flex-col gap-4">
@@ -70,7 +70,7 @@ export default async function NewSchoolPage({
         <Card className="flex flex-col gap-4">
           <div>
             <h2 className="text-lg font-semibold">Bentuk pendidikan</h2>
-            <p className="text-sm text-black/65 dark:text-white/65">
+            <p className="text-sm text-ink-soft">
               Pilih satu atau lebih. Sekolah terpadu bisa memilih beberapa.
             </p>
           </div>
@@ -79,12 +79,12 @@ export default async function NewSchoolPage({
               <legend className="mb-2 text-sm font-medium">{categoryLabel(category)}</legend>
               <div className="grid gap-2 sm:grid-cols-2">
                 {items.map((f) => (
-                  <label key={f.code} className="flex min-h-11 items-center gap-3 rounded-lg border border-black/10 px-3 dark:border-white/15">
+                  <label key={f.code} className="flex min-h-11 items-center gap-3 rounded-lg border border-line bg-card px-3">
                     <input type="checkbox" name="forms" value={f.code} className="size-5" />
                     <span>
                       {f.name}
                       {!f.verified ? (
-                        <span className="ml-2 text-xs text-amber-700 dark:text-amber-300">belum diverifikasi</span>
+                        <span className="ml-2 text-xs text-warn">belum diverifikasi</span>
                       ) : null}
                     </span>
                   </label>
@@ -106,7 +106,7 @@ export default async function NewSchoolPage({
               ))}
             </Select>
           </label>
-          <p className="text-sm text-black/65 dark:text-white/65">
+          <p className="text-sm text-ink-soft">
             Paket bertanda “draf” masih perlu diverifikasi dan bisa Anda sesuaikan nanti.
           </p>
         </Card>

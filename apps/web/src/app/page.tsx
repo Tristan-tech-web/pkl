@@ -1,45 +1,51 @@
 import { SiteHeader } from "@/components/site-header";
-import { Button, Card, Input, Label, LinkButton, Textarea } from "@/components/ui";
+import { ParabolaDemo } from "@/components/parabola-demo";
+import { Button, Card, Input, InfoNote, ErrorNote, Label, LinkButton, Textarea } from "@/components/ui";
 import { submitLead } from "@/app/leads-actions";
 import { featureLabel, formatEntitlement } from "@/lib/format";
 import { createClient } from "@/lib/supabase/server";
 
+type Entitlement = { feature: string; enabled: boolean; limit_value: number | null };
 type Plan = {
   code: string;
   name: string;
   description: string | null;
   is_enterprise: boolean;
   sort: number;
-  plan_entitlements: { feature: string; enabled: boolean; limit_value: number | null }[];
+  plan_entitlements: Entitlement[];
 };
 
-const FEATURES = [
+const FORMS = ["SD", "MI", "SMP", "MTs", "SMA", "MA", "SMK", "SLB", "Paket C", "Pesantren", "Kustom"];
+
+const FEATURES: { title: string; body: string; ready: boolean }[] = [
   {
-    title: "Cocok untuk jenis sekolah apa pun",
-    body: "SD, MI, SMP, MTs, SMA, MA, SMK, SLB, kesetaraan, pesantren, atau bentuk kustom. Struktur disusun dari data, bukan dipaksa ke satu pola.",
-    status: "Tersedia",
+    title: "Satu struktur untuk jenis sekolah apa pun",
+    body: "Bentuk pendidikan, jenjang, dan program disusun dari data. Madrasah, SLB, dan sekolah terpadu tidak dipaksa masuk pola SD-SMP-SMA-SMK.",
+    ready: true,
   },
   {
-    title: "Kurikulum yang bisa Anda atur",
-    body: "Pilih paket kurikulum, mata pelajaran, program keahlian, dan kalender akademik sesuai kebutuhan sekolah.",
-    status: "Tersedia",
+    title: "Kurikulum, mata pelajaran, dan program keahlian yang Anda atur",
+    body: "Mulai dari paket kurikulum, lalu sesuaikan mata pelajaran, peminatan, atau konsentrasi keahlian dan kalender akademik sekolah Anda.",
+    ready: true,
   },
   {
-    title: "Visualisasi untuk matematika, coding, dan lainnya",
-    body: "Modul interaktif yang bisa diaktifkan per mata pelajaran.",
-    status: "Segera hadir",
+    title: "Modul visual per mata pelajaran",
+    body: "Grafik fungsi, geometri, dan editor kode yang bisa diaktifkan sekolah untuk pelajaran yang membutuhkannya. Contoh di atas adalah modul pertama.",
+    ready: false,
   },
   {
-    title: "Tutor AI opsional",
-    body: "Sekolah yang ingin memakai AI menyambungkan kunci API milik sendiri, jadi biaya dan data tetap di tangan sekolah.",
-    status: "Segera hadir",
+    title: "Tutor AI dengan kunci milik sekolah",
+    body: "Sekolah yang ingin memakai AI menyambungkan kunci API sendiri, sehingga biaya dan ketentuan data berada di tangan sekolah.",
+    ready: false,
   },
 ];
 
-const CONTACT_MESSAGES: Record<string, { text: string; tone: "ok" | "bad" }> = {
-  terkirim: { text: "Terima kasih. Tim kami akan menghubungi Anda.", tone: "ok" },
-  gagal: { text: "Pesan belum terkirim. Coba lagi sebentar lagi.", tone: "bad" },
-  "tidak-valid": { text: "Isi nama dan email yang valid.", tone: "bad" },
+const FEATURE_ORDER = ["max_students", "visual_modules", "custom_curriculum", "ai_tutor"];
+
+const CONTACT_MESSAGES: Record<string, { text: string; ok: boolean }> = {
+  terkirim: { text: "Terima kasih. Tim kami menghubungi Anda lewat email.", ok: true },
+  gagal: { text: "Pesan belum terkirim. Coba lagi sebentar lagi.", ok: false },
+  "tidak-valid": { text: "Isi nama dan email yang valid.", ok: false },
 };
 
 export default async function Home({
@@ -54,93 +60,137 @@ export default async function Home({
     .select("code,name,description,is_enterprise,sort,plan_entitlements(feature,enabled,limit_value)")
     .order("sort");
   const plans = (data ?? []) as Plan[];
+  const features = FEATURE_ORDER.filter((f) => plans.some((p) => p.plan_entitlements.some((e) => e.feature === f)));
   const note = kontak ? CONTACT_MESSAGES[kontak] : undefined;
 
   return (
     <>
       <SiteHeader />
       <main className="flex-1">
-        <section className="mx-auto w-full max-w-5xl px-4 py-16 sm:py-24">
-          <h1 className="max-w-3xl text-4xl font-semibold tracking-tight sm:text-5xl">
-            Satu platform untuk semua jenis sekolah
-          </h1>
-          <p className="mt-5 max-w-2xl text-lg text-black/70 dark:text-white/70">
-            Atur kurikulum, mata pelajaran, dan struktur sekolah Anda sendiri, lalu belajar dan
-            mengajar dari satu tempat.
-          </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <LinkButton href="/daftar">Mulai gratis</LinkButton>
-            <LinkButton href="#paket" variant="ghost">
-              Lihat paket
-            </LinkButton>
-          </div>
-        </section>
-
-        <section className="mx-auto w-full max-w-5xl px-4 pb-16">
-          <div className="grid gap-4 sm:grid-cols-2">
-            {FEATURES.map((f) => (
-              <Card key={f.title}>
-                <p className="mb-2 text-xs font-medium uppercase tracking-wide text-indigo-600 dark:text-indigo-400">
-                  {f.status}
-                </p>
-                <h2 className="text-lg font-semibold">{f.title}</h2>
-                <p className="mt-2 text-black/70 dark:text-white/70">{f.body}</p>
-              </Card>
-            ))}
-          </div>
-        </section>
-
-        <section id="paket" className="mx-auto w-full max-w-5xl px-4 pb-16">
-          <h2 className="text-2xl font-semibold">Paket</h2>
-          <p className="mt-1 text-sm text-black/60 dark:text-white/60">
-            Nama dan batas paket masih sementara; harga menyusul.
-          </p>
-          <div className="mt-6 grid gap-4 md:grid-cols-3">
-            {plans.map((plan) => (
-              <Card key={plan.code} className="flex flex-col">
-                <h3 className="text-lg font-semibold">{plan.name}</h3>
-                <p className="mt-1 text-sm text-black/65 dark:text-white/65">{plan.description}</p>
-                <dl className="mt-4 flex-1 space-y-2 text-sm">
-                  {plan.plan_entitlements.map((e) => (
-                    <div key={e.feature} className="flex justify-between gap-3">
-                      <dt className="text-black/65 dark:text-white/65">{featureLabel(e.feature)}</dt>
-                      <dd className="font-medium">{formatEntitlement(e.enabled, e.limit_value)}</dd>
-                    </div>
-                  ))}
-                </dl>
-                <div className="mt-5">
-                  {plan.is_enterprise ? (
-                    <LinkButton href="#kontak" variant="ghost">
-                      Hubungi tim dev
-                    </LinkButton>
-                  ) : (
-                    <LinkButton href="/daftar">Pilih {plan.name}</LinkButton>
-                  )}
-                </div>
-              </Card>
-            ))}
-          </div>
-        </section>
-
-        <section id="kontak" className="mx-auto w-full max-w-5xl px-4 pb-24">
-          <Card className="max-w-xl">
-            <h2 className="text-xl font-semibold">Butuh konfigurasi khusus?</h2>
-            <p className="mt-1 text-sm text-black/65 dark:text-white/65">
-              Ceritakan kebutuhan sekolah Anda untuk paket Enterprise.
-            </p>
-            {note ? (
-              <p
-                role="status"
-                className={`mt-4 rounded-lg px-3 py-2 text-sm ${
-                  note.tone === "ok"
-                    ? "bg-emerald-50 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200"
-                    : "bg-red-50 text-red-800 dark:bg-red-950 dark:text-red-200"
-                }`}
-              >
-                {note.text}
+        <section className="bg-grid border-b border-line">
+          <div className="mx-auto grid w-full max-w-6xl items-center gap-10 px-4 py-14 lg:grid-cols-[1.05fr_1fr] lg:py-20">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.08em] text-ink-soft">
+                Untuk sekolah, madrasah, SLB, dan pesantren
               </p>
-            ) : null}
-            <form action={submitLead} className="mt-4 flex flex-col gap-4">
+              <h1 className="mt-4 font-display text-4xl font-extrabold leading-[1.08] tracking-tight sm:text-6xl">
+                Satu platform untuk <span className="highlight">semua jenis sekolah</span>
+              </h1>
+              <p className="mt-5 max-w-xl text-lg text-ink-soft">
+                Atur kurikulum, mata pelajaran, dan struktur sekolah Anda sendiri. Guru mengajar dan siswa belajar
+                di tempat yang sama, dengan alat visual yang cocok untuk pelajarannya.
+              </p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <LinkButton href="/daftar">Buat akun sekolah</LinkButton>
+                <LinkButton href="#paket" variant="ghost">
+                  Lihat paket
+                </LinkButton>
+              </div>
+              <ul className="mt-10 flex max-w-xl flex-wrap gap-2" aria-label="Bentuk pendidikan yang didukung">
+                {FORMS.map((f) => (
+                  <li
+                    key={f}
+                    className="inline-flex min-h-9 items-center gap-2 rounded-full border border-line bg-card px-3 text-sm font-semibold"
+                  >
+                    <span aria-hidden="true" className="size-3 rounded-full border-2 border-pen" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <ParabolaDemo />
+          </div>
+        </section>
+
+        <section className="mx-auto w-full max-w-6xl px-4 py-16">
+          <h2 className="font-display text-3xl font-bold tracking-tight">Apa yang bisa dilakukan</h2>
+          <ul className="mt-8 border-t border-line">
+            {FEATURES.map((f) => (
+              <li key={f.title} className="grid grid-cols-[2.25rem_1fr] gap-4 border-b border-line py-6 sm:grid-cols-[2.25rem_1fr_9rem]">
+                <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true" className="mt-0.5">
+                  <rect x="2" y="2" width="22" height="22" rx="3" fill="none" stroke="var(--ink)" strokeWidth="2" strokeDasharray={f.ready ? "0" : "4 3"} />
+                  {f.ready ? <path d="M7 13.5l4 4 8-9" fill="none" stroke="var(--ok)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /> : null}
+                </svg>
+                <div>
+                  <h3 className="text-lg font-bold">{f.title}</h3>
+                  <p className="mt-1 max-w-2xl text-ink-soft">{f.body}</p>
+                </div>
+                <p
+                  className={`col-start-2 text-sm font-semibold sm:col-start-3 sm:text-right ${f.ready ? "text-ok" : "text-ink-soft"}`}
+                >
+                  {f.ready ? "Sudah tersedia" : "Dalam pengerjaan"}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section id="paket" className="border-y border-line bg-card">
+          <div className="mx-auto w-full max-w-6xl px-4 py-16">
+            <h2 className="font-display text-3xl font-bold tracking-tight">Paket</h2>
+            <p className="mt-2 text-ink-soft">Nama dan batas paket masih sementara. Harga menyusul.</p>
+            <div className="mt-8 overflow-x-auto">
+              <table className="w-full min-w-[34rem] border-collapse text-left">
+                <thead>
+                  <tr className="border-b-2 border-ink">
+                    <th scope="col" className="py-3 pr-4 text-sm font-semibold text-ink-soft">
+                      Fitur
+                    </th>
+                    {plans.map((p) => (
+                      <th key={p.code} scope="col" className="py-3 pr-4 align-bottom">
+                        <span className="font-display text-xl font-bold">{p.name}</span>
+                        <span className="mt-0.5 block text-sm font-normal text-ink-soft">{p.description}</span>
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {features.map((feature) => (
+                    <tr key={feature} className="border-b border-line">
+                      <th scope="row" className="py-3 pr-4 font-semibold">
+                        {featureLabel(feature)}
+                      </th>
+                      {plans.map((p) => {
+                        const e = p.plan_entitlements.find((x) => x.feature === feature);
+                        return (
+                          <td key={p.code} className="py-3 pr-4">
+                            {e ? formatEntitlement(e.enabled, e.limit_value) : "–"}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                  <tr>
+                    <td className="py-4 pr-4" />
+                    {plans.map((p) => (
+                      <td key={p.code} className="py-4 pr-4">
+                        {p.is_enterprise ? (
+                          <LinkButton href="#kontak" variant="ghost">
+                            Hubungi tim dev
+                          </LinkButton>
+                        ) : (
+                          <LinkButton href="/daftar">Mulai dengan {p.name}</LinkButton>
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section id="kontak" className="mx-auto grid w-full max-w-6xl gap-10 px-4 py-16 lg:grid-cols-[1fr_1.1fr]">
+          <div>
+            <h2 className="font-display text-3xl font-bold tracking-tight">Butuh konfigurasi khusus?</h2>
+            <p className="mt-3 max-w-md text-ink-soft">
+              Paket Enterprise untuk yayasan dengan banyak satuan pendidikan, kurikulum kustom, atau kebutuhan
+              integrasi. Ceritakan kondisi sekolah Anda dan tim kami menghubungi lewat email.
+            </p>
+          </div>
+          <Card>
+            {note ? note.ok ? <InfoNote message={note.text} /> : <ErrorNote message={note.text} /> : null}
+            <form action={submitLead} className="mt-1 flex flex-col gap-4">
               <label>
                 <Label>Nama</Label>
                 <Input name="name" required minLength={2} maxLength={120} autoComplete="name" />
@@ -150,7 +200,7 @@ export default async function Home({
                 <Input name="email" type="email" required maxLength={200} autoComplete="email" />
               </label>
               <label>
-                <Label hint="opsional">Nama sekolah</Label>
+                <Label hint="opsional">Nama sekolah atau yayasan</Label>
                 <Input name="school_name" maxLength={200} />
               </label>
               <label>
@@ -162,6 +212,11 @@ export default async function Home({
           </Card>
         </section>
       </main>
+      <footer className="border-t border-line">
+        <div className="mx-auto w-full max-w-6xl px-4 py-6 text-sm text-ink-soft">
+          EduSmart masih dalam pengembangan.
+        </div>
+      </footer>
     </>
   );
 }

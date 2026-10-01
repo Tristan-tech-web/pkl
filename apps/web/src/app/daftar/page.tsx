@@ -12,7 +12,7 @@ export default async function DaftarPage({
   const { error } = await searchParams;
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center px-4 py-12">
-      <h1 className="mb-6 text-2xl font-semibold">Buat akun</h1>
+      <h1 className="mb-6 font-display text-3xl font-bold tracking-tight">Buat akun</h1>
       <Card>
         <form action={signUp} className="flex flex-col gap-4">
           <ErrorNote message={error} />
@@ -33,7 +33,7 @@ export default async function DaftarPage({
       </Card>
       <p className="mt-4 text-sm">
         Sudah punya akun?{" "}
-        <Link href="/masuk" className="font-medium text-indigo-600 underline dark:text-indigo-400">
+        <Link href="/masuk" className="font-medium text-pen underline">
           Masuk
         </Link>
       </p>

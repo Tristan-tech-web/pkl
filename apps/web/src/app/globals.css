@@ -1,26 +1,136 @@
 @import "tailwindcss";
 
+/* Identitas: kertas buku tulis kotak-kotak, tinta pena biru, garis margin merah, stabilo kuning.
+   Mode gelap: papan tulis hijau dengan kapur. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --paper: #f5f8fb;
+  --card: #ffffff;
+  --ink: #14213d;
+  --ink-soft: #46546b;
+  --pen: #1d3fa8;
+  --pen-strong: #152f80;
+  --on-pen: #ffffff;
+  --margin: #d8433b;
+  --hi: #ffe34d;
+  --grid: #dce6ef;
+  --line: #c7d3e0;
+  --ok: #1f7a4d;
+  --ok-bg: #e5f4ec;
+  --warn: #8a5200;
+  --warn-bg: #fff4db;
+  --bad: #b42318;
+  --bad-bg: #fdecea;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  :root:not([data-theme="light"]) {
+    --paper: #10201b;
+    --card: #172b24;
+    --ink: #ecf3ee;
+    --ink-soft: #aec0b6;
+    --pen: #8db2ff;
+    --pen-strong: #b3ccff;
+    --on-pen: #0b1b33;
+    --margin: #ff8f85;
+    --hi: #e9d96b;
+    --grid: #1f342c;
+    --line: #2c463c;
+    --ok: #6fd3a0;
+    --ok-bg: #123226;
+    --warn: #f2c46b;
+    --warn-bg: #3a2d10;
+    --bad: #ff9a90;
+    --bad-bg: #3a1815;
+    color-scheme: dark;
   }
 }
 
+:root[data-theme="dark"] {
+  --paper: #10201b;
+  --card: #172b24;
+  --ink: #ecf3ee;
+  --ink-soft: #aec0b6;
+  --pen: #8db2ff;
+  --pen-strong: #b3ccff;
+  --on-pen: #0b1b33;
+  --margin: #ff8f85;
+  --hi: #e9d96b;
+  --grid: #1f342c;
+  --line: #2c463c;
+  --ok: #6fd3a0;
+  --ok-bg: #123226;
+  --warn: #f2c46b;
+  --warn-bg: #3a2d10;
+  --bad: #ff9a90;
+  --bad-bg: #3a1815;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-card: var(--card);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-pen: var(--pen);
+  --color-pen-strong: var(--pen-strong);
+  --color-on-pen: var(--on-pen);
+  --color-margin: var(--margin);
+  --color-hi: var(--hi);
+  --color-grid: var(--grid);
+  --color-line: var(--line);
+  --color-ok: var(--ok);
+  --color-ok-bg: var(--ok-bg);
+  --color-warn: var(--warn);
+  --color-warn-bg: var(--warn-bg);
+  --color-bad: var(--bad);
+  --color-bad-bg: var(--bad-bg);
+  --font-display: var(--font-display);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--paper);
+  color: var(--ink);
   font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+}
+
+h1, h2, h3 {
+  text-wrap: balance;
+}
+
+:focus-visible {
+  outline: 3px solid var(--pen);
+  outline-offset: 2px;
+}
+
+/* Kertas kotak-kotak */
+.bg-grid {
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* Stabilo di bawah teks */
+.highlight {
+  background-image: linear-gradient(transparent 62%, var(--hi) 62%, var(--hi) 92%, transparent 92%);
+  padding-inline: 0.1em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+.num {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
 }

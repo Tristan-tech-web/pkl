@@ -25,13 +25,13 @@ export default async function DashboardPage() {
   return (
     <>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-semibold">Sekolah Anda</h1>
+        <h1 className="font-display text-3xl font-bold tracking-tight">Sekolah Anda</h1>
         <LinkButton href="/dashboard/sekolah-baru">Buat sekolah</LinkButton>
       </div>
       {schools.length === 0 ? (
         <Card>
           <h2 className="text-lg font-semibold">Belum ada sekolah</h2>
-          <p className="mt-2 text-black/70 dark:text-white/70">
+          <p className="mt-2 text-ink-soft">
             Buat sekolah pertama Anda. Anda cukup memilih bentuk pendidikan dan paket kurikulum;
             sisanya bisa diatur nanti.
           </p>
@@ -43,10 +43,10 @@ export default async function DashboardPage() {
         <ul className="grid gap-4 sm:grid-cols-2">
           {schools.map((s) => (
             <li key={s.id}>
-              <Link href={`/dashboard/sekolah/${s.id}`} className="block rounded-2xl focus-visible:outline-2 focus-visible:outline-indigo-600">
-                <Card className="transition hover:bg-black/5 dark:hover:bg-white/5">
+              <Link href={`/dashboard/sekolah/${s.id}`} className="block rounded-2xl focus-visible:outline-3 focus-visible:outline-pen">
+                <Card className="transition hover:border-pen">
                   <h2 className="text-lg font-semibold">{s.name}</h2>
-                  <p className="mt-1 text-sm text-black/65 dark:text-white/65">
+                  <p className="mt-1 text-sm text-ink-soft">
                     {[s.city, s.province].filter(Boolean).join(", ") || "Lokasi belum diisi"} ·{" "}
                     {authorityLabel(s.authority)}
                   </p>

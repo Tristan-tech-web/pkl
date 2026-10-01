@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { ComponentProps } from "react";
 
 const field =
-  "w-full rounded-lg border border-black/15 bg-transparent px-3 py-2.5 text-base outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 dark:border-white/20";
+  "w-full rounded-[6px] border border-line bg-card px-3 py-2.5 text-base text-ink placeholder:text-ink-soft/70 outline-none focus:border-pen focus:ring-2 focus:ring-pen/30";
 
 export function Input(props: ComponentProps<"input">) {
   return <input {...props} className={`${field} ${props.className ?? ""}`} />;
@@ -18,19 +18,25 @@ export function Textarea(props: ComponentProps<"textarea">) {
 
 export function Label({ children, hint }: { children: React.ReactNode; hint?: string }) {
   return (
-    <span className="mb-1 block text-sm font-medium">
+    <span className="mb-1 block text-sm font-semibold">
       {children}
-      {hint ? <span className="ml-2 font-normal text-black/55 dark:text-white/55">{hint}</span> : null}
+      {hint ? <span className="ml-2 font-normal text-ink-soft">{hint}</span> : null}
     </span>
   );
 }
 
-export function Button({ className = "", ...props }: ComponentProps<"button">) {
+const solid = "bg-pen text-on-pen hover:bg-pen-strong";
+const ghost = "border border-line bg-card text-ink hover:border-pen";
+const base =
+  "inline-flex min-h-11 items-center justify-center rounded-[6px] px-5 font-semibold transition-colors";
+
+export function Button({
+  className = "",
+  variant = "primary",
+  ...props
+}: ComponentProps<"button"> & { variant?: "primary" | "ghost" }) {
   return (
-    <button
-      {...props}
-      className={`inline-flex min-h-11 items-center justify-center rounded-lg bg-indigo-600 px-5 font-medium text-white transition hover:bg-indigo-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-60 ${className}`}
-    />
+    <button {...props} className={`${base} ${variant === "primary" ? solid : ghost} disabled:opacity-60 ${className}`} />
   );
 }
 
@@ -43,15 +49,8 @@ export function LinkButton({
   children: React.ReactNode;
   variant?: "primary" | "ghost";
 }) {
-  const style =
-    variant === "primary"
-      ? "bg-indigo-600 text-white hover:bg-indigo-700"
-      : "border border-black/15 hover:bg-black/5 dark:border-white/20 dark:hover:bg-white/10";
   return (
-    <Link
-      href={href}
-      className={`inline-flex min-h-11 items-center justify-center rounded-lg px-5 font-medium transition ${style}`}
-    >
+    <Link href={href} className={`${base} ${variant === "primary" ? solid : ghost}`}>
       {children}
     </Link>
   );
@@ -60,14 +59,34 @@ export function LinkButton({
 export function ErrorNote({ message }: { message?: string }) {
   if (!message) return null;
   return (
-    <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-800 dark:bg-red-950 dark:text-red-200">
+    <p role="alert" className="rounded-[6px] border border-bad/30 bg-bad-bg px-3 py-2 text-sm text-bad">
+      {message}
+    </p>
+  );
+}
+
+export function InfoNote({ message }: { message?: string }) {
+  if (!message) return null;
+  return (
+    <p role="status" className="rounded-[6px] border border-ok/30 bg-ok-bg px-3 py-2 text-sm text-ok">
       {message}
     </p>
   );
 }
 
 export function Card({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  return <div className={`rounded-[6px] border border-line bg-card p-5 ${className}`}>{children}</div>;
+}
+
+export function Wordmark() {
   return (
-    <div className={`rounded-2xl border border-black/10 p-5 dark:border-white/15 ${className}`}>{children}</div>
+    <span className="inline-flex items-center gap-2.5">
+      <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true" className="shrink-0">
+        <rect x="0.5" y="0.5" width="27" height="27" rx="3" fill="var(--card)" stroke="var(--line)" />
+        <path d="M0 14H28M14 0V28" stroke="var(--grid)" strokeWidth="1" />
+        <path d="M4 5C8 22 12 24 14 24C16 24 20 22 24 5" fill="none" stroke="var(--pen)" strokeWidth="2.2" strokeLinecap="round" />
+      </svg>
+      <span className="font-display text-xl font-bold tracking-tight">EduSmart</span>
+    </span>
   );
 }

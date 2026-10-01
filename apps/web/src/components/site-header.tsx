@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { LinkButton } from "@/components/ui";
+import { LinkButton, Wordmark } from "@/components/ui";
 
 export async function SiteHeader() {
   const supabase = await createClient();
@@ -8,12 +8,12 @@ export async function SiteHeader() {
     data: { user },
   } = await supabase.auth.getUser();
   return (
-    <header className="border-b border-black/10 dark:border-white/15">
-      <div className="mx-auto flex h-16 w-full max-w-5xl items-center justify-between px-4">
-        <Link href="/" className="text-lg font-semibold tracking-tight">
-          EduSmart
+    <header className="border-b border-line bg-paper">
+      <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4">
+        <Link href="/" aria-label="EduSmart, ke beranda">
+          <Wordmark />
         </Link>
-        <nav className="flex items-center gap-2">
+        <nav className="flex items-center gap-2" aria-label="Utama">
           {user ? (
             <LinkButton href="/dashboard">Dashboard</LinkButton>
           ) : (
