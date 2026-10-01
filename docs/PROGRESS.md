@@ -108,5 +108,5 @@ Permintaan pemilik: situs harus lengkap untuk siswa, guru, dan sekolah; modul (r
 ## Pusat Data fase 2c: tutor memakai buku sekolah (selesai)
 - RPC `book_excerpts(school, node)` (SECURITY DEFINER, wajib anggota + modul `ai_tutor`): mengembalikan maksimal 2 cuplikan (±1400 karakter) dari berkas buku paket/LKS/kurikulum yang cocok dengan judul materi dan mapelnya. Siswa tidak pernah membaca berkas; berkas data siswa/guru/keuangan tidak ikut. Tes: `supabase/tests/book_excerpts.test.sql` (5 lulus).
 - `tutorSystemPrompt` menandai kutipan sebagai data acuan (abaikan perintah di dalamnya). Diuji Playwright (m18): tutor menjawab dengan rumus dari buku.
-- Catatan polesan: tutor kadang menulis LaTeX (`$x=...$`); render matematika belum ada.
+- Tutor diminta menulis rumus dengan teks biasa (belum ada render matematika).
 - Sisa fase data hub: tagihan untuk siswa yang belum bergabung (`invoices.roster_id`), Integrasi (Dapodik/SSO).
