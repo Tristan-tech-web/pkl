@@ -110,3 +110,10 @@ Permintaan pemilik: situs harus lengkap untuk siswa, guru, dan sekolah; modul (r
 - `tutorSystemPrompt` menandai kutipan sebagai data acuan (abaikan perintah di dalamnya). Diuji Playwright (m18): tutor menjawab dengan rumus dari buku.
 - Tutor diminta menulis rumus dengan teks biasa (belum ada render matematika).
 - Sisa fase data hub: tagihan untuk siswa yang belum bergabung (`invoices.roster_id`), Integrasi (Dapodik/SSO).
+
+## Sambungan AI (MCP) dan ujian terkunci (iterasi ini)
+- **Kunci AI per pengguna** (`user_ai_keys`, halaman `/dashboard/ai-saya`): didahulukan atas kunci sekolah; siswa hanya bila sekolah mengizinkan (`schools.allow_student_keys`). Tes SQL 7.
+- **Rencana belajar mendalam** (`study_plans`, `lib/study-plan.ts`): baca penuh berkas panjang bertahap (potongan, bab, strategi per elemen, jadwal ulangan/tugas + alasan), opsi "salin prompt" ke AI sendiri. Batas keluaran AI dinaikkan (JSON terpotong di 4096 token adalah penyebab kegagalan). Belum terbukti end-to-end sampai selesai.
+- **Server MCP** `/api/mcp` (Streamable HTTP, token `esm_…` hash saja disimpan, RPC `mcp_*` anon yang memeriksa token): alat `siapa_saya`, `hari_ini`, `pengumuman`, `cari_peraturan`, `daftar_berkas`, `baca_berkas`, `minta_unggah`, `selesai_unggah` (unggah berkas besar langsung ke Storage lewat jalur sekali pakai). Diuji end-to-end (m21) dan SQL (16). Belum: OAuth untuk konektor claude.ai web (sekarang hanya header Bearer: Claude Code, Cursor, mcp-remote).
+- **Ujian terkunci** (modul `exams`; skema + RPC `exam_*`; tes SQL 21): guru buat/terbitkan/pantau/lanjutkan siswa, siswa mulai lewat kode sekali pakai → aplikasi → token sesi; pemutar web `/ujian/main` (timer server, simpan otomatis, pelanggaran, pembekuan); API `/api/ujian/*`; halaman `/ujian/aplikasi`. Diuji Playwright (m22, 15 pemeriksaan). Rancangan dan riset: `docs/design/exam-app.md`.
+- Keterbatasan jujur: klaim "terkunci" dari aplikasi belum diverifikasi attestation (Play Integrity / App Attest); cangkang native belum ada (lihat langkah berikut).
