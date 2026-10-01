@@ -155,3 +155,13 @@ export function sanitizePlan(raw: unknown, weeks: number): Plan {
   }).filter((c) => c.title.length >= 2);
   return { chapters, ...sanitizeSchedule(raw, weeks) };
 }
+
+/** Cuplikan teks berkas di sekitar kata kunci judul bab (kosong bila tidak ketemu). */
+export function excerptFor(text: string, title: string, size = 3500): string {
+  const lower = text.toLowerCase();
+  const words = title.toLowerCase().split(/[^\p{L}\p{N}]+/u).filter((w) => w.length >= 4);
+  const hits = words.map((w) => lower.indexOf(w)).filter((i) => i >= 0);
+  if (!hits.length) return "";
+  const at = Math.max(0, Math.min(...hits) - 200);
+  return text.slice(at, at + size);
+}

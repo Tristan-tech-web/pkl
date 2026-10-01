@@ -58,6 +58,7 @@ export default async function PlanPage({ params, searchParams }: { params: Promi
       ) : (
         <>
           <p className="mt-4 flex flex-wrap gap-x-6 text-sm"><span className="num font-semibold">{plan.chapters.length} bab</span><span className="num">{plan.chapters.reduce((a, c) => a + c.elements.length, 0)} elemen</span><span className="num">{plan.schedule.length} jadwal</span></p>
+          <p className="mt-4"><a href={`/dashboard/sekolah/${id}/skilltree/${planId}`} className="btn-solid inline-flex min-h-11 items-center rounded-box px-4 font-semibold">Susun skill tree semester</a></p>
           {plan.notes ? <p className="mt-3 max-w-3xl surface p-3 text-sm">{plan.notes}</p> : null}
 
           <h2 className="mt-8 mb-3 font-display text-2xl font-bold">Bab dan cara belajarnya</h2>

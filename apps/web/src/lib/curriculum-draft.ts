@@ -27,15 +27,7 @@ export function sanitizeDraft(raw: unknown, maxNodes: number): DraftNode[] {
     const o = n as Record<string, unknown>;
     const title = s(o.title, 160);
     if (title.length < 2) continue;
-    const questions: DraftQuestion[] = [];
-    for (const qn of Array.isArray(o.questions) ? o.questions.slice(0, 5) : []) {
-      const x = qn as Record<string, unknown>;
-      const options = Array.isArray(x.options) ? x.options.map((p) => s(p, 200)).filter(Boolean) : [];
-      const answer = Number(x.answer);
-      const prompt = s(x.prompt, 1000), explanation = s(x.explanation, 600);
-      if (prompt.length < 3 || explanation.length < 3 || options.length < 2 || options.length > 6 || !Number.isInteger(answer) || answer < 0 || answer >= options.length) continue;
-      questions.push({ prompt, options, answer, explanation });
-    }
+    const questions = sanitizeQuestions(o.questions, 5);
     const minutes = Number(o.minutes);
     out.push({
       title, summary: s(o.summary, 400),
@@ -44,6 +36,19 @@ export function sanitizeDraft(raw: unknown, maxNodes: number): DraftNode[] {
       body_md: s(o.body_md, 6000) || `## ${title}`,
       questions,
     });
+  }
+  return out;
+}
+
+export function sanitizeQuestions(raw: unknown, max: number): DraftQuestion[] {
+  const out: DraftQuestion[] = [];
+  for (const qn of Array.isArray(raw) ? raw.slice(0, max) : []) {
+    const x = qn as Record<string, unknown>;
+    const options = Array.isArray(x.options) ? x.options.map((p) => s(p, 200)).filter(Boolean) : [];
+    const answer = Number(x.answer);
+    const prompt = s(x.prompt, 1000), explanation = s(x.explanation, 600);
+    if (prompt.length < 3 || explanation.length < 3 || options.length < 2 || options.length > 6 || !Number.isInteger(answer) || answer < 0 || answer >= options.length) continue;
+    out.push({ prompt, options, answer, explanation });
   }
   return out;
 }

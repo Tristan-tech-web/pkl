@@ -8,7 +8,7 @@ import { resolveAdminAi } from "@/lib/file-analysis";
 import { requireModule } from "@/lib/modules";
 import { getSchoolContext } from "@/lib/school";
 import {
-  PLAN_SYSTEM, chunkText, detailPrompt, mapPrompt, outlinePrompt, sanitizeChapter, sanitizeMap, sanitizeOutline, sanitizePlan, sanitizeSchedule, schedulePrompt,
+  PLAN_SYSTEM, chunkText, excerptFor, detailPrompt, mapPrompt, outlinePrompt, sanitizeChapter, sanitizeMap, sanitizeOutline, sanitizePlan, sanitizeSchedule, schedulePrompt,
   type MapOut, type PlanChapter,
 } from "@/lib/study-plan";
 
@@ -17,15 +17,6 @@ const base = (id: string) => `/dashboard/sekolah/${id}/rencana`;
 
 type Work = { stage: "map" | "outline" | "detail" | "schedule"; i: number; maps: MapOut[]; outline: { title: string; summary: string; elements: MapOut[number]["elements"]; prerequisites: string[] }[]; chapters: PlanChapter[] };
 const EMPTY: Work = { stage: "map", i: 0, maps: [], outline: [], chapters: [] };
-
-function excerptFor(text: string, title: string, size = 3500): string {
-  const lower = text.toLowerCase();
-  const words = title.toLowerCase().split(/[^\p{L}\p{N}]+/u).filter((w) => w.length >= 4);
-  const hits = words.map((w) => lower.indexOf(w)).filter((i) => i >= 0);
-  if (!hits.length) return "";
-  const at = Math.max(0, Math.min(...hits) - 200);
-  return text.slice(at, at + size);
-}
 
 export async function startPlan(schoolId: string, fileId: string, formData: FormData) {
   const { supabase, me } = await getSchoolContext(schoolId);
