@@ -2,7 +2,8 @@ import Link from "next/link";
 import { Countdown } from "@/components/countdown";
 import { Mascot } from "@/components/three/mascot";
 import { IslandScene } from "@/components/island/island-scene";
-import { loadMap, type MapNode } from "@/lib/learning";
+import { loadMap, loadStats, type MapNode } from "@/lib/learning";
+import { penaLine } from "@/lib/pena-says";
 import type { createClient } from "@/lib/supabase/server";
 
 type Supa = Awaited<ReturnType<typeof createClient>>;
@@ -27,6 +28,7 @@ async function loadToday(supabase: Supa, memberId: string, classId: string | nul
   ]);
   const today = wib.toISOString().slice(0, 10);
   return {
+    hour: wib.getUTCHours(), day: Math.floor(wib.getTime() / 86_400_000),
     attempts: attempts ?? 0, practiced: practiced ?? 0, activeToday: (stat?.last_activity_date as string | null) === today,
     slots: ((slots ?? []) as Slot[]).filter((s) => s.weekday === weekday).sort((a, b) => a.starts_at.localeCompare(b.starts_at)),
     me: ((league ?? []) as { rank: number; xp: number; is_me: boolean }[]).find((r) => r.is_me) ?? null,
@@ -41,7 +43,7 @@ function pickNext(map: MapNode[]) {
 }
 
 export async function StudentHome({ supabase, schoolId, memberId, name, classId, subjects }: { supabase: Supa; schoolId: string; memberId: string; name: string; classId: string | null; subjects: { id: string; name: string; hours: number | null }[] }) {
-  const [map, today] = await Promise.all([loadMap(supabase, schoolId, memberId), loadToday(supabase, memberId, classId, schoolId)]);
+  const [map, today, stats] = await Promise.all([loadMap(supabase, schoolId, memberId), loadToday(supabase, memberId, classId, schoolId), loadStats(supabase, schoolId, memberId)]);
   const { next, soon } = pickNext(map);
   const base = `/dashboard/sekolah/${schoolId}`;
   const missions = [
@@ -50,12 +52,13 @@ export async function StudentHome({ supabase, schoolId, memberId, name, classId,
     { icon: "🔥", title: "Jaga beruntunmu", have: today.activeToday ? 1 : 0, goal: 1, href: `${base}/latihan` },
   ];
   const doneAll = missions.every((m) => m.have >= m.goal);
+  const say = penaLine({ hour: today.hour, day: today.day, name, level: stats.level, streak: stats.streak, into: stats.into, need: stats.need, missionsDone: doneAll });
   const bySubject = new Map<string, { total: number; done: number }>();
   for (const n of map) { const c = bySubject.get(n.subjectName) ?? { total: 0, done: 0 }; c.total++; if (n.state === "selesai") c.done++; bySubject.set(n.subjectName, c); }
 
   return (
     <div className="space-y-6">
-      <IslandScene compact pena={<Mascot size={150} className="island-pena" />}>
+      <IslandScene compact growth={{ level: stats.level, streak: stats.streak }} pena={<><p className="island-say">{say}</p><Mascot size={150} className="island-pena" /></>}>
         <section aria-label="Lanjut belajar" className="grid max-w-[22rem] gap-2">
           <p className="island-eyebrow w-fit">Halo, {name}!</p>
           {next ? (

@@ -56,3 +56,10 @@ Belum: transisi layar antar-halaman bergaya "kamera", suara/haptik opsional, Pen
 ## 6. Tambahan (2 Okt, sesi suara)
 - Panduan suara dan penegakannya untuk teks AI: `docs/design/voice-guide.md`, `apps/web/src/lib/voice.ts`.
 - Pena bereaksi: melompat saat benar/lulus, miring dan menunduk saat salah/belum lulus (`edusmart:oops`); getar singkat di HP (`lib/haptic.ts`), mati bila hemat gerak.
+
+## 7. Catatan putaran: "kalau aku murid, apakah ini terasa spesial?" (2 Okt, malam)
+Ditambahkan: pulau tumbuh menurut level dan streak (bunga mulai level 2, pohon 3, rumah 4, lentera jalan 5, kincir angin 6, api unggun menyala bila streak ≥ 1 dan membesar sampai 10 hari); Pena bicara sesuai keadaan nyata (`lib/pena-says.ts`, 6 tes); paralaks dihitung dari posisi kartu sendiri.
+Penilaian jujur:
+- Terasa spesial: beranda (ada "rumahku" yang tumbuh, Pena menyapa dengan kalimat yang masuk akal), peta belajar (daerah per mapel), landing.
+- Belum cukup: layar kuis dan latihan (inti belajarnya) masih bergaya kartu biasa; momen naik level dan lencana belum dirayakan secara layar penuh; belum ada suara; jadwal, nilai, rapor masih datar.
+- Putaran berikutnya: layar kuis/latihan sebagai "petualangan" (progres berupa langkah di jalan, soal sebagai pos), layar naik level, suara opsional (mati bawaan), jadwal/nilai/rapor.

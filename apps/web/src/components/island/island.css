@@ -170,3 +170,16 @@ html[data-experience="ceria"] .biome .path-node.is-locked { box-shadow: 0 7px 0 
 .island-auth > p a { color: var(--is-ink); font-weight: 800; text-decoration: underline; text-underline-offset: 3px; }
 /* Kartu di atas adegan kembali ke warna teks tema (bukan warna langit) */
 .island .surface { color: var(--ink); }
+
+.is-blades { transform-box: view-box; }
+@media (prefers-reduced-motion: no-preference) {
+  html:not([data-motion="kurangi"]) .is-blades { animation: is-spin 9s linear infinite; }
+  html:not([data-motion="kurangi"]) .is-flame { animation: is-flicker 1.1s ease-in-out infinite alternate; }
+}
+@keyframes is-spin { to { transform: rotate(360deg); } }
+@keyframes is-flicker { from { transform: scale(1, 1) skewX(-2deg); } to { transform: scale(0.94, 1.08) skewX(3deg); } }
+/* gelembung ucapan Pena di sebelah kirinya (beranda murid) */
+.island-say { position: absolute; z-index: 5; width: 8.6rem; background: #fff; color: #1b1a3a; border: 3px solid #1b1a3a; border-radius: 16px; padding: 0.4rem 0.7rem;
+  font-weight: 700; font-size: 0.9rem; line-height: 1.25; box-shadow: 0 4px 0 0 #1b1a3a; left: max(0.6rem, calc(50% + 100 * var(--s) - 75px - 9.4rem)); bottom: calc(138 * var(--s) + 3.2rem); }
+.island-say::after { content: ""; position: absolute; right: -10px; bottom: 14px; width: 14px; height: 14px; background: #fff; border-right: 3px solid #1b1a3a; border-bottom: 3px solid #1b1a3a; rotate: -45deg; }
+@media (min-width: 640px) { .island-say { width: 13rem; left: max(0.6rem, calc(50% + 100 * var(--s) - 75px - 14rem)); } }

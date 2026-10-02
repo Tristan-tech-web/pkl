@@ -26,6 +26,37 @@ function Tree({ x, y, s = 1, c = "var(--is-tree)" }: { x: number; y: number; s?:
     </g>
   );
 }
+function Windmill({ x, y }: { x: number; y: number }) {
+  return (
+    <g transform={`translate(${x} ${y})`}>
+      <path d="M-9 0 L-5 -46 H5 L9 0Z" fill="#fff6e6" /><path d="M-6 -46 L0 -58 L6 -46Z" fill="var(--is-flower)" />
+      <g className="is-blades" style={{ transformOrigin: "0px -50px", transformBox: "view-box" }}>
+        <g transform="translate(0 -50)" fill="#fff" stroke="var(--is-trunk)" strokeWidth="1.5">
+          <rect x="-3" y="-30" width="6" height="30" rx="2" /><rect x="-3" y="0" width="6" height="30" rx="2" /><rect x="-30" y="-3" width="30" height="6" rx="2" /><rect x="0" y="-3" width="30" height="6" rx="2" />
+        </g>
+      </g>
+      <circle cy="-50" r="4" fill="var(--is-trunk)" />
+    </g>
+  );
+}
+function Campfire({ x, y, size }: { x: number; y: number; size: number }) {
+  return (
+    <g transform={`translate(${x} ${y}) scale(${size})`}>
+      <ellipse cy="4" rx="22" ry="5" fill="#000" opacity=".16" />
+      <rect x="-17" y="-4" width="34" height="7" rx="3.5" fill="var(--is-trunk)" transform="rotate(-14)" /><rect x="-17" y="-4" width="34" height="7" rx="3.5" fill="#5e3a1f" transform="rotate(14)" />
+      <g className="is-flame" style={{ transformOrigin: "0px 0px", transformBox: "view-box" }}>
+        <path d="M0 -4 C-14 -14 -8 -30 0 -44 C8 -30 14 -14 0 -4Z" fill="#ff8a1f" /><path d="M0 -4 C-7 -10 -4 -20 0 -28 C4 -20 7 -10 0 -4Z" fill="#ffd34d" />
+      </g>
+    </g>
+  );
+}
+function Lantern({ x, y }: { x: number; y: number }) {
+  return (
+    <g transform={`translate(${x} ${y})`}>
+      <rect x="-2" y="-34" width="4" height="34" fill="#4a3a2a" /><circle cy="-38" r="9" fill="var(--is-glow)" /><rect x="-5" y="-44" width="10" height="12" rx="3" fill="#ffe27a" stroke="#4a3a2a" strokeWidth="2" />
+    </g>
+  );
+}
 function Flower({ x, y }: { x: number; y: number }) {
   return (
     <g transform={`translate(${x} ${y})`}>
@@ -36,7 +67,11 @@ function Flower({ x, y }: { x: number; y: number }) {
   );
 }
 
-export function IslandScene({ children, pena, header, compact = false, strip = false, bare = false }: { children: React.ReactNode; pena: React.ReactNode; header?: React.ReactNode; compact?: boolean; strip?: boolean; bare?: boolean }) {
+export type Growth = { level: number; streak: number };
+
+/** `growth` membuat pulau murid tumbuh: makin tinggi level, makin ramai; streak menyalakan api unggun. Tanpa `growth` (landing) semuanya tampil. */
+export function IslandScene({ children, pena, header, compact = false, strip = false, bare = false, growth }: { children: React.ReactNode; pena: React.ReactNode; header?: React.ReactNode; compact?: boolean; strip?: boolean; bare?: boolean; growth?: Growth }) {
+  const g = growth ?? { level: 99, streak: 3 };
   const root = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -51,7 +86,7 @@ export function IslandScene({ children, pena, header, compact = false, strip = f
     const tick = () => {
       raf = 0;
       cx += (tx - cx) * 0.12; cy += (ty - cy) * 0.12;
-      el.style.setProperty("--p", String(Math.min(window.scrollY, el.offsetHeight)));
+      el.style.setProperty("--p", String(Math.min(Math.max(0, -el.getBoundingClientRect().top), el.offsetHeight)));
       el.style.setProperty("--mx", cx.toFixed(3));
       el.style.setProperty("--my", cy.toFixed(3));
       if (Math.abs(tx - cx) > 0.002 || Math.abs(ty - cy) > 0.002) raf = requestAnimationFrame(tick);
@@ -86,16 +121,17 @@ export function IslandScene({ children, pena, header, compact = false, strip = f
       <div className="island-layer" aria-hidden="true" style={layer(0.32, -12)}>
         <svg viewBox="0 0 1440 600" preserveAspectRatio="xMidYMax slice">
           <path d="M0 380 Q240 270 480 350 T900 330 T1440 340 V600 H0Z" fill="var(--is-h1)" />
-          <Tree x={1250} y={330} s={1.1} c="var(--is-tree2)" /><Tree x={1330} y={345} s={0.7} c="var(--is-tree2)" />
+          {g.level >= 3 ? <><Tree x={1250} y={330} s={1.1} c="var(--is-tree2)" /><Tree x={1330} y={345} s={0.7} c="var(--is-tree2)" /></> : null}
+          {g.level >= 6 ? <Windmill x={575} y={346} /> : null}
           {/* pondok kecil */}
-          <g transform="translate(1040 322)"><rect x="-22" y="-14" width="44" height="30" fill="#fff6e6" /><path d="M-28 -14 0 -40 28 -14Z" fill="var(--is-flower)" /><rect x="-6" y="-2" width="12" height="18" fill="var(--is-trunk)" /></g>
+          {g.level >= 4 ? <g transform="translate(1040 322)"><rect x="-22" y="-14" width="44" height="30" fill="#fff6e6" /><path d="M-28 -14 0 -40 28 -14Z" fill="var(--is-flower)" /><rect x="-6" y="-2" width="12" height="18" fill="var(--is-trunk)" /></g> : null}
         </svg>
       </div>
       <div className="island-layer" aria-hidden="true" style={layer(0.2, -20)}>
         <svg viewBox="0 0 1440 600" preserveAspectRatio="xMidYMax slice">
           <path d="M0 440 Q300 340 620 410 T1200 400 T1440 420 V600 H0Z" fill="var(--is-h2)" />
-          <Tree x={560} y={398} s={0.8} c="var(--is-tree2)" /><Tree x={1180} y={405} s={1.3} /><Tree x={1360} y={420} s={0.9} c="var(--is-tree2)" />
-          <Flower x={400} y={440} /><Flower x={440} y={446} /><Flower x={1020} y={420} /><Flower x={1060} y={428} />
+          {g.level >= 3 ? <Tree x={560} y={398} s={0.8} c="var(--is-tree2)" /> : null}<Tree x={1180} y={405} s={1.3} />{g.level >= 3 ? <Tree x={1360} y={420} s={0.9} c="var(--is-tree2)" /> : null}
+          {g.level >= 2 ? <><Flower x={400} y={440} /><Flower x={440} y={446} /><Flower x={1020} y={420} /><Flower x={1060} y={428} /></> : null}
         </svg>
       </div>
       <div className="island-layer" aria-hidden="true" style={layer(0.1, -32)}>
@@ -104,8 +140,10 @@ export function IslandScene({ children, pena, header, compact = false, strip = f
           {/* jalan setapak melebar ke arah penonton */}
           <path d="M790 446 C760 470 690 480 640 515 C595 548 560 578 500 600 L730 600 C760 574 800 552 845 532 C895 508 920 485 858 448Z" fill="var(--is-path)" />
           <path d="M822 452 C800 478 720 492 672 524 C640 546 610 575 590 600" stroke="#fff" strokeOpacity=".55" strokeWidth="4" strokeLinecap="round" strokeDasharray="2 14" fill="none" />
-          <Flower x={300} y={515} /><Flower x={340} y={522} /><Flower x={1130} y={500} /><Flower x={1180} y={508} /><Flower x={1230} y={500} />
-          <Tree x={1330} y={480} s={1.6} c="var(--is-tree)" />
+          {g.level >= 2 ? <><Flower x={300} y={515} /><Flower x={340} y={522} /><Flower x={1130} y={500} /><Flower x={1180} y={508} /><Flower x={1230} y={500} /></> : null}
+          {g.level >= 5 ? <><Lantern x={690} y={500} /><Lantern x={600} y={548} /></> : null}
+          {g.streak >= 1 ? <Campfire x={985} y={520} size={0.75 + Math.min(g.streak, 10) * 0.06} /> : null}
+          {g.level >= 3 ? <Tree x={1330} y={480} s={1.6} c="var(--is-tree)" /> : null}
         </svg>
       </div>
       <div className="island-layer" aria-hidden="true" style={{ ...layer(0.04, -40) }}>
