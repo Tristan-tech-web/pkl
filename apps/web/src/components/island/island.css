@@ -150,3 +150,13 @@ html[data-experience="ceria"] .biome .path-node.is-locked { box-shadow: 0 7px 0 
 .island-mini .island-cloud { top: 6% !important; }
 .island-quest { font-family: var(--font-display); font-weight: 800; letter-spacing: -0.02em; line-height: 1; font-size: clamp(1.9rem, 7.5vw, 2.6rem); color: var(--is-ink); text-wrap: balance; max-width: 15ch; }
 @media (min-width: 640px) { .island-mini { height: 430px; } .island-mini .island-text { padding: 1.6rem 1.8rem 0; } }
+
+/* Pita sapaan untuk guru dan pemilik: tenang, satu strip langit dan bukit di puncak beranda */
+.island-strip { --ih: 150px; min-height: 0; height: 176px; margin-top: -3.1rem; border-radius: calc(var(--r-box) * 1.3); border: var(--bw) solid color-mix(in oklab, var(--is-ink) 16%, transparent); }
+.island-strip::after, .island-strip .island-cue, .island-strip .island-stars, .island-strip .island-cloud.c3 { display: none; }
+.island-strip .island-text { padding: 1rem 1.1rem 0; margin: 0; max-width: none; }
+.island-strip .island-sun { width: 64px; right: 24% !important; top: 12% !important; box-shadow: 0 0 0 8px var(--is-glow), 0 0 40px 12px var(--is-glow); }
+.island-strip .island-quest { font-size: clamp(1.7rem, 6vw, 2.5rem); }
+.island-strip[data-tod="malam"] .island-stars { display: block; }
+@media (min-width: 640px) { .island-strip { height: 190px; } .island-strip .island-text { padding: 1.2rem 1.6rem 0; } }
+@media (max-width: 640px) { .island-strip .island-sun { display: none; } }

@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { Icon } from "@/components/icons";
+import { IslandScene } from "@/components/island/island-scene";
 import { enabledModuleCodes } from "@/lib/modules";
 import type { createClient } from "@/lib/supabase/server";
 
@@ -7,23 +9,24 @@ type Slot = { weekday: number; starts_at: string; ends_at: string; room: string 
 type Tile = { slug: string; icon: string; title: string; hint: string; module?: string };
 
 const TEACHER_TILES: Tile[] = [
-  { slug: "absensi", icon: "📋", title: "Absensi", hint: "Catat kehadiran", module: "attendance" },
-  { slug: "nilai", icon: "📝", title: "Nilai", hint: "Isi dan lihat nilai", module: "gradebook" },
-  { slug: "rencana", icon: "🌳", title: "Skill tree", hint: "Susun jalur belajar semester", module: "data_hub" },
-  { slug: "bank", icon: "🧠", title: "Bank soal", hint: "Soal dari buku, dibuat AI", module: "learning" },
-  { slug: "pantau", icon: "👀", title: "Pantau murid", hint: "Siapa yang tertinggal", module: "learning" },
-  { slug: "ujian", icon: "🧪", title: "Ujian", hint: "Jadwal dan pengawasan", module: "exams" },
+  { slug: "absensi", icon: "absensi", title: "Absensi", hint: "Catat kehadiran", module: "attendance" },
+  { slug: "nilai", icon: "nilai", title: "Nilai", hint: "Isi dan lihat nilai", module: "gradebook" },
+  { slug: "rencana", icon: "rencana", title: "Skill tree", hint: "Susun jalur belajar semester", module: "data_hub" },
+  { slug: "bank", icon: "bank", title: "Bank soal", hint: "Soal dari buku, dibuat AI", module: "learning" },
+  { slug: "pantau", icon: "pantau", title: "Pantau murid", hint: "Siapa yang tertinggal", module: "learning" },
+  { slug: "ujian", icon: "ujian", title: "Ujian", hint: "Jadwal dan pengawasan", module: "exams" },
 ];
 const OWNER_TILES: Tile[] = [
-  { slug: "anggota", icon: "👥", title: "Anggota", hint: "Guru, siswa, staf, orang tua" },
-  { slug: "rombel", icon: "🏫", title: "Rombel", hint: "Kelas dan wali kelas" },
-  { slug: "berkas", icon: "📁", title: "Berkas dan impor", hint: "Unggah data, AI memilah", module: "data_hub" },
-  { slug: "tampilan", icon: "🎨", title: "Tampilan sekolah", hint: "Warna dan gaya" },
-  { slug: "keuangan", icon: "💰", title: "Keuangan", hint: "Tagihan dan pembayaran", module: "fees" },
-  { slug: "rapor", icon: "📄", title: "Rapor", hint: "Template dan cetak", module: "gradebook" },
-  { slug: "integritas", icon: "🛡️", title: "Integritas latihan", hint: "Kebijakan dan kasus", module: "learning" },
-  { slug: "paket", icon: "🧩", title: "Paket dan modul", hint: "Fitur yang aktif" },
+  { slug: "anggota", icon: "anggota", title: "Anggota", hint: "Guru, siswa, staf, orang tua" },
+  { slug: "rombel", icon: "rombel", title: "Rombel", hint: "Kelas dan wali kelas" },
+  { slug: "berkas", icon: "berkas", title: "Berkas dan impor", hint: "Unggah data, AI memilah", module: "data_hub" },
+  { slug: "tampilan", icon: "tampilan", title: "Tampilan sekolah", hint: "Warna dan gaya" },
+  { slug: "keuangan", icon: "keuangan", title: "Keuangan", hint: "Tagihan dan pembayaran", module: "fees" },
+  { slug: "rapor", icon: "rapor", title: "Rapor", hint: "Template dan cetak", module: "gradebook" },
+  { slug: "integritas", icon: "integritas", title: "Integritas latihan", hint: "Kebijakan dan kasus", module: "learning" },
+  { slug: "paket", icon: "paket", title: "Paket dan modul", hint: "Fitur yang aktif" },
 ];
+const TINTS = ["--pen", "--accent", "--ok", "--warn"];
 const DAYS = ["", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"];
 const MONTHS = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
 
@@ -58,10 +61,12 @@ export async function StaffHome({ supabase, schoolId, memberId, name, kind }: { 
   ].filter((a) => a.show && a.n > 0);
   return (
     <div className="space-y-6">
-      <header>
-        <p className="text-sm font-semibold text-ink-soft">{today.date}</p>
-        <h1 className="font-display text-3xl font-extrabold tracking-tight">{today.greeting}, {name}</h1>
-      </header>
+      <IslandScene strip pena={null}>
+        <header className="grid gap-1 pt-1">
+          <p className="island-eyebrow w-fit">{today.date}</p>
+          <h1 className="island-quest !max-w-none">{today.greeting}, {name}</h1>
+        </header>
+      </IslandScene>
 
       {attention.length ? (
         <section aria-label="Perlu perhatian" className="rounded-box border-2 border-warn bg-warn-bg p-4">
@@ -94,10 +99,10 @@ export async function StaffHome({ supabase, schoolId, memberId, name, kind }: { 
       <section aria-label="Tugas utama">
         <h2 className="font-display text-xl font-bold">{kind === "teacher" ? "Tugas utama" : "Kelola sekolah"}</h2>
         <ul className="mt-2 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
-          {tiles.map((t) => (
+          {tiles.map((t, i) => (
             <li key={t.slug}>
-              <Link href={`${base}/${t.slug}`} className="press flex h-full min-h-28 flex-col justify-between rounded-box border-2 border-line bg-card p-3 hover:border-pen">
-                <span aria-hidden="true" className="text-3xl">{t.icon}</span>
+              <Link href={`${base}/${t.slug}`} className="press flex h-full min-h-28 flex-col justify-between gap-3 rounded-box border-2 border-line bg-card p-3 hover:border-pen">
+                <span aria-hidden="true" className="grid size-11 place-items-center rounded-xl" style={{ color: `var(${TINTS[i % TINTS.length]})`, background: `color-mix(in srgb, var(${TINTS[i % TINTS.length]}) 13%, var(--card))` }}><Icon name={t.icon} size={26} /></span>
                 <span><span className="block text-lg font-bold leading-tight">{t.title}</span><span className="block text-sm text-ink-soft">{t.hint}</span></span>
               </Link>
             </li>

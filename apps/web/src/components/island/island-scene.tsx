@@ -36,7 +36,7 @@ function Flower({ x, y }: { x: number; y: number }) {
   );
 }
 
-export function IslandScene({ children, pena, header, compact = false }: { children: React.ReactNode; pena: React.ReactNode; header?: React.ReactNode; compact?: boolean }) {
+export function IslandScene({ children, pena, header, compact = false, strip = false }: { children: React.ReactNode; pena: React.ReactNode; header?: React.ReactNode; compact?: boolean; strip?: boolean }) {
   const root = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -65,7 +65,7 @@ export function IslandScene({ children, pena, header, compact = false }: { child
   const layer = (k: number, m: number) => ({ transform: `translate3d(calc(var(--mx) * ${m}px), calc(var(--p) * ${k}px + var(--my) * ${m / 2}px), 0)` });
 
   return (
-    <section ref={root} data-tod="siang" className={compact ? "island island-mini" : "island"} aria-label="Pulau Belajar">
+    <section ref={root} data-tod="siang" className={strip ? "island island-strip" : compact ? "island island-mini" : "island"} aria-label="Pulau Belajar">
       <div className="island-stars" aria-hidden="true">{STARS.map((s, i) => <i key={i} style={{ left: `${s.x}%`, top: `${s.y}%`, width: s.s + 1, height: s.s + 1 }} />)}</div>
       <div className="island-sun" aria-hidden="true" style={{ right: "12%", top: "16%", ...layer(0.55, -10) }} />
       {[{ c: "c1", t: "9%", w: 1 }, { c: "c2", t: "22%", w: 0.7 }, { c: "c3", t: "34%", w: 1.15 }].map((c) => (
@@ -115,7 +115,7 @@ export function IslandScene({ children, pena, header, compact = false }: { child
       </div>
 
       {pena}
-      {compact ? null : <a href="#perjalanan" className="island-cue" aria-label="Mulai perjalanan, gulir ke bawah">
+      {compact || strip ? null : <a href="#perjalanan" className="island-cue" aria-label="Mulai perjalanan, gulir ke bawah">
         <span>Gulir untuk berjalan</span>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
       </a>}

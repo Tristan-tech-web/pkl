@@ -34,7 +34,7 @@ export default async function SchoolLayout({ children, params }: { children: Rea
     <>
       {ctx ? <AppearanceApply look={ctx.look} /> : null}
       <AvatarApply avatar={avatar} />
-      <div className="no-print -mt-2 mb-2 flex justify-end">
+      <div className="no-print relative z-10 -mt-2 mb-2 flex justify-end">
         <Link
           href={`/dashboard/sekolah/${id}/notifikasi`}
           aria-label={n > 0 ? `Notifikasi, ${n} belum dibaca` : "Notifikasi"}
