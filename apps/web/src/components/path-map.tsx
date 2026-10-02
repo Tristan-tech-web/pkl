@@ -2,6 +2,9 @@ import Link from "next/link";
 import { Countdown } from "@/components/countdown";
 import { Stars } from "@/components/stars";
 import type { MapNode } from "@/lib/learning";
+import { Mascot } from "@/components/three/mascot";
+import { Road } from "@/components/island/road";
+import { Scenery, BIOMES, hash } from "@/components/island/scenery";
 
 const ICON: Record<string, string> = { materi: "📖", persiapan: "🌱", latihan: "💪", ulang: "🔁", checkpoint: "🚩", boss: "👾", proyek: "🛠️", cerita: "📚" };
 const KIND_LABEL: Record<string, string> = { materi: "Materi", persiapan: "Persiapan", latihan: "Latihan", ulang: "Ulang", checkpoint: "Checkpoint", boss: "Tantangan", proyek: "Proyek", cerita: "Cerita" };
@@ -30,22 +33,25 @@ function Node({ n, schoolId, offset, current, preview }: { n: MapNode; schoolId:
   const cls = `path-node ${big ? "path-node-big" : ""} ${n.state === "selesai" ? "is-done" : locked ? "is-locked" : "is-open"} ${current ? "is-current" : ""}`;
   const inner = (
     <>
-      <span className={cls} aria-hidden="true">
+      <span className={cls} aria-hidden="true" data-node data-state={n.state === "selesai" ? "done" : current ? "now" : locked ? "lock" : "open"}>
         <span className="path-node-face">{n.state === "selesai" ? "✓" : locked ? (n.state === "dijadwalkan" ? "⏳" : "🔒") : ICON[n.kind] ?? "📖"}</span>
       </span>
-      <span className="mt-2 block max-w-[9rem] break-words text-center text-sm font-bold leading-tight">{n.title}</span>
+      <span className="path-caption">
+      <span className="block max-w-[9rem] break-words text-center text-sm font-bold leading-tight">{n.title}</span>
       <span className="num block text-center text-xs text-ink-soft">{KIND_LABEL[n.kind] ?? "Materi"}{!locked && n.state !== "selesai" ? ` · +${n.xpReward} XP` : ""}</span>
       {n.state === "selesai" ? <span className="mt-0.5 flex justify-center"><Stars n={n.stars} /></span> : null}
       {n.state === "dijadwalkan" && n.opensAt && !preview ? (
         <span className="mt-1 block text-center text-xs font-semibold text-ink-soft">Terbuka {when(n.opensAt)}<br /><Countdown until={n.opensAt} className="num" /></span>
       ) : null}
       {n.state === "terkunci" && !preview ? <span className="mt-0.5 block text-center text-xs text-ink-soft">Selesaikan materi sebelumnya</span> : null}
+      </span>
       {current ? <span className="path-here" aria-hidden="true">MULAI</span> : null}
     </>
   );
   const style = { marginLeft: `${Math.max(0, offset * 2)}%`, marginRight: `${Math.max(0, -offset * 2)}%` } as React.CSSProperties;
   return (
     <li className="relative flex justify-center py-3" style={style}>
+      {current ? <Mascot size={92} className={`path-pena ${offset > 0 ? "left-[calc(50%-9rem)]" : "left-[calc(50%+4rem)]"}`} /> : null}
       {locked ? (
         <div className="relative flex flex-col items-center opacity-90" aria-disabled="true" aria-label={`${n.title}, terkunci`}>{inner}</div>
       ) : (
@@ -61,20 +67,26 @@ export function PathMap({ nodes, schoolId, preview = false }: { nodes: MapNode[]
   const currentId = nodes.find((n) => n.state === "tersedia")?.id;
   let idx = 0;
   return (
-    <div className="mx-auto max-w-md space-y-8">
-      {groups.map((g) => (
-        <section key={g.key} aria-label={g.title ?? "Materi"}>
-          {g.title ? (
-            <div className="path-banner">
-              <p className="text-xs font-bold uppercase tracking-[0.1em] opacity-80">Unit</p>
-              <h3 className="font-display text-xl font-extrabold leading-tight">{g.title}</h3>
-            </div>
-          ) : null}
-          <ol className="relative mt-3">
-            {g.nodes.map((n) => <Node key={n.id} n={n} schoolId={schoolId} offset={WAVE[idx++ % WAVE.length]} current={n.id === currentId && !preview} preview={preview} />)}
-          </ol>
-        </section>
-      ))}
+    <div className="mx-auto max-w-md space-y-6">
+      {groups.map((g, gi) => {
+        const biome = BIOMES[(hash(groups[0].key) + gi) % BIOMES.length];
+        return (
+          <section key={g.key} aria-label={g.title ?? "Materi"} className="biome" data-biome={biome}>
+            {g.title ? (
+              <div className="path-banner biome-banner">
+                <p className="text-xs font-bold uppercase tracking-[0.1em] opacity-80">Unit</p>
+                <h3 className="font-display text-xl font-extrabold leading-tight">{g.title}</h3>
+              </div>
+            ) : null}
+            <Scenery biome={biome} seed={hash(g.key) + gi} slots={g.nodes.length} />
+            <Road>
+              <ol className="relative mt-3">
+                {g.nodes.map((n) => <Node key={n.id} n={n} schoolId={schoolId} offset={WAVE[idx++ % WAVE.length]} current={n.id === currentId && !preview} preview={preview} />)}
+              </ol>
+            </Road>
+          </section>
+        );
+      })}
     </div>
   );
 }

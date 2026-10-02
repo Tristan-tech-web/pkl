@@ -115,3 +115,27 @@ html[data-motion="kurangi"] .island-title .em path, .island-title .em path[data-
 html[data-motion="kurangi"] .js [data-reveal] { opacity: 1; transform: none; transition: none; }
 .gate { position: relative; overflow: hidden; background: var(--pen); color: var(--on-pen); }
 .gate h2 { font-family: var(--font-display); font-weight: 800; letter-spacing: -0.04em; line-height: 0.9; font-size: clamp(3rem, 12vw, 9rem); }
+
+/* ===== Peta belajar murid: wilayah (biome) + jalan ===== */
+.biome { --bi-a: #e3f6cf; --bi-b: #bfe8a0; --rd-edge: #b98f55; --rd-bed: #f6e3b4; position: relative; isolation: isolate; overflow: hidden; border-radius: calc(var(--r-box) * 1.4);
+  background: linear-gradient(180deg, color-mix(in oklab, var(--bi-a) 78%, var(--paper)), color-mix(in oklab, var(--bi-b) 78%, var(--paper))); border: var(--bw) solid color-mix(in oklab, var(--bi-b) 60%, var(--line)); }
+.biome[data-biome="hutan"] { --bi-a: #cfe7bf; --bi-b: #93c98e; }
+.biome[data-biome="pantai"] { --bi-a: #fdf0c6; --bi-b: #f3d890; --rd-edge: #a77a3e; --rd-bed: #e2bc7a; }
+.biome[data-biome="gunung"] { --bi-a: #e3ebf6; --bi-b: #b9c9de; --rd-edge: #7d8aa0; --rd-bed: #d9d2c4; }
+.biome[data-biome="hutan"] { --rd-edge: #8d6a3d; --rd-bed: #e9d3a0; }
+.biome-banner { position: relative; z-index: 3; margin: 0.9rem 0.9rem 0; }
+.biome-decos { position: absolute; inset: 3.5rem 0 0; z-index: 0; pointer-events: none; }
+.biome-deco { position: absolute; display: block; }
+.biome-deco svg { display: block; overflow: visible; }
+.biome-sea { position: absolute; left: -3%; top: 0; bottom: 0; width: 15%; background: linear-gradient(90deg, #5cc3e8, #8ddcf2); border-radius: 0 60% 40% 0 / 0 12% 12% 0; opacity: .85; }
+.road-root { position: relative; padding: 0.5rem 0 1.5rem; z-index: 1; }
+.road-svg { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: visible; }
+.road-edge { fill: none; stroke: var(--rd-edge); stroke-width: 40; stroke-linecap: round; stroke-linejoin: round; }
+.road-bed { fill: none; stroke: var(--rd-bed); stroke-width: 30; stroke-linecap: round; stroke-linejoin: round; }
+.road-dash { fill: none; stroke: #fff; stroke-opacity: .65; stroke-width: 3; stroke-dasharray: 2 12; stroke-linecap: round; }
+.road-walked { fill: none; stroke: var(--ok); stroke-opacity: .55; stroke-width: 12; stroke-linecap: round; transition: stroke-dashoffset 900ms var(--ease-out, ease-out); }
+.path-caption { display: flex; flex-direction: column; align-items: center; margin-top: 0.55rem; padding: 0.2rem 0.75rem 0.3rem; border-radius: 16px; max-width: 12rem;
+  background: color-mix(in oklab, var(--card) 92%, transparent); color: var(--ink); border: 1px solid color-mix(in oklab, var(--line) 70%, transparent); }
+.biome .path-node.is-locked { background: #aab4c3; border-color: #7f8ba0; color: #fff; }
+html[data-experience="ceria"] .biome .path-node.is-locked { box-shadow: 0 7px 0 0 #7f8ba0; }
+.path-pena { position: absolute; z-index: 4; top: 50%; translate: 0 -62%; pointer-events: none; }
