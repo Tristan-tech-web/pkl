@@ -160,3 +160,13 @@ html[data-experience="ceria"] .biome .path-node.is-locked { box-shadow: 0 7px 0 
 .island-strip[data-tod="malam"] .island-stars { display: block; }
 @media (min-width: 640px) { .island-strip { height: 190px; } .island-strip .island-text { padding: 1.2rem 1.6rem 0; } }
 @media (max-width: 640px) { .island-strip .island-sun { display: none; } }
+
+/* Latar halaman masuk/daftar: dunia yang sama, formulir menumpang di atasnya */
+.island-bare { min-height: 100svh; }
+.island-bare::after { display: none; }
+.island-bare .island-text { padding-bottom: 14rem; }
+.island-bare .island-sun { top: 10% !important; }
+.island-auth > p { color: var(--is-ink); }
+.island-auth > p a { color: var(--is-ink); font-weight: 800; text-decoration: underline; text-underline-offset: 3px; }
+/* Kartu di atas adegan kembali ke warna teks tema (bukan warna langit) */
+.island .surface { color: var(--ink); }
