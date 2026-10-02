@@ -33,7 +33,8 @@ export default async function PengumumanPage({ params, searchParams }: { params:
     <>
       {management ? <SchoolNav schoolId={id} active="pengumuman" /> : <BackLink />}
       <header className="mt-3 mb-6">
-        <h1 className="font-display text-4xl font-bold tracking-tight">Pengumuman</h1>
+        <h1 className="font-display text-4xl font-bold tracking-tight">Papan pengumuman</h1>
+        <p className="mt-1 text-ink-soft">{canWrite ? "Tulis singkat, sebut tanggal dan tempatnya. Orang malas baca yang panjang." : "Kabar terbaru dari sekolah."}</p>
       </header>
       <div className="space-y-3"><ErrorNote message={sp.error} /><InfoNote message={sp.info} /></div>
       {canWrite ? (
@@ -50,19 +51,19 @@ export default async function PengumumanPage({ params, searchParams }: { params:
             <label><Label hint="untuk sasaran rombel">Rombel</Label>
               <Select name="class_group_id">{writableClasses.map((c) => <option key={c.id as string} value={c.id as string}>{c.name as string}</option>)}</Select></label>
             {management ? <label className="flex min-h-11 items-center gap-2 sm:col-span-2"><input type="checkbox" name="pinned" className="size-4" /> Sematkan di atas</label> : null}
-            <div className="sm:col-span-2"><Button type="submit">Kirim</Button></div>
+            <div className="sm:col-span-2"><Button type="submit">Pasang di papan</Button></div>
           </form>
         </details>
       ) : null}
       {rows.length === 0 ? (
-        <Empty className="mt-6">Belum ada pengumuman.</Empty>
+        <Empty className="mt-6">Papan masih kosong. Belum ada kabar baru.</Empty>
       ) : (
         <ul className="stagger mt-6 space-y-4">
           {rows.map((r) => (
             <li key={r.id} className={`rounded-box border bg-card p-4 ${r.pinned ? "border-pen" : "border-line"}`}>
               <div className="flex flex-wrap items-baseline justify-between gap-2">
-                <h2 className="text-lg font-bold">{r.pinned ? "📌 " : ""}{r.title}</h2>
-                <span className="rounded-full border border-line px-2 py-0.5 text-xs text-ink-soft">{r.audience === "kelas" ? first(r.class_groups)?.name ?? "Rombel" : AUD[r.audience]}</span>
+                <h2 className="text-lg font-bold">{r.title}</h2>
+                <span className="rounded-full border border-line px-2 py-0.5 text-xs text-ink-soft">{r.pinned ? "Disematkan · " : ""}{r.audience === "kelas" ? first(r.class_groups)?.name ?? "Rombel" : AUD[r.audience]}</span>
               </div>
               <p className="mt-2 whitespace-pre-wrap">{r.body}</p>
               <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-sm text-ink-soft">
