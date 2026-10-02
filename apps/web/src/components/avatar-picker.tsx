@@ -3,6 +3,7 @@
 import { useEffect, useState, useTransition } from "react";
 import { saveAvatar } from "@/app/dashboard/sekolah/[id]/profil/actions";
 import { COLORS, COLOR_HEX, COLOR_LABEL, HATS, HAT_LABEL, encodeAvatar, type Avatar } from "@/lib/avatar";
+import "./island/island.css";
 import { Mascot } from "@/components/three/mascot";
 
 // Pratinjau langsung: mengubah data-avatar di <html> sehingga maskot di halaman ini berubah seketika; Simpan menyimpannya ke akun.
@@ -16,7 +17,7 @@ export function AvatarPicker({ schoolId, initial }: { schoolId: string; initial:
     <section className="surface p-4" aria-label="Kustomisasi maskot">
       <h2 className="font-display text-xl font-extrabold">Dandani Pena</h2>
       <div className="mt-2 flex flex-col items-center gap-4 sm:flex-row">
-        <Mascot size={190} className="shrink-0" />
+        <div className="pena-stage shrink-0"><Mascot size={190} /></div>
         <div className="w-full space-y-3">
           <fieldset><legend className="mb-1 text-sm font-bold">Topi</legend>
             <div className="flex flex-wrap gap-2">{HATS.map((h) => <button key={h} type="button" aria-pressed={a.hat === h} onClick={() => set({ hat: h })} className={`min-h-11 rounded-btn border-2 px-3 text-sm font-bold ${a.hat === h ? "border-pen bg-pen text-on-pen" : "border-line bg-card"}`}>{HAT_LABEL[h]}</button>)}</div></fieldset>
