@@ -6,7 +6,7 @@ import type { MapNode } from "@/lib/learning";
 const ICON: Record<string, string> = { materi: "📖", persiapan: "🌱", latihan: "💪", ulang: "🔁", checkpoint: "🚩", boss: "👾", proyek: "🛠️", cerita: "📚" };
 const KIND_LABEL: Record<string, string> = { materi: "Materi", persiapan: "Persiapan", latihan: "Latihan", ulang: "Ulang", checkpoint: "Checkpoint", boss: "Tantangan", proyek: "Proyek", cerita: "Cerita" };
 // Pergeseran kiri-kanan membentuk jalur berkelok (satuan: persen dari lebar jalur).
-const WAVE = [0, 18, 28, 18, 0, -18, -28, -18];
+const WAVE = [0, 14, 22, 14, 0, -14, -22, -14];
 
 type Group = { key: string; title: string | null; position: number; nodes: MapNode[] };
 
@@ -33,7 +33,7 @@ function Node({ n, schoolId, offset, current, preview }: { n: MapNode; schoolId:
       <span className={cls} aria-hidden="true">
         <span className="path-node-face">{n.state === "selesai" ? "✓" : locked ? (n.state === "dijadwalkan" ? "⏳" : "🔒") : ICON[n.kind] ?? "📖"}</span>
       </span>
-      <span className="mt-2 block max-w-[11rem] text-center text-sm font-bold leading-tight">{n.title}</span>
+      <span className="mt-2 block max-w-[9rem] break-words text-center text-sm font-bold leading-tight">{n.title}</span>
       <span className="num block text-center text-xs text-ink-soft">{KIND_LABEL[n.kind] ?? "Materi"}{!locked && n.state !== "selesai" ? ` · +${n.xpReward} XP` : ""}</span>
       {n.state === "selesai" ? <span className="mt-0.5 flex justify-center"><Stars n={n.stars} /></span> : null}
       {n.state === "dijadwalkan" && n.opensAt && !preview ? (
@@ -43,7 +43,7 @@ function Node({ n, schoolId, offset, current, preview }: { n: MapNode; schoolId:
       {current ? <span className="path-here" aria-hidden="true">MULAI</span> : null}
     </>
   );
-  const style = { transform: `translateX(${offset}%)` } as React.CSSProperties;
+  const style = { marginLeft: `${Math.max(0, offset * 2)}%`, marginRight: `${Math.max(0, -offset * 2)}%` } as React.CSSProperties;
   return (
     <li className="relative flex justify-center py-3" style={style}>
       {locked ? (
