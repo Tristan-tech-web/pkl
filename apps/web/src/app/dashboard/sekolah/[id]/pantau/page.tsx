@@ -84,16 +84,22 @@ export default async function PantauPage({
       {management ? <SchoolNav schoolId={id} active="pantau" /> : <BackLink />}
       <header className="mt-3 mb-6">
         <h1 className="font-display text-4xl font-bold tracking-tight">Pantau belajar</h1>
-        <p className="mt-1 text-ink-soft">Siswa dengan tanda risiko tampil paling atas. Aturan: belum mulai, tidak aktif 7 hari, ada materi belum lulus, atau rata-rata nilai di bawah 60.</p>
+        <p className="mt-1 text-ink-soft">Yang butuh perhatian tampil paling atas.</p>
+        <details className="mt-2 text-sm text-ink-soft"><summary className="inline-flex min-h-11 cursor-pointer items-center font-semibold underline">Kapan siswa ditandai?</summary><p className="max-w-2xl">Belum mulai belajar, tidak aktif 7 hari, ada materi yang belum lulus, atau rata-rata nilai di bawah 60.</p></details>
       </header>
       <div className="space-y-3">
         <ErrorNote message={error} />
         <InfoNote message={info} />
       </div>
-      <section aria-label="Ringkasan" className="stagger mt-4 grid grid-cols-3 gap-6">
-        <div className="border-t-2 border-ink pt-3"><p className="num font-display text-4xl font-bold">{rows.length}</p><p className="text-sm font-semibold">Siswa</p></div>
-        <div className="border-t-2 border-ink pt-3"><p className="num font-display text-4xl font-bold">{atRisk}</p><p className="text-sm font-semibold">Perlu perhatian</p></div>
-        <div className="border-t-2 border-ink pt-3"><p className="num font-display text-4xl font-bold">{open.length}</p><p className="text-sm font-semibold">Tindak lanjut terbuka</p></div>
+      <section aria-label="Ringkasan" className={`mt-4 flex items-start gap-3 rounded-box border-2 p-4 ${atRisk === 0 ? "border-ok bg-ok-bg" : "border-warn bg-warn-bg"}`}>
+        <span aria-hidden="true" className="text-3xl">{atRisk === 0 ? "👍" : "👀"}</span>
+        <div>
+          <p className="font-display text-xl font-extrabold leading-tight">
+            {rows.length === 0 ? "Belum ada siswa yang bisa dipantau." : atRisk === 0 ? "Semua siswa sesuai jalur. Tidak ada yang perlu dikejar hari ini." : `${atRisk} dari ${rows.length} siswa perlu perhatian.`}
+          </p>
+          {atRisk > 0 ? <p className="mt-1">Mulai dari {rows.filter((r) => r.reasons.length > 0).slice(0, 3).map((r) => r.name.split(" ")[0]).join(", ")}.</p> : null}
+          <p className="num mt-1 text-sm text-ink-soft">{rows.length} siswa · {open.length} tindak lanjut terbuka</p>
+        </div>
       </section>
 
       <section className="mt-10">

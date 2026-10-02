@@ -1,3 +1,4 @@
+import "@/components/island/island.css";
 import { notFound } from "next/navigation";
 import { BackLink } from "@/components/role-views";
 import { SchoolNav } from "@/components/school-nav";
@@ -98,7 +99,7 @@ export default async function AbsensiPage({ params, searchParams }: { params: Pr
                             {STATUS.map((st) => (
                               <label key={st.code} className="relative">
                                 <input type="radio" name={`status:${s.id}`} value={st.code} defaultChecked={(cur?.status ?? "hadir") === st.code && (cur !== undefined || st.code === "hadir")} className="peer sr-only" />
-                                <span className="press flex min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-box border-2 border-line px-2 text-sm font-semibold peer-checked:border-pen peer-checked:bg-pen peer-checked:text-on-pen peer-focus-visible:ring-2 peer-focus-visible:ring-pen/40 sm:px-3">
+                                <span data-s={st.code} className="att-opt press flex min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-box border-2 border-line px-2 text-sm font-semibold peer-focus-visible:ring-2 peer-focus-visible:ring-pen/40 sm:px-3">
                                   <span className="sm:hidden" aria-hidden="true">{st.short}</span>
                                   <span className="hidden sm:inline">{st.label}</span>
                                   <span className="sr-only sm:hidden">{st.label}</span>
