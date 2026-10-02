@@ -42,7 +42,7 @@ export function TutorChat({ schoolId, nodeId }: { schoolId: string; nodeId: stri
     <section aria-label="Tanya tutor" className="surface">
       <div className="border-b border-line px-4 py-3">
         <h2 className="font-display text-lg font-bold">Tanya tutor</h2>
-        <p className="text-sm text-ink-soft">Tutor memberi petunjuk, bukan jawaban kuis. Jangan tulis data pribadi.</p>
+        <p className="text-sm text-ink-soft">Tutor kasih petunjuk dulu, jawaban kuis tidak. Jangan tulis data pribadi ya.</p>
       </div>
       <ol ref={list} aria-live="polite" className="max-h-80 space-y-3 overflow-y-auto px-4 py-3">
         {msgs.length === 0 ? (
@@ -60,7 +60,7 @@ export function TutorChat({ schoolId, nodeId }: { schoolId: string; nodeId: stri
             <span>{m.role === "assistant" ? <InlineMd text={m.content} /> : m.content}</span>
           </li>
         ))}
-        {pending ? <li className="mr-8 text-ink-soft">Tutor sedang berpikir…</li> : null}
+        {pending ? <li className="mr-8 text-ink-soft">Tutor lagi berpikir…</li> : null}
       </ol>
       <div className="px-4 pb-1">
         <ErrorNote message={error} />

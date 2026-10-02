@@ -1,6 +1,7 @@
 "use server";
 
 import { decryptSecret } from "@/lib/crypto";
+import { scrubAi } from "@/lib/voice";
 import { generateReply, generateWithPlatform, tutorSystemPrompt, type ChatMsg, type Provider } from "@/lib/ai";
 import { enabledModuleCodes } from "@/lib/modules";
 import { getSchoolContext } from "@/lib/school";
@@ -51,7 +52,7 @@ export async function askTutor(
             system,
             messages: msgs,
           });
-    return { ok: true, reply: reply.slice(0, 1500), remaining: r.remaining ?? null };
+    return { ok: true, reply: scrubAi(reply, { plain: true }).slice(0, 1500), remaining: r.remaining ?? null };
   } catch {
     return { ok: false, error: "Tutor sedang sibuk atau kunci AI sekolah bermasalah. Coba lagi sebentar." };
   }

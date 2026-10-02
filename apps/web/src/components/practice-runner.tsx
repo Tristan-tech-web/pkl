@@ -77,8 +77,8 @@ export function PracticeRunner({ schoolId, sessionId, backHref, initial, camera 
         {held ? (
           <div className="mt-2 text-left">
             <p className="font-bold">{integrity.level === "tinggi" ? "XP sesi ini dibatalkan." : "XP sesi ini sedang dicek guru."}</p>
-            <p className="mt-1 text-sm text-ink-soft">Pola jawabanmu terlihat tidak biasa (misalnya terlalu cepat atau sering pindah halaman). Ini hanya dugaan komputer, bukan tuduhan. Kalau kamu merasa keliru, tulis alasannya; guru akan memeriksa dan XP bisa dikembalikan penuh.</p>
-            {appealState === "terkirim" ? <p className="mt-3 rounded-box border border-ok p-3 text-sm font-semibold">Banding terkirim. Guru akan memeriksanya.</p> : (
+            <p className="mt-1 text-sm text-ink-soft">Cara kamu menjawab tadi agak tidak biasa, misalnya terlalu cepat atau sering pindah halaman. Itu cuma dugaan komputer, belum tentu kamu salah. Kalau memang keliru, ceritakan di bawah. Guru akan melihatnya, dan XP bisa dikembalikan penuh.</p>
+            {appealState === "terkirim" ? <p className="mt-3 rounded-box border border-ok p-3 text-sm font-semibold">Terkirim. Guru akan melihatnya.</p> : (
               <div className="mt-3">
                 <label className="block text-sm font-semibold" htmlFor="appeal">Alasan banding</label>
                 <textarea id="appeal" rows={3} value={appeal} onChange={(e) => setAppeal(e.target.value)} className="field mt-1 w-full" placeholder="Contoh: soal pertama mudah, saya sudah hafal materinya." />
@@ -90,7 +90,7 @@ export function PracticeRunner({ schoolId, sessionId, backHref, initial, camera 
         ) : (
           <>
             <p className="num mt-1 text-xl font-bold text-pen">+{xp} XP</p>
-            <p className="mt-1 text-ink-soft">Soal yang salah akan muncul lagi lebih cepat, yang benar diulang beberapa hari lagi. Itu cara otak mengingat lebih lama.</p>
+            <p className="mt-1 text-ink-soft">Soal yang salah akan muncul lagi lebih cepat, yang benar diulang beberapa hari lagi. Begitulah otak jadi ingat lebih lama.</p>
           </>
         )}
         <div className="mt-4 flex flex-wrap justify-center gap-3"><Link href={backHref} className="btn-solid inline-flex min-h-11 items-center rounded-box px-5 font-bold">Pilih latihan lain</Link></div>
@@ -102,7 +102,7 @@ export function PracticeRunner({ schoolId, sessionId, backHref, initial, camera 
     return (
       <div className="surface p-5">
         <h2 className="font-display text-xl font-bold">Latihan dengan kamera?</h2>
-        <p className="mt-2 text-sm">Sekolahmu mengizinkan kamera sebagai pengaman supaya latihan adil. Kamera menyala hanya selama sesi ini. <strong>Tidak ada gambar atau video yang dikirim atau disimpan</strong>; komputermu hanya menghitung apakah wajah terlihat. Kamera tidak pernah menjadi satu-satunya alasan XP dikurangi.</p>
+        <p className="mt-2 text-sm">Sekolahmu mengizinkan kamera supaya latihan tetap adil. Kamera hanya menyala selama sesi ini. <strong>Tidak ada gambar atau video yang dikirim atau disimpan</strong>; komputermu hanya menghitung apakah wajah terlihat. Kamera tidak pernah menjadi satu-satunya alasan XP dikurangi.</p>
         <p className="mt-2 text-sm text-ink-soft">Kamu boleh menolak dan tetap berlatih tanpa kamera.</p>
         <div className="mt-4 flex flex-wrap gap-3">
           <button type="button" onClick={() => setCamOn(true)} className="btn-solid inline-flex min-h-11 items-center rounded-box px-5 font-bold">Pakai kamera</button>

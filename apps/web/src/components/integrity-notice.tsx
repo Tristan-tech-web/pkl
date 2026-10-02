@@ -16,8 +16,8 @@ export function IntegrityNotice({ schoolId, integrity }: { schoolId: string; int
   return (
     <section className="mt-6 rounded-box border-2 border-warn bg-warn-bg p-4" aria-label="Pemeriksaan XP">
       <p className="font-bold">{integrity.level === "tinggi" ? "XP kuis ini dibatalkan." : "XP kuis ini sedang dicek guru."}</p>
-      <p className="mt-1 text-sm">Pola pengerjaanmu terlihat tidak biasa (misalnya terlalu cepat atau sering pindah halaman). Ini hanya dugaan komputer, bukan tuduhan. Kalau keliru, tulis alasannya; guru akan memeriksa dan XP bisa dikembalikan penuh.</p>
-      {state === "terkirim" ? <p className="mt-3 font-semibold text-ok">Banding terkirim. Guru akan memeriksanya.</p> : (
+      <p className="mt-1 text-sm">Cara kamu mengerjakan tadi agak tidak biasa, misalnya terlalu cepat atau sering pindah halaman. Itu cuma dugaan komputer, belum tentu kamu salah. Kalau memang keliru, ceritakan di bawah. Guru akan melihatnya, dan XP bisa dikembalikan penuh.</p>
+      {state === "terkirim" ? <p className="mt-3 font-semibold text-ok">Terkirim. Guru akan melihatnya.</p> : (
         <div className="mt-3">
           <label htmlFor="appeal-quiz" className="block text-sm font-semibold">Alasan banding</label>
           <textarea id="appeal-quiz" rows={3} value={text} onChange={(e) => setText(e.target.value)} className="field mt-1 w-full" />

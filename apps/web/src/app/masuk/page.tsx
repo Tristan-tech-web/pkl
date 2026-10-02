@@ -14,7 +14,7 @@ export default async function MasukPage({
   const { error, info, next } = await searchParams;
   const nextSafe = safeNext(next);
   return (
-    <AuthShell title="Halo, selamat datang!" lead="Masuk untuk melanjutkan jalur belajarmu, atau mengelola kelas dan sekolah Anda.">
+    <AuthShell title="Halo, selamat datang!" lead="Masuk untuk lanjut belajar, atau mengurus kelas dan sekolahmu.">
       <Card>
         <form action={signIn} className="flex flex-col gap-4">
           <input type="hidden" name="next" value={nextSafe} />

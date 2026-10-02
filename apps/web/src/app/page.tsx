@@ -28,26 +28,26 @@ const FORMS = ["SD", "MI", "SMP", "MTs", "SMA", "MA", "SMK", "SLB", "Paket C", "
 
 type ModuleRow = { code: string; name: string; description: string; status: string; sort: number };
 
-const AUDIENCE = [
-  { icon: "🚀", title: "Murid", sub: "Seru seperti game", points: ["Jalur belajar bergaya Duolingo dengan hitung mundur", "Misi harian, streak, level, dan liga kelas", "Latihan ribuan soal, XP yang adil"] },
-  { icon: "🧑‍🏫", title: "Guru", sub: "Ringkas, tinggal klik", points: ["Beranda “Hari ini”: jadwal, absen, perlu perhatian", "AI menyusun skill tree semester dan bank soal", "Antrean integritas dengan banding yang adil"] },
-  { icon: "🏫", title: "Sekolah", sub: "Fleksibel, semua jenis sekolah", points: ["SD, MI, SMP, SMA, SMK, SLB, pesantren, kustom", "Impor data dan berkas besar, AI memilah", "Kebijakan tampilan dan integritas sendiri"] },
+const MURID_POINTS = [
+  "Simpul terbuka satu per satu, lengkap dengan hitung mundur ke pelajaran berikutnya",
+  "Misi harian yang pendek, streak, level, dan liga kelas tiap pekan",
+  "Ribuan soal latihan, dan XP tidak bisa diakali dengan asal klik",
 ];
 const SCIENCE = [
-  { title: "Bersiap sehari sebelumnya", body: "Persiapan baru terbuka H-1 pukul 15.00 dengan pratinjau singkat dan soal pemantik, supaya otak sudah “panas” saat guru mulai." },
-  { title: "Berlatih mengingat", body: "Soal latihan memaksa otak mengingat, cara belajar yang terbukti lebih awet daripada membaca ulang." },
-  { title: "Mengulang dengan jarak", body: "Soal yang sudah dikuasai muncul lagi beberapa hari kemudian, tepat sebelum lupa. Menjelang ulangan, pengulangannya dirapatkan." },
+  { title: "Sehari sebelumnya", body: "Pukul 15.00, simpul persiapan terbuka: bacaan singkat dan satu pertanyaan pemancing. Besoknya otak sudah “panas”." },
+  { title: "Saat belajar", body: "Soal latihan memaksa kamu mengingat sendiri. Itu jauh lebih awet daripada membaca ulang catatan." },
+  { title: "Sesudahnya", body: "Soal yang sudah dikuasai muncul lagi beberapa hari kemudian, tepat sebelum lupa. Makin dekat ulangan, makin rapat." },
 ];
 const AI_FEATURES = [
-  { icon: "🌳", title: "Skill tree semester otomatis", body: "Dari buku paket dan jadwal pelajaran, tanggal buka dihitung sistem dan isi disusun AI. Guru tinggal meninjau dan menerbitkan per unit." },
-  { icon: "🧠", title: "Bank soal ribuan butir", body: "Dibuat dari buku atau LKS, diperiksa duplikat, kutipan sumber, dan dijawab ulang tanpa kunci sebelum sampai ke murid." },
-  { icon: "🛡️", title: "Latihan yang adil", body: "Jawaban asal-cepat tidak menambah XP. Pola mencurigakan menahan XP, murid boleh banding, kamera hanya opsional dan di perangkat." },
+  { icon: "🌳", title: "Skill tree semester", body: "Unggah buku paket dan jadwal pelajaran. Tanggal buka dihitung sistem, isinya disusun AI, guru tinggal memeriksa dan menerbitkan per unit." },
+  { icon: "🧠", title: "Ribuan soal latihan", body: "Dibuat dari buku atau LKS. Tiap soal dicek: ada kutipan sumbernya, tidak kembar, dan dijawab ulang tanpa kunci sebelum sampai ke murid." },
+  { icon: "🛡️", title: "Latihan yang jujur", body: "Jawab asal-asalan tidak menambah XP. Kalau polanya mencurigakan, XP ditahan dan murid boleh banding. Kamera opsional, gambarnya tidak keluar dari perangkat." },
 ];
 const ADMIN = [
-  { icon: "🗓️", title: "Absensi, nilai, jadwal", body: "Administrasi harian dalam satu tempat." },
-  { icon: "📄", title: "Rapor dan surat", body: "Template yang bisa diatur, cetak rapi." },
+  { icon: "🗓️", title: "Absensi, nilai, jadwal", body: "Semuanya di satu tempat." },
+  { icon: "📄", title: "Rapor dan surat", body: "Template bisa diatur, cetaknya rapi." },
   { icon: "💰", title: "Keuangan", body: "Tagihan, pembayaran, dan impor dari Excel." },
-  { icon: "🔌", title: "AI Anda sendiri", body: "Hubungkan Claude, ChatGPT, atau Gemini lewat satu prompt." },
+  { icon: "🔌", title: "AI milik Anda", body: "Sambungkan Claude, ChatGPT, atau Gemini lewat satu prompt." },
 ];
 
 const FEATURE_ORDER = ["max_students", "visual_modules", "custom_curriculum", "ai_tutor"];
@@ -92,13 +92,13 @@ export default async function Home({
           }
         >
           <HeroMotion className="grid gap-5">
-            <p data-hero="eyebrow" className="hero-item island-eyebrow w-fit">Belajar seru · Sekolah rapi</p>
+            <p data-hero="eyebrow" className="hero-item island-eyebrow w-fit">Sekolah digital yang enak dipakai</p>
             <h1 className="island-title">
               <Words text="Belajar jadi" /><br />
               <span className="em"><Words text="petualangan." /><svg viewBox="0 0 300 20" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M4 12 C 50 2, 90 20, 140 10 S 230 2, 296 11" /></svg></span>
             </h1>
             <p data-hero="lede" className="hero-item island-lede">
-              Murid menyusuri jalur belajar seperti game. Guru dibantu AI. Sekolah mengatur semuanya sendiri, dari SD sampai pesantren.
+              Murid menyusuri peta belajar dan mengumpulkan XP. Guru tidak perlu begadang bikin soal, AI yang membantu. Sekolah mengatur semuanya sendiri, dari SD sampai pesantren.
             </p>
             <div data-hero="cta" className="hero-item flex flex-wrap gap-3">
               <LinkButton href="/daftar">Daftarkan sekolah</LinkButton>
@@ -110,16 +110,16 @@ export default async function Home({
         <section id="perjalanan" className="mx-auto w-full max-w-6xl px-4 pb-10">
           <Journey>
             <Station n={1} title={<>Setiap pelajaran adalah <mark>jalan setapak</mark>.</>}
-              body={<><p>Murid menyusuri jalur belajar: simpul terbuka satu per satu, XP, streak, dan liga kelas. Seru seperti game, adil seperti ujian.</p>
-                <ul className="mt-4 space-y-1.5">{AUDIENCE[0].points.map((x) => <li key={x} className="flex gap-2"><span aria-hidden="true" className="font-extrabold text-ok">✓</span>{x}</li>)}</ul></>}
+              body={<><p>Murid tidak lagi menatap daftar tugas. Mereka melihat peta, dan tiap simpul yang selesai membuka jalan berikutnya.</p>
+                <ul className="mt-4 space-y-1.5">{MURID_POINTS.map((x) => <li key={x} className="flex gap-2"><span aria-hidden="true" className="font-extrabold text-ok">✓</span>{x}</li>)}</ul></>}
               visual={<div className="mx-auto max-w-sm" style={{ rotate: "-2deg" }}><LandingPath /></div>} />
 
-            <Station n={2} side="right" title={<>Dibuat supaya ingatan <mark>awet</mark>.</>}
-              body={<ol className="space-y-3">{SCIENCE.map((x, i) => <li key={x.title} className="flex gap-3"><span className="num grid size-8 shrink-0 place-items-center rounded-full bg-pen font-extrabold text-on-pen">{i + 1}</span><span><strong className="block text-ink">{x.title}</strong>{x.body}</span></li>)}</ol>}
+            <Station n={2} side="right" title={<>Biar yang dipelajari <mark>tidak menguap</mark>.</>}
+              body={<><p className="mb-4">Belajar semalam suntuk memang bikin hafal, tapi lusa sudah hilang. Urutan di EduSmart mengikuti cara otak menyimpan.</p><ol className="space-y-3">{SCIENCE.map((x, i) => <li key={x.title} className="flex gap-3"><span className="num grid size-8 shrink-0 place-items-center rounded-full bg-pen font-extrabold text-on-pen">{i + 1}</span><span><strong className="block text-ink">{x.title}</strong>{x.body}</span></li>)}</ol></>}
               visual={<ForgettingCurve />} />
 
-            <Station n={3} title={<>AI membantu guru. <mark>Bukan menggantikan.</mark></>}
-              body={<p>Semua hasil AI berstatus draf sampai guru menyetujuinya. Kunci AI milik sekolah atau pengguna sendiri; data siswa tidak lewat kunci milik platform.</p>}
+            <Station n={3} title={<>AI menyiapkan, <mark>guru memutuskan</mark>.</>}
+              body={<p>Semua hasil AI berstatus draf. Tidak ada yang sampai ke murid sebelum guru menyetujuinya. Kunci AI milik sekolah atau penggunanya sendiri, jadi data murid tidak lewat kunci milik platform.</p>}
               visual={<ul className="grid gap-4">{AI_FEATURES.map((f, i) => (
                 <li key={f.title} className="sticker flex gap-3" style={{ rotate: `${[-1.6, 1.2, -0.8][i]}deg`, marginLeft: `${[0, 1.5, 0.5][i]}rem` }}>
                   <span aria-hidden="true" className="text-4xl">{f.icon}</span>
@@ -127,15 +127,15 @@ export default async function Home({
                 </li>))}</ul>} />
 
             <Station n={4} side="right" title={<>Pilih <mark>duniamu</mark>.</>}
-              body={<p>Sepuluh tema, tiga gaya, ukuran huruf, dan mode hemat gerak. Coba sekarang: seluruh halaman ini ikut berubah. Sekolah menetapkan batasnya, murid dan guru memilih di dalamnya.</p>}
+              body={<p>Ada sepuluh tema dan tiga gaya, plus ukuran huruf dan mode hemat gerak. Coba klik temanya, seluruh halaman ini ikut berubah. Sekolah menentukan batasnya, murid dan guru memilih sendiri di dalamnya.</p>}
               visual={<div className="sticker"><ThemePlayground /></div>} />
 
             <Station n={5} title={<>Lihat, <mark>jangan cuma baca</mark>.</>}
-              body={<p>Modul visual per mata pelajaran, dipasang sekolah sesuai kebutuhan: grafik fungsi untuk matematika, editor dan eksekusi untuk coding, simulasi untuk sains. Geser sliderlah, grafiknya bergerak.</p>}
+              body={<p>Tiap mata pelajaran bisa punya modul visual: grafik fungsi untuk matematika, editor kode untuk informatika, simulasi untuk sains. Geser slider-nya dan lihat grafiknya ikut bergerak.</p>}
               visual={<ParabolaDemo />} />
 
-            <Station n={6} side="right" title={<>Untuk guru dan kepala sekolah: <mark>sederhana</mark>.</>}
-              body={<><p>Administrasi harian dalam satu tempat, tanpa tumpukan menu. Satu beranda “Hari ini”, selebihnya satu klik.</p>
+            <Station n={6} side="right" title={<>Buat guru dan kepala sekolah: <mark>sesederhana mungkin</mark>.</>}
+              body={<><p>Satu beranda “Hari ini” yang memuat jadwal mengajar, tombol absen, dan hal yang perlu diperhatikan. Selebihnya cukup satu klik.</p>
                 <ul className="mt-4 flex flex-wrap gap-2" aria-label="Bentuk pendidikan yang didukung">{FORMS.map((f) => <li key={f} className="inline-flex min-h-9 items-center rounded-full border-2 border-line bg-card px-3 text-sm font-bold">{f}</li>)}</ul></>}
               visual={<ul className="grid gap-3 sm:grid-cols-2">{ADMIN.map((x, i) => (
                 <li key={x.title} className="sticker" style={{ rotate: `${[1, -1.2, -0.6, 1.4][i]}deg` }}>
@@ -148,7 +148,7 @@ export default async function Home({
           <div className="mx-auto grid w-full max-w-6xl items-end gap-6 px-4 py-16 md:grid-cols-[1fr_auto]">
             <div>
               <h2>Siap berangkat?</h2>
-              <p className="mt-4 max-w-xl text-lg opacity-90">Daftarkan sekolahmu, undang guru dan murid dengan satu kode, dan jalan setapak pertama siap dilalui hari ini.</p>
+              <p className="mt-4 max-w-xl text-lg opacity-90">Daftarkan sekolah, undang guru dan murid pakai satu kode, lalu jalan setapak pertama sudah bisa dilalui hari ini.</p>
               <div className="mt-6 flex flex-wrap gap-3">
                 <LinkButton href="/daftar" variant="ghost">Daftarkan sekolah</LinkButton>
                 <LinkButton href="#paket" variant="ghost">Lihat paket</LinkButton>

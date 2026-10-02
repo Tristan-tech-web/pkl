@@ -14,7 +14,7 @@ export default async function DaftarPage({
   const { error, next } = await searchParams;
   const nextSafe = safeNext(next);
   return (
-    <AuthShell title="Ayo mulai!" lead="Buat akun untuk bergabung dengan sekolahmu atau mendaftarkan sekolah baru.">
+    <AuthShell title="Ayo mulai!" lead="Buat akun untuk gabung ke sekolahmu, atau daftarkan sekolah baru.">
       <Card>
         <form action={signUp} className="flex flex-col gap-4">
           <input type="hidden" name="next" value={nextSafe} />

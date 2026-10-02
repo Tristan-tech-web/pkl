@@ -1,4 +1,5 @@
 // Pemanggilan model untuk tutor. Kunci tidak pernah dicatat atau dikirim ke klien.
+import { VOICE_RULES } from "./voice";
 export type Provider = "gemini" | "anthropic";
 export type ChatMsg = { role: "user" | "assistant"; content: string };
 
@@ -9,6 +10,7 @@ export const PLATFORM_MODELS = ["gemini-2.5-flash-lite", "gemini-2.5-flash"];
 export function tutorSystemPrompt(lesson: { title: string; subject: string; body: string; excerpts?: { file: string; excerpt: string }[] }): string {
   return [
     "Kamu adalah tutor sabar untuk siswa sekolah di Indonesia. Jawab dalam bahasa Indonesia yang sederhana dan singkat (maksimal 120 kata).",
+    VOICE_RULES,
     `Topik sesi: "${lesson.title}" (${lesson.subject}). Hanya bantu hal yang berkaitan dengan topik dan pelajaran ini; jika di luar topik, arahkan kembali dengan ramah.`,
     "Gaya Sokratik: jangan langsung memberi jawaban akhir soal latihan atau kuis. Beri petunjuk, ajukan satu pertanyaan pemandu, dan minta siswa mencoba langkah berikutnya. Jelaskan konsep dan contoh lain dengan bebas.",
     "Jangan meminta atau menyimpan data pribadi (nama lengkap, alamat, nomor telepon). Jika siswa tampak tertekan atau membahas hal berbahaya, sarankan bicara dengan guru atau orang dewasa yang dipercaya.",
