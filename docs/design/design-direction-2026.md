@@ -72,3 +72,4 @@ Penilaian jujur:
 - Regresi teks sangat besar di 360px untuk guru, pemilik, orang tua, dan murid pada 27 halaman: satu luapan ditemukan (administrasi murid, baris data diri) dan diperbaiki; sisanya bersih.
 - Profil: Pena dipajang di panggung kecil (langit, bukit, bayangan) saat didandani.
 - Keadaan kosong: komponen `Empty` (Pena kecil + kalimat mengajak) menggantikan kotak putus-putus di 13 halaman; kalimat notifikasi menjadi "Sepi dulu. ...".
+- Tinjauan landing "apa yang masih generik?": logo diganti Pena mini (topi toga, mata, paruh) menggantikan simbol parabola; penutup "Siap berangkat?" menjadi adegan senja (`fixedTod="sore"`) bukan blok biru polos; kincir angin digeser agar tidak menimpa teks.

@@ -80,10 +80,12 @@ export function Card({ children, className = "" }: { children: React.ReactNode; 
 export function Wordmark() {
   return (
     <span className="inline-flex items-center gap-2.5">
-      <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true" className="shrink-0">
-        <rect x="0.5" y="0.5" width="27" height="27" rx="3" fill="var(--card)" stroke="var(--line)" />
-        <path d="M0 14H28M14 0V28" stroke="var(--grid)" strokeWidth="1" />
-        <path d="M4 5C8 22 12 24 14 24C16 24 20 22 24 5" fill="none" stroke="var(--pen)" strokeWidth="2.2" strokeLinecap="round" />
+      <svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true" className="shrink-0">
+        <rect x="1" y="1" width="30" height="30" rx="9" fill="var(--pen)" />
+        <path d="M5 10 16 5l11 5-11 5z" fill="#14183f" /><path d="M10 12.5v3c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-3" fill="#232a6e" />
+        <circle cx="11.5" cy="20.5" r="4.2" fill="#fff" /><circle cx="20.5" cy="20.5" r="4.2" fill="#fff" />
+        <circle cx="12" cy="21" r="2.1" fill="#1b1a3a" /><circle cx="20" cy="21" r="2.1" fill="#1b1a3a" />
+        <path d="M14.4 24.2h3.2L16 27z" fill="var(--hi)" />
       </svg>
       <span className="font-display text-xl font-bold tracking-tight">EduSmart</span>
     </span>

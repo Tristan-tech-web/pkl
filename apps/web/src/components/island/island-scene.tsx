@@ -70,14 +70,14 @@ function Flower({ x, y }: { x: number; y: number }) {
 export type Growth = { level: number; streak: number };
 
 /** `growth` membuat pulau murid tumbuh: makin tinggi level, makin ramai; streak menyalakan api unggun. Tanpa `growth` (landing) semuanya tampil. */
-export function IslandScene({ children, pena, header, compact = false, strip = false, bare = false, growth }: { children: React.ReactNode; pena: React.ReactNode; header?: React.ReactNode; compact?: boolean; strip?: boolean; bare?: boolean; growth?: Growth }) {
+export function IslandScene({ children, pena, header, compact = false, strip = false, bare = false, growth, fixedTod }: { children: React.ReactNode; pena: React.ReactNode; header?: React.ReactNode; compact?: boolean; strip?: boolean; bare?: boolean; growth?: Growth; fixedTod?: Tod }) {
   const g = growth ?? { level: 99, streak: 3 };
   const root = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const el = root.current;
     if (!el) return;
-    el.dataset.tod = todNow();
+    el.dataset.tod = fixedTod ?? todNow();
     const calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches || document.documentElement.dataset.motion === "kurangi";
     if (calm) return;
     let raf = 0, tx = 0, ty = 0, cx = 0, cy = 0;
@@ -95,7 +95,7 @@ export function IslandScene({ children, pena, header, compact = false, strip = f
     window.addEventListener("pointermove", onMove, { passive: true });
     tick();
     return () => { window.removeEventListener("scroll", onScroll); window.removeEventListener("pointermove", onMove); if (raf) cancelAnimationFrame(raf); };
-  }, []);
+  }, [fixedTod]);
 
   const layer = (k: number, m: number) => ({ transform: `translate3d(calc(var(--mx) * ${m}px), calc(var(--p) * ${k}px + var(--my) * ${m / 2}px), 0)` });
 
@@ -122,7 +122,7 @@ export function IslandScene({ children, pena, header, compact = false, strip = f
         <svg viewBox="0 0 1440 600" preserveAspectRatio="xMidYMax slice">
           <path d="M0 380 Q240 270 480 350 T900 330 T1440 340 V600 H0Z" fill="var(--is-h1)" />
           {g.level >= 3 ? <><Tree x={1250} y={330} s={1.1} c="var(--is-tree2)" /><Tree x={1330} y={345} s={0.7} c="var(--is-tree2)" /></> : null}
-          {g.level >= 6 ? <Windmill x={575} y={346} /> : null}
+          {g.level >= 6 ? <Windmill x={705} y={338} /> : null}
           {/* pondok kecil */}
           {g.level >= 4 ? <g transform="translate(1040 322)"><rect x="-22" y="-14" width="44" height="30" fill="#fff6e6" /><path d="M-28 -14 0 -40 28 -14Z" fill="var(--is-flower)" /><rect x="-6" y="-2" width="12" height="18" fill="var(--is-trunk)" /></g> : null}
         </svg>

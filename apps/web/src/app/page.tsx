@@ -144,18 +144,17 @@ export default async function Home({
           </Journey>
         </section>
 
-        <section className="gate">
-          <div className="mx-auto grid w-full max-w-6xl items-end gap-6 px-4 py-16 md:grid-cols-[1fr_auto]">
-            <div>
-              <h2>Siap berangkat?</h2>
-              <p className="mt-4 max-w-xl text-lg opacity-90">Daftarkan sekolah, undang guru dan murid pakai satu kode, lalu jalan setapak pertama sudah bisa dilalui hari ini.</p>
-              <div className="mt-6 flex flex-wrap gap-3">
-                <LinkButton href="/daftar" variant="ghost">Daftarkan sekolah</LinkButton>
+        <section className="mx-auto w-full max-w-6xl px-4 pb-14">
+          <IslandScene compact fixedTod="sore" growth={{ level: 99, streak: 5 }} pena={<Mascot size={150} className="island-pena" />}>
+            <div className="grid max-w-md gap-3 pt-2">
+              <h2 className="island-title" style={{ fontSize: "clamp(2.6rem, 11vw, 4.6rem)" }}>Siap berangkat?</h2>
+              <p className="island-lede">Daftarkan sekolah, undang guru dan murid pakai satu kode, lalu jalan setapak pertama sudah bisa dilalui hari ini.</p>
+              <div className="flex flex-wrap gap-3">
+                <LinkButton href="/daftar">Daftarkan sekolah</LinkButton>
                 <LinkButton href="#paket" variant="ghost">Lihat paket</LinkButton>
               </div>
             </div>
-            <Mascot size={190} className="mx-auto" />
-          </div>
+          </IslandScene>
         </section>
 
         <section id="paket" className="border-y border-line bg-card">
