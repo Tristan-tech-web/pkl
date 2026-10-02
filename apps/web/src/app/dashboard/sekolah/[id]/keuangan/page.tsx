@@ -66,9 +66,15 @@ export default async function KeuanganPage({ params, searchParams }: { params: P
       {management ? <SchoolNav schoolId={id} active="keuangan" /> : <BackLink />}
       <header className="mt-3 mb-6">
         <h1 className="font-display text-4xl font-bold tracking-tight">{management ? "Keuangan" : me.roleCode === "parent" ? "Tagihan anak" : "Tagihanku"}</h1>
-        {management ? <p className="mt-1 max-w-2xl text-ink-soft">Tagihan per siswa dan pencatatan pembayaran manual (tunai atau transfer). Pembayaran online lewat gerbang pembayaran dibahas di modul Integrasi.</p> : null}
+        {management ? <p className="mt-1 max-w-2xl text-ink-soft">Terbitkan tagihan per siswa, lalu catat pembayaran tunai atau transfer. Bayar online belum tersedia.</p> : null}
       </header>
       <div className="space-y-3"><ErrorNote message={sp.error} /><InfoNote message={sp.info} /></div>
+      {total > 0 ? (
+        <div className="mt-4">
+          <p className="text-sm font-semibold">{paid >= total ? "Semua tagihan sudah lunas." : `${Math.round((paid / total) * 100)}% sudah terbayar.${overdue > 0 ? ` ${rupiah(overdue)} lewat jatuh tempo.` : ""}`}</p>
+          <div className="mt-1 h-3 overflow-hidden rounded-full bg-line" role="img" aria-label={`Terbayar ${Math.round((paid / total) * 100)} persen`}><div className="h-full rounded-full bg-ok" style={{ width: `${Math.min(100, (paid / total) * 100)}%` }} /></div>
+        </div>
+      ) : null}
       <section aria-label="Ringkasan" className="stagger mt-4 grid gap-x-6 gap-y-5 sm:grid-cols-3">
         <div className="border-t-2 border-ink pt-3"><p className="num font-display text-2xl font-bold sm:text-3xl">{rupiah(total)}</p><p className="text-sm font-semibold">Ditagihkan</p></div>
         <div className="border-t-2 border-ink pt-3"><p className="num font-display text-2xl font-bold text-ok sm:text-3xl">{rupiah(paid)}</p><p className="text-sm font-semibold">Terbayar</p></div>
@@ -98,7 +104,7 @@ export default async function KeuanganPage({ params, searchParams }: { params: P
             ))}
           </nav>
         </div>
-        {shown.length === 0 ? <Empty className="mt-3">Tidak ada tagihan.</Empty> : (
+        {shown.length === 0 ? <Empty className="mt-3">Tidak ada tagihan di sini.</Empty> : (
           <ul className="stagger mt-3 border-t border-line">
             {shown.map((i) => {
               const p = paidBy.get(i.id) ?? 0;
