@@ -138,3 +138,6 @@ Proyek dihentikan sementara atas permintaan pengguna; semua jadwal loop dihapus,
 2. Nyalakan "Leaked password protection" di dasbor Supabase Auth.
 3. Menunggu pihak luar: kunci AI berbayar (uji ribuan soal), client ID SSO, akun sandbox pembayaran, telaah hukum kamera (UU PDP), uji HP Android sungguhan, verifikasi preset Dapodik ⚠.
 4. Server dev lokal: lihat resep di CLAUDE.md/PROGRESS (build + `next start -p 3118`); tidak ada proses yang berjalan.
+
+## Desain ulang "Pulau Belajar" (2 Okt 2026)
+Arah, riset (Awwwards SOTD Sep–Okt 2026, Apple Design Awards 2026), penilaian jujur, dan status: `docs/design/design-direction-2026.md`. Terdorong: landing, peta belajar, beranda murid/guru/pemilik, masuk/daftar. Uji gulir di HP berkecepatan CPU 1/4 (tanpa GPU): rata-rata 18,8 ms/bingkai, p95 33 ms.
