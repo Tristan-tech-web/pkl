@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { appealCase, practiceAnswer, practiceNext, reportItem, type Answered, type Integrity, type Next, type PracticeItem } from "@/app/dashboard/sekolah/[id]/latihan/actions";
 import { FaceGuard, type FaceHandle } from "@/components/face-guard";
 import { Mascot } from "@/components/three/mascot";
+import { QuestionView } from "@/components/question-view";
 
 const FLAG_TEXT: Record<string, string> = {
   terlalu_cepat: "Terlalu cepat, baca soalnya dulu ya. XP tidak dihitung.",
@@ -14,7 +15,6 @@ const FLAG_TEXT: Record<string, string> = {
   batas_harian: "Batas XP latihan hari ini sudah tercapai. Lanjut besok!",
   bangkit: "Bangkit! Dulu salah, sekarang benar. Bonus XP!",
 };
-const LETTER = ["A", "B", "C", "D", "E", "F"];
 
 export function PracticeRunner({ schoolId, sessionId, backHref, initial, camera }: { schoolId: string; sessionId: string; backHref: string; initial: Next; camera: boolean }) {
   const first = initial.ok ? initial : null;
@@ -118,39 +118,14 @@ export function PracticeRunner({ schoolId, sessionId, backHref, initial, camera 
   return (
     <div>
       {camOn ? <FaceGuard handleRef={face} /> : null}
-      <div className="flex items-center justify-between text-sm font-semibold"><span className="num flex items-center gap-2"><Mascot size={44} />Soal {index} dari {total}</span><span className="num text-pen">+{xp} XP</span></div>
-      <div className="mt-2 h-3 overflow-hidden rounded-full bg-line" role="progressbar" aria-valuenow={index - 1} aria-valuemin={0} aria-valuemax={total} aria-label="Kemajuan sesi">
-        <div className="h-full bg-pen transition-[width] duration-300" style={{ width: `${((index - 1 + (res ? 1 : 0)) / total) * 100}%` }} />
-      </div>
       {error ? <p role="alert" className="mt-4 rounded-box border border-bad/40 p-3 text-sm text-bad">{error} <button className="underline" onClick={() => (item ? setError(null) : load())}>Coba lagi</button></p> : null}
       {item ? (
-        <div className="mt-4">
-          <h2 className="surface p-4 text-lg font-bold">{item.stem}</h2>
-          <ul className="mt-3 grid gap-2">
-            {item.options.map((o, i) => {
-              const isAns = res && i === res.answer, isWrong = res && picked === i && !res.correct;
-              return (
-                <li key={i}>
-                  <button type="button" disabled={picked !== null} onClick={() => choose(i)} aria-pressed={picked === i}
-                    className={`press flex min-h-14 w-full items-center gap-3 rounded-box border-2 p-3 text-left font-semibold ${isAns ? "border-ok bg-ok/10" : isWrong ? "border-bad bg-bad/10" : picked === i ? "border-pen" : "border-line bg-card"}`}>
-                    <span className="num inline-flex size-8 shrink-0 items-center justify-center rounded-full border border-line">{LETTER[i]}</span>
-                    <span>{o}</span>{isAns ? <span aria-hidden className="ml-auto">✓</span> : isWrong ? <span aria-hidden className="ml-auto">✗</span> : null}
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-          {res ? (
-            <div aria-live="polite" className={`mt-4 rounded-box border-2 p-4 ${res.correct ? "border-ok" : "border-bad"}`}>
-              <p className="text-lg font-bold">{res.correct ? (res.xp > 0 ? `Benar! +${res.xp} XP` : "Benar!") : "Belum tepat"}</p>
-              {res.explanation ? <p className="mt-1 text-sm">{res.explanation}</p> : null}
-              {res.flags.map((f) => FLAG_TEXT[f] ? <p key={f} className="mt-1 text-sm text-ink-soft">{FLAG_TEXT[f]}</p> : null)}
-              <div className="mt-3 flex flex-wrap items-center gap-3">
-                <button type="button" onClick={load} disabled={busy} className="btn-solid inline-flex min-h-11 items-center rounded-box px-5 font-bold">{res.done ? "Lihat hasil" : "Lanjut"}</button>
-                <button type="button" disabled={reported} onClick={() => { setReported(true); void reportItem(schoolId, item.id); }} className="text-sm underline">{reported ? "Terima kasih, dilaporkan" : "Soal ini salah?"}</button>
-              </div>
-            </div>
-          ) : null}
+        <div className="mt-2">
+          <QuestionView index={index} total={total} xp={xp} stem={item.stem} options={item.options}
+            picked={picked} answer={res ? res.answer : null} correct={res ? res.correct : null} gain={res?.xp} explanation={res?.explanation}
+            notes={res ? res.flags.map((f) => FLAG_TEXT[f]).filter(Boolean) : []} busy={busy} reported={reported}
+            nextLabel={res?.done ? "Lihat hasil" : "Lanjut"} onPick={choose} onNext={load}
+            onReport={() => { setReported(true); void reportItem(schoolId, item.id); }} />
         </div>
       ) : !error ? <p className="mt-6 text-ink-soft" aria-live="polite">Memuat soal…</p> : null}
     </div>
