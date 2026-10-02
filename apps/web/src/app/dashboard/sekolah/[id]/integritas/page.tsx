@@ -37,7 +37,7 @@ export default async function IntegrityPage({ params, searchParams }: { params: 
     <>
       <SchoolNav schoolId={id} active="integritas" />
       <h1 className="mb-1 font-display text-3xl font-bold tracking-tight">Integritas latihan</h1>
-      <p className="max-w-3xl text-ink-soft">Sistem menilai pola jawaban (terlalu cepat, pindah tab, waktu seragam). Bila mencurigakan, XP sesi ditahan atau dibatalkan, dan murid boleh banding. Ini dugaan komputer, bukan bukti: Andalah yang memutuskan. Kamera tidak pernah cukup sendirian untuk mengurangi XP.</p>
+      <p className="max-w-3xl text-ink-soft">Sistem menilai pola jawaban (terlalu cepat, pindah tab, waktu seragam). Bila mencurigakan, XP sesi ditahan atau dibatalkan, dan murid boleh banding. Itu dugaan komputer, bukan bukti. Anda yang memutuskan. Kamera tidak pernah cukup sendirian untuk mengurangi XP.</p>
       <div className="mt-3 space-y-3"><ErrorNote message={sp.error} /><InfoNote message={sp.info} /></div>
 
       <section className="mt-6" aria-label="Antrean kasus">

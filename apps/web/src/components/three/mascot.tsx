@@ -11,10 +11,11 @@ export function Mascot({ size = 180, className = "" }: { size?: number; classNam
   useEffect(() => {
     const cap = detectCapability();
     if (!cap.ok) { queueMicrotask(() => setMode("svg")); return; }
-    let m: { dispose: () => void; jump: () => void; setPalette: (p: import("./kit").Palette) => void; setAvatar: (a: import("@/lib/avatar").Avatar) => void } | null = null;
+    let m: { dispose: () => void; jump: () => void; oops: () => void; setPalette: (p: import("./kit").Palette) => void; setAvatar: (a: import("@/lib/avatar").Avatar) => void } | null = null;
     let obs: MutationObserver | null = null;
     let dead = false;
     const onReward = () => m?.jump();
+    const onOops = () => m?.oops();
     Promise.all([import("./kit"), import("./pena")]).then(([k, pena]) => {
       if (dead || !ref.current) return;
       m = pena.createPena(ref.current, { still: cap.still, quality: cap.quality === 2 ? 2 : 1, palette: k.readPalette(), avatar: decodeAvatar(document.documentElement.dataset.avatar) });
@@ -22,8 +23,9 @@ export function Mascot({ size = 180, className = "" }: { size?: number; classNam
       obs = new MutationObserver(() => { m?.setPalette(k.readPalette()); m?.setAvatar(decodeAvatar(document.documentElement.dataset.avatar)); });
       obs.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme", "style", "data-avatar"] });
       window.addEventListener("edusmart:reward", onReward);
+      window.addEventListener("edusmart:oops", onOops);
     }).catch(() => setMode("svg"));
-    return () => { dead = true; obs?.disconnect(); window.removeEventListener("edusmart:reward", onReward); m?.dispose(); };
+    return () => { dead = true; obs?.disconnect(); window.removeEventListener("edusmart:reward", onReward); window.removeEventListener("edusmart:oops", onOops); m?.dispose(); };
   }, []);
   return (
     <div className={`relative ${className}`} style={{ width: size, height: size }} aria-hidden="true">

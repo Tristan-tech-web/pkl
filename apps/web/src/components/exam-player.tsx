@@ -153,7 +153,7 @@ export function ExamPlayer() {
     <Shell>
       <div role="alert" className="rounded-box border border-bad/50 bg-card p-8 text-center">
         <h1 className="font-display text-3xl font-bold text-bad">Ujian dibekukan</h1>
-        <p className="mt-2 text-ink-soft">Ada pelanggaran aturan ujian. Angkat tangan dan hubungi pengawas; ujian dilanjutkan setelah pengawas mengizinkan. Jawabanmu aman.</p>
+        <p className="mt-2 text-ink-soft">Ujian dihentikan sementara karena ada pelanggaran aturan. Angkat tangan dan panggil pengawas. Ujian lanjut setelah pengawas mengizinkan, dan jawabanmu aman.</p>
       </div>
     </Shell>
   );

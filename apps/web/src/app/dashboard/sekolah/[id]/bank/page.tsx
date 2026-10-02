@@ -34,7 +34,7 @@ export default async function BankPage({ params, searchParams }: { params: Promi
     <>
       <SchoolNav schoolId={id} active="bank" />
       <h1 className="mb-1 font-display text-3xl font-bold tracking-tight">Bank soal</h1>
-      <p className="text-ink-soft">AI membuat ratusan sampai ribuan soal dari buku paket atau LKS. Murid berlatih di menu Latihan untuk mengumpulkan XP; XP berkurang untuk soal yang diulang-ulang atau dijawab terlalu cepat.</p>
+      <p className="text-ink-soft">AI membuat ratusan sampai ribuan soal dari buku paket atau LKS. Murid berlatih di menu Latihan dan mengumpulkan XP. Soal yang diulang terus atau dijawab terlalu cepat memberi XP lebih sedikit.</p>
       <div className="mt-3 space-y-3"><ErrorNote message={sp.error} /><InfoNote message={sp.info} /></div>
 
       <section className="mt-6 surface p-4" aria-label="Buat soal">

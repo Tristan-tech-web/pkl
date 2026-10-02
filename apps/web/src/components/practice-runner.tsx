@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { haptic } from "@/lib/haptic";
 import { useEffect, useRef, useState } from "react";
 import { appealCase, practiceAnswer, practiceNext, reportItem, type Answered, type Integrity, type Next, type PracticeItem } from "@/app/dashboard/sekolah/[id]/latihan/actions";
 import { FaceGuard, type FaceHandle } from "@/components/face-guard";
@@ -58,6 +59,8 @@ export function PracticeRunner({ schoolId, sessionId, backHref, initial, camera 
     setBusy(false);
     if (!r.ok) { setError(r.error); setPicked(null); return; }
     setRes(r); setXp(r.sessionXp); if (r.integrity) setIntegrity(r.integrity);
+    haptic(r.correct ? "benar" : "salah");
+    if (!r.correct) window.dispatchEvent(new Event("edusmart:oops"));
     if (r.correct && r.xp > 0) window.dispatchEvent(new Event("edusmart:reward"));
   }
 

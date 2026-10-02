@@ -52,3 +52,7 @@ Selesai dan terdorong:
 - Aksesibilitas: axe kontras bersih (landing 9 tema × jam, beranda murid/guru 4 jam, masuk/daftar), paralaks dan gambar-jalan mati pada `prefers-reduced-motion`/`data-motion=kurangi`.
 
 Belum: transisi layar antar-halaman bergaya "kamera", suara/haptik opsional, Pena bereaksi (state machine) pada hasil kuis, wilayah peta untuk mapel tertentu (bukan acak), uji performa pada HP Android lemah (lapisan SVG banyak + WebGL), halaman lain (nilai, jadwal, rapor) masih bergaya ringkas lama.
+
+## 6. Tambahan (2 Okt, sesi suara)
+- Panduan suara dan penegakannya untuk teks AI: `docs/design/voice-guide.md`, `apps/web/src/lib/voice.ts`.
+- Pena bereaksi: melompat saat benar/lulus, miring dan menunduk saat salah/belum lulus (`edusmart:oops`); getar singkat di HP (`lib/haptic.ts`), mati bila hemat gerak.

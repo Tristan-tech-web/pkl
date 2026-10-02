@@ -5,7 +5,7 @@ import type { Palette } from "./kit";
 // Maskot "Pena": burung hantu bulat berkacamata bulat dan topi toga, gaya kartun bergaris tepi (cel-shading + outline).
 // Seluruhnya prosedural (tanpa aset), ≈ 9 ribu segitiga. Mata mengikuti kursor/jari, berkedip, bernapas, melambai, dan melompat
 // dengan peregangan-pemipihan saat ada hadiah atau saat diketuk.
-export type Mascot = { dispose: () => void; jump: () => void; setPalette: (p: Palette) => void; setAvatar: (a: Avatar) => void };
+export type Mascot = { dispose: () => void; jump: () => void; oops: () => void; setPalette: (p: Palette) => void; setAvatar: (a: Avatar) => void };
 
 const CREAM = 0xfff1db, CREAM_DARK = 0xf0d9b8, INK = 0x1b1a3a;
 
@@ -125,10 +125,11 @@ export function createPena(canvas: HTMLCanvasElement, opts: { still: boolean; qu
   geos.push(shadow.geometry); shadow.rotation.x = -Math.PI / 2; shadow.position.set(0, -1.14, 0.1); root.add(shadow);
 
   // --- interaksi dan animasi
-  let tx = 0, ty = 0, raf = 0, visible = true, jumpT = -10, last = 0, nextBlink = 1.6, blinkT = -10, waveT = -10, nextWave = 4, disposed = false;
+  let tx = 0, ty = 0, raf = 0, visible = true, jumpT = -10, last = 0, nextBlink = 1.6, blinkT = -10, oopsT = -10, waveT = -10, nextWave = 4, disposed = false;
   const onMove = (e: PointerEvent) => { const r = canvas.getBoundingClientRect(); tx = Math.max(-1, Math.min(1, ((e.clientX - (r.left + r.width / 2)) / Math.max(r.width, 220)) * 1.5)); ty = Math.max(-1, Math.min(1, -((e.clientY - (r.top + r.height / 2)) / Math.max(r.height, 220)) * 1.5)); };
   window.addEventListener("pointermove", onMove, { passive: true });
   const jump = () => { jumpT = performance.now() / 1000; };
+  const oops = () => { oopsT = performance.now() / 1000; };
   const onTap = () => jump(); canvas.addEventListener("pointerdown", onTap); canvas.style.cursor = "pointer"; canvas.style.pointerEvents = "auto";
   const resize = () => { const w = canvas.clientWidth || 200, h = canvas.clientHeight || 200; renderer.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix(); };
   const ro = new ResizeObserver(resize); ro.observe(canvas); resize();
@@ -145,10 +146,13 @@ export function createPena(canvas: HTMLCanvasElement, opts: { still: boolean; qu
       else if (k < 0.78) { const a = (k - 0.14) / 0.64; y += Math.sin(a * Math.PI) * 0.6; sy = 1 + 0.1 * Math.sin(a * Math.PI); sxz = 1 - 0.05 * Math.sin(a * Math.PI); flap = Math.sin(a * 22) * 0.7 + 0.8; squint = 1; }
       else { const a = (k - 0.78) / 0.57; const d = Math.exp(-a * 3.5) * Math.cos(a * 11); sy = 1 - 0.14 * d; sxz = 1 + 0.08 * d; squint = Math.max(0, 1 - a * 1.6); }
     }
+    // salah jawab: kepala miring sebentar, badan sedikit menunduk, mata menyipit, sayap terkulai (lalu pulih)
+    const ko = (t - oopsT) / 1.3; let droop = 0, tilt = 0;
+    if (ko >= 0 && ko < 1) { const e = Math.sin(Math.PI * Math.min(1, ko * 1.15)); droop = e; tilt = e * 0.32; y -= 0.045 * e; sy -= 0.03 * e; squint = Math.max(squint, 0.35 * e); }
     root.position.y = y; rig.scale.set(sxz, sy, sxz); rig.position.y = (1 - sy) * -1.0;
     const air = Math.max(0, y); const s = 1 - Math.min(0.5, air * 0.35); shadow.scale.set(s, s, s); (shadow.material as THREE.MeshBasicMaterial).opacity = 1 - Math.min(0.6, air * 0.5);
     // kepala/badan menoleh ke penunjuk
-    rig.rotation.y += (tx * 0.55 - rig.rotation.y) * 0.1; rig.rotation.x += (-ty * 0.22 - rig.rotation.x) * 0.1; rig.rotation.z += (-tx * 0.05 - rig.rotation.z) * 0.1;
+    rig.rotation.y += (tx * 0.55 - rig.rotation.y) * 0.1; rig.rotation.x += (-ty * 0.22 - rig.rotation.x) * 0.1; rig.rotation.z += (-tx * 0.05 + tilt - rig.rotation.z) * 0.1;
     for (const ir of irises) { ir.position.x += (tx * 0.06 - ir.position.x) * 0.25; ir.position.y += (ty * 0.06 - ir.position.y) * 0.25; }
     // kedip dan mata senang
     if (t > nextBlink) { blinkT = t; nextBlink = t + 2 + Math.random() * 3.2; }
@@ -157,7 +161,7 @@ export function createPena(canvas: HTMLCanvasElement, opts: { still: boolean; qu
     // lambaian sayap: sesekali sendiri, cepat saat lompat
     if (t > nextWave) { waveT = t; nextWave = t + 6 + Math.random() * 5; }
     const wv = t - waveT < 1.3 ? Math.sin((t - waveT) * 11) * 0.35 + 0.9 : 0;
-    wings[0].rotation.z = 0.12 + flap * 0.5; wings[1].rotation.z = -0.12 - (wv + flap * 0.5) * (1) + Math.sin(t * 2.1) * 0.03;
+    wings[0].rotation.z = 0.12 + flap * 0.5 - droop * 0.28; wings[1].rotation.z = -0.12 - (wv + flap * 0.5) * (1) + Math.sin(t * 2.1) * 0.03 + droop * 0.28;
     wings[0].rotation.z += Math.sin(t * 2.1 + 1) * 0.03;
     tufts[0].rotation.z = 0.95 + Math.sin(t * 3.1) * 0.03 + squint * 0.2; tufts[1].rotation.z = -0.95 - Math.sin(t * 2.7) * 0.03 - squint * 0.2;
     tassel.rotation.z = Math.sin(t * 2.4) * 0.09 - rig.rotation.y * 0.25 + (k >= 0 && k < 1 ? Math.sin(k * 20) * 0.3 * (1 - k) : 0);
@@ -192,5 +196,5 @@ export function createPena(canvas: HTMLCanvasElement, opts: { still: boolean; qu
     ro.disconnect(); io.disconnect(); geos.forEach((g) => g.dispose()); [grad, shTex].forEach((t) => t.dispose());
     [...Object.values(mats), cream, creamDark, white, ink, flat, blush, outlineMat, shadow.material as THREE.Material].forEach((m) => m.dispose()); renderer.dispose();
   };
-  return { dispose, jump, setPalette, setAvatar };
+  return { dispose, jump, oops, setPalette, setAvatar };
 }

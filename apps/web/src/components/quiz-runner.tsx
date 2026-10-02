@@ -1,6 +1,7 @@
 "use client";
 
 import { Mascot } from "@/components/three/mascot";
+import { haptic } from "@/lib/haptic";
 import Link from "next/link";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { submitQuizAction, type QuizResult } from "@/app/dashboard/sekolah/[id]/belajar/[nodeId]/kuis/actions";
@@ -16,8 +17,8 @@ type Answer = number | string | number[];
 // Maskot menyambut hasil: melompat riang bila lulus (mendengar peristiwa hadiah).
 function MascotCheer({ passed }: { passed: boolean }) {
   useEffect(() => {
-    if (!passed) return;
-    const t = setTimeout(() => window.dispatchEvent(new Event("edusmart:reward")), 700);
+    if (!passed) { const t0 = setTimeout(() => window.dispatchEvent(new Event("edusmart:oops")), 700); return () => clearTimeout(t0); }
+    const t = setTimeout(() => { haptic("selesai"); window.dispatchEvent(new Event("edusmart:reward")); }, 700);
     return () => clearTimeout(t);
   }, [passed]);
   return <div className="mb-2 flex justify-center"><Mascot size={150} /></div>;
