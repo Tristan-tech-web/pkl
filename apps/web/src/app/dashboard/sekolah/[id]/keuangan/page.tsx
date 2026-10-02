@@ -91,7 +91,7 @@ export default async function KeuanganPage({ params, searchParams }: { params: P
       <section className="mt-8">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <h2 className="font-display text-2xl font-bold tracking-tight">Daftar tagihan</h2>
-          <nav aria-label="Saring status" className="flex gap-1 text-sm font-semibold">
+          <nav aria-label="Saring status" className="flex flex-wrap gap-1 text-sm font-semibold">
             {[["semua", "Semua"], ["belum", "Belum lunas"], ["terlambat", "Terlambat"], ["lunas", "Lunas"]].map(([k, l]) => (
               <a key={k} href={`?status=${k}`} aria-current={filter === k ? "page" : undefined} className={`inline-flex min-h-11 items-center rounded-full border px-3 ${filter === k ? "border-pen bg-pen text-on-pen" : "border-line"}`}>{l}</a>
             ))}

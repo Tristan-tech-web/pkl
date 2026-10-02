@@ -416,3 +416,6 @@ main:has([data-shell="student"]) { padding-top: 0; padding-bottom: 6.5rem; max-w
 
 .xp-chip { background: var(--hi); color: #1b1a3a; }
 @media (max-width: 380px) { .s-lv { display: none; } .s-top { gap: 0.35rem; } .s-chip { padding: 0 0.55rem; } }
+
+/* label di dalam grid boleh menyusut (select dengan opsi panjang tidak melebarkan halaman) */
+label { min-width: 0; }
