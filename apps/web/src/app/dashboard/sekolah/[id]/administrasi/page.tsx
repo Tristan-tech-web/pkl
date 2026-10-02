@@ -73,7 +73,7 @@ async function MyRecords({ schoolId, memberId, role }: { schoolId: string; membe
       <header className="mt-3 mb-6"><h1 className="font-display text-4xl font-bold tracking-tight">Data diriku</h1><p className="mt-1 text-ink-soft">Untuk perubahan data, hubungi tata usaha.</p></header>
       {p ? (
         <dl className="grid gap-x-8 sm:grid-cols-2">
-          {L.filter(([, k]) => p[k]).map(([l, k]) => <div key={k} className="flex gap-3 border-b border-line py-2"><dt className="w-32 shrink-0 text-ink-soft">{l}</dt><dd className="font-semibold">{String(p[k])}</dd></div>)}
+          {L.filter(([, k]) => p[k]).map(([l, k]) => <div key={k} className="flex gap-3 border-b border-line py-2"><dt className="w-28 shrink-0 text-ink-soft sm:w-32">{l}</dt><dd className="min-w-0 break-words font-semibold">{String(p[k])}</dd></div>)}
         </dl>
       ) : <p className="rounded-box border border-dashed border-line p-6 text-ink-soft">Data induk belum diisi sekolah.</p>}
       <h2 className="mt-10 font-display text-2xl font-bold tracking-tight">Surat untukku</h2>
