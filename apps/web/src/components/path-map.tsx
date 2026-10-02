@@ -13,10 +13,10 @@ const WAVE = [0, 14, 22, 14, 0, -14, -22, -14];
 
 // Tiap mata pelajaran punya wilayah sendiri supaya murid hafal "ini daerah Matematika"; yang tak dikenali bergilir.
 const REGION: [RegExp, (typeof BIOMES)[number]][] = [
-  [/pplg|informatika|komputer|program|tik|rpl|tkj/i, "padang"],
+  [/\bpplg|informatika|komputer|\bprogram|\btik\b|\brpl|\btkj/i, "padang"],
   [/\bmat|statistik|aljabar|geometri/i, "gunung"],
   [/ipa|fisika|kimia|biologi|sains|alam/i, "hutan"],
-  [/bahasa|indo|ing|arab|jawa|sastra|seni|musik/i, "pantai"],
+  [/bahasa|\bindo|\bing|\barab|\bjawa|sastra|\bseni|musik/i, "pantai"],
 ];
 const biomeFor = (subject: string, seed: number) => REGION.find(([re]) => re.test(subject))?.[1] ?? BIOMES[seed % BIOMES.length];
 
