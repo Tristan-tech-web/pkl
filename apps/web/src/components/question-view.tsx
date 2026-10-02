@@ -15,7 +15,7 @@ export type QuestionViewProps = {
 };
 
 /** Jalan setapak kecil: satu titik per soal. Yang sudah dilewati hijau, yang sedang dikerjakan berdenyut, ujungnya bendera. */
-function Trail({ index, total, answered }: { index: number; total: number; answered: boolean }) {
+export function Trail({ index, total, answered }: { index: number; total: number; answered: boolean }) {
   const done = index - 1 + (answered ? 1 : 0);
   return (
     <ol className="qv-trail" role="progressbar" aria-valuenow={done} aria-valuemin={0} aria-valuemax={total} aria-label={`Soal ${index} dari ${total}`}>

@@ -7,6 +7,8 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { submitQuizAction, type QuizResult } from "@/app/dashboard/sekolah/[id]/belajar/[nodeId]/kuis/actions";
 import { gsap, NO_REDUCE, useGSAP } from "@/lib/motion";
 import { IntegrityNotice } from "@/components/integrity-notice";
+import { IslandScene } from "@/components/island/island-scene";
+import { Trail } from "@/components/question-view";
 import { RewardBurst } from "@/components/motion/reward-burst";
 import { XpCounter } from "@/components/motion/xp-counter";
 import { Button, ErrorNote, Input, LinkButton } from "@/components/ui";
@@ -15,13 +17,13 @@ type Q = { id: string; kind: "mcq" | "multi" | "short"; prompt: string; options:
 type Answer = number | string | number[];
 
 // Maskot menyambut hasil: melompat riang bila lulus (mendengar peristiwa hadiah).
-function MascotCheer({ passed }: { passed: boolean }) {
+function MascotCheer({ passed, className = "mb-2 flex justify-center" }: { passed: boolean; className?: string }) {
   useEffect(() => {
     if (!passed) { const t0 = setTimeout(() => window.dispatchEvent(new Event("edusmart:oops")), 700); return () => clearTimeout(t0); }
     const t = setTimeout(() => { haptic("selesai"); window.dispatchEvent(new Event("edusmart:reward")); }, 700);
     return () => clearTimeout(t);
   }, [passed]);
-  return <div className="mb-2 flex justify-center"><Mascot size={150} /></div>;
+  return <Mascot size={150} className={className} />;
 }
 
 export function QuizRunner({
@@ -93,24 +95,24 @@ export function QuizRunner({
     return (
       <div ref={stage} className="relative">
         {result.passed ? <RewardBurst intensity={0.5 + result.stars * 0.35} /> : null}
-        <MascotCheer passed={result.passed} />
-        <p className="text-sm font-semibold uppercase tracking-[0.08em] text-ink-soft">{title}</p>
-        <div className="r-score mt-2 flex items-end gap-4">
-          <p className="num font-display text-7xl font-bold leading-none">{result.score}</p>
-          <p className="pb-2 text-lg text-ink-soft">
-            {result.correct} dari {result.total} benar
-          </p>
-        </div>
-        <div className="mt-4 flex gap-1 text-5xl" role="img" aria-label={`${result.stars} dari 3 bintang`}>
-          {[1, 2, 3].map((n) => (
-            <span key={n} className={`r-star ${n <= result.stars ? "on" : ""}`} style={{ color: n <= result.stars ? "var(--star)" : "var(--line)" }}>
-              ★
-            </span>
-          ))}
-        </div>
+        <IslandScene compact growth={{ level: result.level, streak: result.streak }} pena={<MascotCheer passed={result.passed} className="island-pena" />}>
+          <div className="grid gap-2">
+            <p className="island-eyebrow w-fit">{title}</p>
+            <div className="r-score flex items-end gap-3">
+              <p className="num island-quest !max-w-none" style={{ fontSize: "clamp(3.6rem, 16vw, 5.5rem)" }}>{result.score}</p>
+              <p className="island-lede pb-2">{result.correct} dari {result.total} benar</p>
+            </div>
+            <div className="flex gap-1 text-4xl" role="img" aria-label={`${result.stars} dari 3 bintang`}>
+              {[1, 2, 3].map((n) => (
+                <span key={n} className={`r-star ${n <= result.stars ? "on" : ""}`} style={{ color: n <= result.stars ? "var(--star)" : "color-mix(in srgb, var(--is-ink) 22%, transparent)", textShadow: n <= result.stars ? "0 2px 0 rgb(0 0 0 / 0.25)" : undefined }}>★</span>
+              ))}
+            </div>
+            {result.leveled_up ? <p className="r-level w-fit rounded-box border-2 border-[#1b1a3a] bg-[var(--hi)] px-3 py-1 font-display text-lg font-extrabold text-[#1b1a3a]">Naik level! Sekarang level {result.level}</p> : null}
+          </div>
+        </IslandScene>
         <IntegrityNotice schoolId={schoolId} integrity={result.integrity ?? null} />
         <p className="mt-3 text-lg font-semibold">
-          {result.stars === 3 ? "Sempurna!" : result.stars === 2 ? "Bagus sekali." : result.stars === 1 ? "Lulus. Masih bisa lebih baik." : "Belum lulus. Baca materi lagi, lalu coba ulang."}
+          {result.stars === 3 ? "Sempurna. Tidak ada yang meleset." : result.stars === 2 ? "Bagus. Tinggal satu langkah lagi ke sempurna." : result.stars === 1 ? "Lulus. Coba lagi kalau mau bintang lebih banyak." : "Belum lulus kali ini. Baca materinya sebentar, lalu coba lagi."}
         </p>
 
         <div className="mt-6 grid gap-3 sm:grid-cols-3">
@@ -136,11 +138,6 @@ export function QuizRunner({
           </div>
         </div>
 
-        {result.leveled_up ? (
-          <p className="r-level mt-4 inline-block rounded-box border-2 border-pen bg-card px-4 py-2 font-display text-xl font-bold text-pen">
-            Naik level! Sekarang level {result.level}
-          </p>
-        ) : null}
         {result.unlocked.length > 0 ? (
           <div className="r-reward mt-4 rounded-box border border-ok/40 bg-ok-bg p-4">
             <p className="font-semibold text-ok">Materi baru terbuka</p>
@@ -180,20 +177,11 @@ export function QuizRunner({
   const last = i === questions.length - 1;
   return (
     <div ref={stage}>
-      <p className="text-sm font-semibold uppercase tracking-[0.08em] text-ink-soft">{title}</p>
-      <div className="mt-2 flex items-center gap-3" role="progressbar" aria-valuemin={1} aria-valuemax={questions.length} aria-valuenow={i + 1} aria-label="Kemajuan kuis">
-        <div className="flex flex-1 gap-1.5">
-          {questions.map((_, n) => (
-            <span key={n} className={`h-2 flex-1 rounded-full ${n < i ? "bg-ok" : n === i ? "bg-pen" : "bg-line"}`} />
-          ))}
-        </div>
-        <span className="num text-sm text-ink-soft">
-          {i + 1}/{questions.length}
-        </span>
-      </div>
-      <div className="q-card mt-6 surface p-5">
-        <h1 className="font-display text-2xl font-bold leading-snug tracking-tight">{q.prompt}</h1>
-        <div className="mt-5 grid gap-3">
+      <div className="flex items-center justify-between"><p className="text-sm font-bold uppercase tracking-[0.08em] text-ink-soft">{title}</p><span className="num text-sm font-bold text-ink-soft">{i + 1}/{questions.length}</span></div>
+      <div className="mt-2"><Trail index={i + 1} total={questions.length} answered={false} /></div>
+      <div className="q-card mt-5">
+        <h1 className="qv-stem">{q.prompt}</h1>
+        <div className="mt-4 grid gap-3">
           {q.kind === "short" ? (
             <div className="q-opt">
               <label className="mb-1 block text-sm font-semibold" htmlFor="short">Jawabanmu</label>
@@ -208,12 +196,10 @@ export function QuizRunner({
                   type="button"
                   aria-pressed={on}
                   onClick={() => (q.kind === "mcq" ? set(n) : set(Array.isArray(cur) ? (cur.includes(n) ? cur.filter((x) => x !== n) : [...cur, n]) : [n]))}
-                  className={`q-opt press flex min-h-12 items-center gap-3 rounded-box border-2 px-4 py-3 text-left text-lg ${on ? "border-pen bg-pen/10 font-semibold" : "border-line hover:border-pen"}`}
+                  className={`q-opt qv-opt press ${on ? "sel" : ""}`}
                 >
-                  <span aria-hidden="true" className={`grid size-6 shrink-0 place-items-center rounded-full border-2 text-xs font-bold ${on ? "border-pen bg-pen text-on-pen" : "border-line"}`}>
-                    {String.fromCharCode(65 + n)}
-                  </span>
-                  {opt}
+                  <span aria-hidden="true" className="qv-letter num">{String.fromCharCode(65 + n)}</span>
+                  <span className="qv-text">{opt}</span>
                 </button>
               );
             })
