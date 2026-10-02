@@ -155,17 +155,15 @@ export function QuizRunner({
           <Link href={lessonHref} className="inline-flex min-h-11 items-center font-semibold text-pen underline">Baca materi</Link>
         </div>
 
-        <h2 className="mt-10 font-display text-2xl font-bold tracking-tight">Pembahasan</h2>
-        <ol className="mt-3 space-y-3">
+        <h2 className="mt-10 font-display text-2xl font-extrabold tracking-tight">Yuk, bahas satu-satu</h2>
+        <ol className="mt-3 grid gap-3">
           {questions.map((qq, n) => {
             const r = byId.get(qq.id);
             return (
-              <li key={qq.id} className={`rounded-box border p-4 ${r?.correct ? "border-ok/40 bg-ok-bg" : "border-bad/40 bg-bad-bg"}`}>
-                <p className="font-semibold">
-                  {n + 1}. {qq.prompt}
-                </p>
-                <p className="mt-1 text-sm font-semibold">{r?.correct ? "Benar" : `Belum tepat. Jawaban: ${renderAnswer(qq, r?.correct_answer)}`}</p>
-                <p className="mt-1 text-ink-soft">{r?.explanation}</p>
+              <li key={qq.id} className={`qv-fb ${r?.correct ? "ok" : "no"}`}>
+                <p className="flex gap-2 font-bold"><span className="num grid size-7 shrink-0 place-items-center rounded-full border-2 border-current text-sm">{n + 1}</span><span>{qq.prompt}</span></p>
+                <p className="qv-head mt-2 !text-base"><span aria-hidden="true">{r?.correct ? "✓" : "💡"}</span> {r?.correct ? "Benar" : `Belum tepat. Jawabannya: ${renderAnswer(qq, r?.correct_answer)}`}</p>
+                {r?.explanation ? <p className="qv-expl">{r.explanation}</p> : null}
               </li>
             );
           })}

@@ -8,6 +8,21 @@ import { addSlot, removeSlot } from "./actions";
 export const metadata = { title: "Jadwal · EduSmart" };
 const DAYS = ["", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"];
 const hm = (t: string) => t.slice(0, 5);
+const TINTS = ["--pen", "--accent", "--ok", "--warn"];
+const tintOf = (name: string) => TINTS[[...name].reduce((a, c) => a + c.charCodeAt(0), 0) % TINTS.length];
+const mins = (t: string) => Number(t.slice(0, 2)) * 60 + Number(t.slice(3, 5));
+// Waktu sekarang di WIB, dihitung di fungsi biasa agar render tetap murni.
+function nowWib() { const w = new Date(Date.now() + 7 * 3600_000); return { day: ((w.getUTCDay() + 6) % 7) + 1, min: w.getUTCHours() * 60 + w.getUTCMinutes() }; }
+function untilText(delta: number) { return delta < 60 ? `${delta} menit lagi` : delta < 24 * 60 ? `${Math.round(delta / 60)} jam lagi` : `${Math.round(delta / 1440)} hari lagi`; }
+function nextSlot(slots: Slot[], now: { day: number; min: number }) {
+  let best: { s: Slot; delta: number } | null = null;
+  for (const s of slots) {
+    let delta = (s.weekday - now.day) * 1440 + mins(s.starts_at) - now.min;
+    if (delta < 0) delta += 7 * 1440;
+    if (!best || delta < best.delta) best = { s, delta };
+  }
+  return best;
+}
 type Slot = { id: string; weekday: number; starts_at: string; ends_at: string; room: string | null; class_group_id: string; class_name: string; subject_name: string; teacher_name: string | null };
 
 export default async function JadwalPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ class?: string; error?: string; info?: string }> }) {
@@ -36,6 +51,8 @@ export default async function JadwalPage({ params, searchParams }: { params: Pro
     slots = await load(undefined, me.memberId);
     title = "Jadwal mengajarku";
   }
+  const now = nowWib();
+  const next = !management ? nextSlot(slots, now) : null;
   const byDay = new Map<number, Slot[]>();
   for (const s of slots) byDay.set(s.weekday, [...(byDay.get(s.weekday) ?? []), s]);
 
@@ -65,16 +82,27 @@ export default async function JadwalPage({ params, searchParams }: { params: Pro
         </form>
       ) : null}
 
+      {next ? (
+        <aside className="surface mt-5 flex items-center gap-3 border-2 !border-pen p-4" aria-label="Pelajaran berikutnya">
+          <span aria-hidden="true" className="grid size-12 shrink-0 place-items-center rounded-xl text-2xl" style={{ background: `color-mix(in srgb, var(${tintOf(next.s.subject_name)}) 16%, var(--card))` }}>⏰</span>
+          <span className="min-w-0">
+            <span className="block text-xs font-bold uppercase tracking-[0.08em] text-pen">Berikutnya · {untilText(next.delta)}</span>
+            <span className="block font-display text-xl font-extrabold leading-tight">{next.s.subject_name}</span>
+            <span className="num block text-sm text-ink-soft">{DAYS[next.s.weekday]} {hm(next.s.starts_at)}{next.s.room ? ` · ${next.s.room}` : ""}</span>
+          </span>
+        </aside>
+      ) : null}
+
       {slots.length === 0 ? (
         <p className="mt-6 rounded-box border border-dashed border-line p-6 text-ink-soft">Belum ada jadwal.</p>
       ) : (
         <div className="stagger mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3, 4, 5, 6, 7].filter((d) => byDay.has(d)).map((d) => (
-            <section key={d} className="surface p-4">
-              <h2 className="font-display text-xl font-bold">{DAYS[d]}</h2>
+            <section key={d} className={`surface p-4 ${d === now.day ? "!border-pen" : ""}`}>
+              <h2 className="flex items-center gap-2 font-display text-xl font-bold">{DAYS[d]}{d === now.day ? <span className="rounded-full bg-pen px-2 py-0.5 text-xs font-bold text-on-pen">Hari ini</span> : null}</h2>
               <ul className="mt-2">
                 {byDay.get(d)!.map((s) => (
-                  <li key={s.id} className="border-t border-line py-2">
+                  <li key={s.id} className="border-t border-line py-2 pl-3" style={{ borderLeft: `5px solid var(${tintOf(s.subject_name)})`, borderLeftColor: `var(${tintOf(s.subject_name)})` }}>
                     <p className="num text-sm font-semibold text-pen">{hm(s.starts_at)}–{hm(s.ends_at)}</p>
                     <p className="font-semibold">{s.subject_name}</p>
                     <p className="text-sm text-ink-soft">

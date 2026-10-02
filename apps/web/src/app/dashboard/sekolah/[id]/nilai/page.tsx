@@ -1,3 +1,4 @@
+import "@/components/island/island.css";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BackLink } from "@/components/role-views";
@@ -141,6 +142,14 @@ export default async function NilaiPage({ params, searchParams }: { params: Prom
   );
 }
 
+// Kalimat penyemangat yang konkret: berapa poin lagi ke predikat berikutnya.
+function gradeHint(g: number | null): string {
+  if (g === null) return "Belum ada nilai akhir.";
+  if (g >= 90) return "Predikat tertinggi. Pertahankan.";
+  const next = g >= 80 ? [90, "A"] : g >= 70 ? [80, "B"] : [70, "C"];
+  return `Tinggal ${Math.ceil(Number(next[0]) - g)} poin lagi ke ${next[1]}.`;
+}
+
 async function StudentGrades({ schoolId, memberId, terms, term }: { schoolId: string; memberId: string; terms: Terms; term: Terms[number] | undefined }) {
   const { supabase } = await getSchoolContext(schoolId);
   const { data } = term
@@ -159,6 +168,7 @@ async function StudentGrades({ schoolId, memberId, terms, term }: { schoolId: st
       <BackLink />
       <header className="mt-3 mb-6">
         <h1 className="font-display text-4xl font-bold tracking-tight">Nilaiku</h1>
+        <p className="mt-1 text-ink-soft">Nilai akhir tiap mapel dihitung dari semua penilaian, sesuai bobotnya.</p>
         <form method="get" className="mt-3 flex items-end gap-3">
           <label><Label>Semester</Label><Select name="term" defaultValue={term?.id}>{terms.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}</Select></label>
           <Button type="submit" variant="ghost">Tampilkan</Button>
@@ -170,15 +180,24 @@ async function StudentGrades({ schoolId, memberId, terms, term }: { schoolId: st
         [...bySubject.entries()].map(([subject, items]) => {
           const g = finalGrade(items.map((i) => ({ weight: i.weight, maxScore: i.max, score: i.score })));
           return (
-            <section key={subject} className="mt-6">
-              <div className="flex items-baseline justify-between gap-3 border-b-2 border-ink pb-1">
-                <h2 className="font-display text-2xl font-bold">{subject}</h2>
-                <p className="num text-lg font-bold">{g ?? "–"} <span className="text-sm font-semibold text-ink-soft">({predicate(g)})</span></p>
+            <section key={subject} className="surface mt-5 p-4">
+              <div className="flex items-center gap-4">
+                <span className="grade-ring" style={{ ["--g" as string]: Math.max(0, Math.min(100, g ?? 0)) }} role="img" aria-label={g === null ? "Belum ada nilai akhir" : `Nilai akhir ${g}, predikat ${predicate(g)}`}>
+                  <b className="font-display">{predicate(g)}</b>
+                </span>
+                <div className="min-w-0">
+                  <h2 className="font-display text-xl font-extrabold leading-tight">{subject}</h2>
+                  <p className="num text-2xl font-extrabold">{g ?? "–"}</p>
+                  <p className="text-sm font-semibold text-ink-soft">{gradeHint(g)}</p>
+                </div>
               </div>
-              <ul>{items.map((i) => (
-                <li key={i.title} className="flex items-baseline justify-between gap-3 border-b border-line py-2">
-                  <span>{i.title} <span className="text-sm text-ink-soft">· {KIND_LABEL[i.kind]} · bobot {i.weight}</span></span>
-                  <span className="num font-semibold">{i.score ?? "–"}<span className="font-normal text-ink-soft">/{i.max}</span></span>
+              <ul className="mt-3">{items.map((i) => (
+                <li key={i.title} className="border-t border-line py-2">
+                  <div className="flex items-baseline justify-between gap-3">
+                    <span>{i.title} <span className="text-sm text-ink-soft">· {KIND_LABEL[i.kind]} · bobot {i.weight}</span></span>
+                    <span className="num font-semibold">{i.score ?? "–"}<span className="font-normal text-ink-soft">/{i.max}</span></span>
+                  </div>
+                  <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-line" aria-hidden="true"><div className="h-full rounded-full bg-pen" style={{ width: `${i.score === null ? 0 : Math.min(100, (i.score / i.max) * 100)}%` }} /></div>
                 </li>
               ))}</ul>
             </section>

@@ -264,3 +264,10 @@ html[data-experience="ceria"] .qv-opt:not(:disabled):active { transform: transla
   html:not([data-motion="kurangi"]) .podium-col.r3 .podium-step { animation-delay: 220ms; }
 }
 @keyframes podium-up { from { transform: scaleY(0.2); opacity: 0; } to { transform: scaleY(1); opacity: 1; } }
+
+/* Cincin nilai di halaman Nilaiku */
+.grade-ring { --g: 0; display: grid; place-items: center; flex: none; width: 4.6rem; height: 4.6rem; border-radius: 50%;
+  background: conic-gradient(var(--ok) calc(var(--g) * 1%), var(--line) 0); position: relative; }
+.grade-ring::before { content: ""; position: absolute; inset: 0.42rem; border-radius: 50%; background: var(--card); }
+.grade-ring b { position: relative; font-size: 1.7rem; font-weight: 800; }
+@media (prefers-reduced-motion: no-preference) { html:not([data-motion="kurangi"]) .grade-ring { animation: qv-pop 500ms var(--ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1)); } }
