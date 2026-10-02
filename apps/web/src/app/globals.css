@@ -419,3 +419,8 @@ main:has([data-shell="student"]) { padding-top: 0; padding-bottom: 6.5rem; max-w
 
 /* label di dalam grid boleh menyusut (select dengan opsi panjang tidak melebarkan halaman) */
 label { min-width: 0; }
+
+@media (prefers-reduced-motion: no-preference) {
+  html:not([data-motion="kurangi"]) .pena-wait { animation: pena-nod 1s ease-in-out infinite; transform-origin: 50% 90%; }
+}
+@keyframes pena-nod { 0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-7px) rotate(3deg); } }
