@@ -11,6 +11,15 @@ const KIND_LABEL: Record<string, string> = { materi: "Materi", persiapan: "Persi
 // Pergeseran kiri-kanan membentuk jalur berkelok (satuan: persen dari lebar jalur).
 const WAVE = [0, 14, 22, 14, 0, -14, -22, -14];
 
+// Tiap mata pelajaran punya wilayah sendiri supaya murid hafal "ini daerah Matematika"; yang tak dikenali bergilir.
+const REGION: [RegExp, (typeof BIOMES)[number]][] = [
+  [/pplg|informatika|komputer|program|tik|rpl|tkj/i, "padang"],
+  [/\bmat|statistik|aljabar|geometri/i, "gunung"],
+  [/ipa|fisika|kimia|biologi|sains|alam/i, "hutan"],
+  [/bahasa|indo|ing|arab|jawa|sastra|seni|musik/i, "pantai"],
+];
+const biomeFor = (subject: string, seed: number) => REGION.find(([re]) => re.test(subject))?.[1] ?? BIOMES[seed % BIOMES.length];
+
 type Group = { key: string; title: string | null; position: number; nodes: MapNode[] };
 
 export function groupByUnit(nodes: MapNode[]): Group[] {
@@ -69,7 +78,7 @@ export function PathMap({ nodes, schoolId, preview = false }: { nodes: MapNode[]
   return (
     <div className="mx-auto max-w-md space-y-6">
       {groups.map((g, gi) => {
-        const biome = BIOMES[(hash(groups[0].key) + gi) % BIOMES.length];
+        const biome = biomeFor(g.nodes[0]?.subjectName ?? "", hash(g.key) + gi);
         return (
           <section key={g.key} aria-label={g.title ?? "Materi"} className="biome" data-biome={biome}>
             {g.title ? (
