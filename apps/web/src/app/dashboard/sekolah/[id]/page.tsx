@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { IslandScene } from "@/components/island/island-scene";
 import { BackLink, OwnerView, StudentView, TeacherView, type Membership } from "@/components/role-views";
 import { ParentView } from "@/components/parent-view";
 import { LatestAnnouncements, ModuleLinks } from "@/components/module-links";
@@ -44,14 +45,17 @@ export default async function SchoolPage({ params }: { params: Promise<{ id: str
   return (
     <>
       {(schoolCount ?? 0) > 1 ? <BackLink /> : null}
-      {me.roleCode === "student" || MANAGEMENT.has(me.roleCode) || TEACHING.has(me.roleCode) ? null : <header className="mt-3 mb-8">
+      {me.roleCode === "parent" ? (
+        <IslandScene strip pena={null}>
+          <header className="grid gap-1 pt-1">
+            <p className="island-eyebrow w-fit">{school.name}</p>
+            <h1 className="island-quest !max-w-none">Halo, {first}</h1>
+          </header>
+        </IslandScene>
+      ) : me.roleCode === "student" || MANAGEMENT.has(me.roleCode) || TEACHING.has(me.roleCode) ? null : <header className="mt-3 mb-8">
         <p className="text-sm font-semibold uppercase tracking-[0.08em] text-ink-soft">{me.roleName}</p>
-        <h1 className="mt-1 font-display text-4xl font-bold tracking-tight">
-          {me.roleCode === "student" || me.roleCode === "parent" ? `Halo, ${first}` : school.name}
-        </h1>
-        <p className="mt-1 text-ink-soft">
-          {me.roleCode === "student" || me.roleCode === "parent" ? school.name : `${where ? `${where} · ` : ""}${authorityLabel(school.authority)} · ${school.ownership === "negeri" ? "Negeri" : "Swasta"}`}
-        </p>
+        <h1 className="mt-1 font-display text-4xl font-bold tracking-tight">{school.name}</h1>
+        <p className="mt-1 text-ink-soft">{`${where ? `${where} · ` : ""}${authorityLabel(school.authority)} · ${school.ownership === "negeri" ? "Negeri" : "Swasta"}`}</p>
       </header>}
       {MANAGEMENT.has(me.roleCode) ? (
         <>
