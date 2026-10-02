@@ -7,7 +7,8 @@
   --is-ink: #0b2540; --is-ink-soft: #1d3d5f; --is-flower: #ff6b8b; --is-star: 0;
   --p: 0; --mx: 0; --my: 0;
   /* skala viewBox 1440x600 → piksel (preserveAspectRatio slice): dipakai menempatkan Pena persis di puncak jalan */
-  --s: max(calc(100vw / 1440), calc(max(62svh, 380px) / 600));
+  --ih: max(62svh, 380px);
+  --s: max(calc(100vw / 1440), calc(var(--ih) / 600));
   position: relative; isolation: isolate; overflow: hidden; min-height: 100svh; display: flex; flex-direction: column;
   background: linear-gradient(180deg, var(--is-sky-a) 0%, var(--is-sky-b) 62%);
   color: var(--is-ink);
@@ -28,7 +29,7 @@
   --is-tree: #0f2a4a; --is-tree2: #1a3b66; --is-trunk: #2a2347; --is-cloud: #8c83c9;
   --is-ink: #f6f3ff; --is-ink-soft: #d3ccf5; --is-flower: #ffb4e0; --is-star: 1;
 }
-.island-layer { position: absolute; inset-inline: 0; bottom: 0; height: 62svh; min-height: 380px; pointer-events: none; will-change: transform; }
+.island-layer { position: absolute; inset-inline: 0; bottom: 0; height: var(--ih); pointer-events: none; will-change: transform; }
 .island-layer svg { width: 100%; height: 100%; display: block; }
 .island-sun { position: absolute; width: clamp(110px, 16vw, 220px); aspect-ratio: 1; border-radius: 50%; background: var(--is-sun);
   box-shadow: 0 0 0 clamp(14px, 3vw, 40px) var(--is-glow), 0 0 120px 40px var(--is-glow); pointer-events: none; }
@@ -139,3 +140,13 @@ html[data-motion="kurangi"] .js [data-reveal] { opacity: 1; transform: none; tra
 .biome .path-node.is-locked { background: #aab4c3; border-color: #7f8ba0; color: #fff; }
 html[data-experience="ceria"] .biome .path-node.is-locked { box-shadow: 0 7px 0 0 #7f8ba0; }
 .path-pena { position: absolute; z-index: 4; top: 50%; translate: 0 -62%; pointer-events: none; }
+
+/* Versi ringkas untuk beranda murid: kartu berlanskap dengan sapaan dan misi berikutnya */
+.island-mini { --ih: 270px; min-height: 0; height: 470px; border-radius: calc(var(--r-box) * 1.4); border: var(--bw) solid color-mix(in oklab, var(--is-ink) 18%, transparent); }
+.island-mini::after { display: none; }
+.island-mini .island-text { padding: 1.1rem 1.1rem 0; margin: 0; max-width: none; }
+.island-mini .island-sun { width: 84px; right: 7% !important; top: 8% !important; box-shadow: 0 0 0 10px var(--is-glow), 0 0 60px 20px var(--is-glow); }
+.island-mini .island-pena { left: calc(50% + 100 * var(--s) - 75px); bottom: calc(138 * var(--s)); }
+.island-mini .island-cloud { top: 6% !important; }
+.island-quest { font-family: var(--font-display); font-weight: 800; letter-spacing: -0.02em; line-height: 1; font-size: clamp(1.9rem, 7.5vw, 2.6rem); color: var(--is-ink); text-wrap: balance; max-width: 15ch; }
+@media (min-width: 640px) { .island-mini { height: 430px; } .island-mini .island-text { padding: 1.6rem 1.8rem 0; } }

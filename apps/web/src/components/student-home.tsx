@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Countdown } from "@/components/countdown";
 import { Mascot } from "@/components/three/mascot";
+import { IslandScene } from "@/components/island/island-scene";
 import { loadMap, type MapNode } from "@/lib/learning";
 import type { createClient } from "@/lib/supabase/server";
 
@@ -54,34 +55,31 @@ export async function StudentHome({ supabase, schoolId, memberId, name, classId,
 
   return (
     <div className="space-y-6">
-      <section aria-label="Lanjut belajar" className="surface relative isolate overflow-hidden p-5">
-        <div className="relative z-10 flex items-center gap-3">
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-bold uppercase tracking-[0.08em] text-pen">Halo, {name}!</p>
-            {next ? (
-              <>
-                <h1 className="mt-1 font-display text-2xl font-extrabold leading-tight">{next.title}</h1>
-                <p className="mt-1 text-sm text-ink-soft">{next.subjectName} · {KIND[next.kind] ?? "Materi"}</p>
-                <p className="num mt-1 inline-flex gap-2 text-sm font-bold"><span className="xp-chip rounded-full px-2">+{next.xpReward} XP</span>{next.minutes ? <span className="text-ink-soft">±{next.minutes} mnt</span> : null}</p>
-                <Link href={`${base}/belajar/${next.id}`} className="btn-solid mt-4 flex min-h-12 w-fit items-center whitespace-nowrap rounded-btn px-5 text-lg font-extrabold">Mulai ▶</Link>
-              </>
-            ) : soon ? (
-              <>
-                <h1 className="mt-1 font-display text-2xl font-extrabold leading-tight">Berikutnya: {soon.title}</h1>
-                <p className="mt-1 text-sm text-ink-soft">Dibuka sehari sebelum pelajaran supaya otakmu sudah &ldquo;panas&rdquo;.</p>
-                <p className="num mt-3 inline-flex min-h-11 items-center rounded-btn border-2 border-pen px-4 text-lg font-extrabold text-pen"><Countdown until={soon.opensAt as string} /></p>
-              </>
-            ) : (
-              <>
-                <h1 className="mt-1 font-display text-2xl font-extrabold leading-tight">{map.length ? "Semua simpul selesai! 🎉" : "Ayo berlatih!"}</h1>
-                <p className="mt-1 text-sm text-ink-soft">Latihan soal mengumpulkan XP dan menguatkan ingatan.</p>
-                <Link href={`${base}/latihan`} className="btn-solid mt-4 flex min-h-12 w-fit items-center whitespace-nowrap rounded-btn px-5 text-lg font-extrabold">Latihan soal 💪</Link>
-              </>
-            )}
-          </div>
-          <Mascot size={118} className="shrink-0" />
-        </div>
-      </section>
+      <IslandScene compact pena={<Mascot size={150} className="island-pena" />}>
+        <section aria-label="Lanjut belajar" className="grid max-w-[22rem] gap-2">
+          <p className="island-eyebrow w-fit">Halo, {name}!</p>
+          {next ? (
+            <>
+              <h1 className="island-quest">{next.title}</h1>
+              <p className="island-lede">{next.subjectName} · {KIND[next.kind] ?? "Materi"}</p>
+              <p className="num inline-flex items-center gap-2 text-sm font-bold"><span className="xp-chip rounded-full px-2">+{next.xpReward} XP</span>{next.minutes ? <span style={{ color: "var(--is-ink-soft)" }}>±{next.minutes} mnt</span> : null}</p>
+              <Link href={`${base}/belajar/${next.id}`} className="btn-solid mt-1 flex min-h-12 w-fit items-center whitespace-nowrap rounded-btn px-5 text-lg font-extrabold">Mulai petualangan ▶</Link>
+            </>
+          ) : soon ? (
+            <>
+              <h1 className="island-quest">Berikutnya: {soon.title}</h1>
+              <p className="island-lede">Dibuka sehari sebelum pelajaran supaya otakmu sudah &ldquo;panas&rdquo;.</p>
+              <p className="num inline-flex min-h-11 w-fit items-center rounded-btn border-2 border-pen bg-card px-4 text-lg font-extrabold text-pen"><Countdown until={soon.opensAt as string} /></p>
+            </>
+          ) : (
+            <>
+              <h1 className="island-quest">{map.length ? "Semua simpul selesai! 🎉" : "Ayo berlatih!"}</h1>
+              <p className="island-lede">Latihan soal mengumpulkan XP dan menguatkan ingatan.</p>
+              <Link href={`${base}/latihan`} className="btn-solid mt-1 flex min-h-12 w-fit items-center whitespace-nowrap rounded-btn px-5 text-lg font-extrabold">Latihan soal 💪</Link>
+            </>
+          )}
+        </section>
+      </IslandScene>
 
       <section aria-label="Misi hari ini">
         <div className="flex items-baseline justify-between"><h2 className="font-display text-xl font-extrabold">Misi hari ini</h2>{doneAll ? <span className="text-sm font-bold text-ok">Semua beres! 🎉</span> : null}</div>
