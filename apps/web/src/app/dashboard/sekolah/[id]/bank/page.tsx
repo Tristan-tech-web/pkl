@@ -34,18 +34,18 @@ export default async function BankPage({ params, searchParams }: { params: Promi
     <>
       <SchoolNav schoolId={id} active="bank" />
       <h1 className="mb-1 font-display text-3xl font-bold tracking-tight">Bank soal</h1>
-      <p className="text-ink-soft">AI membuat ratusan sampai ribuan soal dari buku paket atau LKS. Murid berlatih di menu Latihan dan mengumpulkan XP. Soal yang diulang terus atau dijawab terlalu cepat memberi XP lebih sedikit.</p>
+      <p className="text-ink-soft">Unggah buku paket atau LKS, AI menyusun soalnya, Anda tinggal memeriksa. Murid berlatih di menu Latihan dan dapat XP. Soal yang diulang-ulang atau dijawab asal cepat dapat XP lebih sedikit.</p>
       <div className="mt-3 space-y-3"><ErrorNote message={sp.error} /><InfoNote message={sp.info} /></div>
 
       <section className="mt-6 surface p-4" aria-label="Buat soal">
         <h2 className="font-display text-xl font-bold">Buat soal dari berkas</h2>
-        {readable.length === 0 ? <p className="mt-2 text-sm text-ink-soft">Belum ada berkas buku paket, LKS, atau kurikulum yang terbaca. Unggah di menu Berkas.</p> : (
+        {readable.length === 0 ? <p className="mt-2 text-sm text-ink-soft">Belum ada berkas yang bisa dibaca. Unggah buku paket atau LKS dulu di menu Berkas.</p> : (
           <form action={startBank.bind(null, id)} className="mt-3 grid gap-3 sm:grid-cols-2">
             <label><Label>Berkas</Label><Select name="file_id" required>{readable.map((f) => <option key={f.id as string} value={f.id as string}>{f.name as string}</option>)}</Select></label>
             <label><Label>Mata pelajaran</Label><Select name="subject_id" required>{(subjects ?? []).map((s) => <option key={s.id as string} value={s.id as string}>{s.name as string}</option>)}</Select></label>
             <label><Label>Kelas</Label><Input name="grade" type="number" min={0} max={13} defaultValue={10} /></label>
             <label><Label hint="8–2000">Jumlah soal</Label><Input name="target" type="number" min={8} max={2000} defaultValue={80} /></label>
-            <label className="flex min-h-11 items-center gap-2 sm:col-span-2"><input type="checkbox" name="auto" className="size-4" /> Terbitkan otomatis yang lolos semua pemeriksaan (tanpa saya setujui satu per satu)</label>
+            <label className="flex min-h-11 items-center gap-2 sm:col-span-2"><input type="checkbox" name="auto" className="size-4" /> Langsung terbitkan soal yang lolos semua pemeriksaan, tanpa saya setujui satu-satu</label>
             <div className="sm:col-span-2"><Button type="submit">Mulai</Button></div>
           </form>
         )}
@@ -86,7 +86,7 @@ export default async function BankPage({ params, searchParams }: { params: Promi
               </li>
             );
           })}
-          {(items ?? []).length === 0 ? <li className="surface p-4 text-sm text-ink-soft">Tidak ada butir pada status ini.</li> : null}
+          {(items ?? []).length === 0 ? <li className="surface p-4 text-sm text-ink-soft">Belum ada soal di tab ini.</li> : null}
         </ul>
         <div className="mt-4 flex gap-3 text-sm font-semibold">
           {page > 0 ? <a className="underline" href={`/dashboard/sekolah/${id}/bank?s=${status}${sp.mapel ? `&mapel=${sp.mapel}` : ""}&p=${page - 1}`}>← Sebelumnya</a> : null}
