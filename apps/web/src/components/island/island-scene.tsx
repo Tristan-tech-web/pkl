@@ -80,11 +80,15 @@ export function IslandScene({ children, pena, header, compact = false, strip = f
     el.dataset.tod = fixedTod ?? todNow();
     const calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches || document.documentElement.dataset.motion === "kurangi";
     if (calm) return;
-    let raf = 0, tx = 0, ty = 0, cx = 0, cy = 0;
+    let raf = 0, tx = 0, ty = 0, cx = 0, cy = 0, on = true;
+    // Adegan di luar layar tidak perlu menghitung paralaks (hemat CPU di HP lambat).
+    const io = new IntersectionObserver(([e]) => { on = e.isIntersecting; if (on) onScroll(); }, { rootMargin: "80px" });
+    io.observe(el);
     const onScroll = () => { if (!raf) raf = requestAnimationFrame(tick); };
     const onMove = (e: PointerEvent) => { tx = (e.clientX / window.innerWidth - 0.5) * 2; ty = (e.clientY / window.innerHeight - 0.5) * 2; onScroll(); };
     const tick = () => {
       raf = 0;
+      if (!on) return;
       cx += (tx - cx) * 0.12; cy += (ty - cy) * 0.12;
       el.style.setProperty("--p", String(Math.min(Math.max(0, -el.getBoundingClientRect().top), el.offsetHeight)));
       el.style.setProperty("--mx", cx.toFixed(3));
@@ -94,7 +98,7 @@ export function IslandScene({ children, pena, header, compact = false, strip = f
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("pointermove", onMove, { passive: true });
     tick();
-    return () => { window.removeEventListener("scroll", onScroll); window.removeEventListener("pointermove", onMove); if (raf) cancelAnimationFrame(raf); };
+    return () => { io.disconnect(); window.removeEventListener("scroll", onScroll); window.removeEventListener("pointermove", onMove); if (raf) cancelAnimationFrame(raf); };
   }, [fixedTod]);
 
   const layer = (k: number, m: number) => ({ transform: `translate3d(calc(var(--mx) * ${m}px), calc(var(--p) * ${k}px + var(--my) * ${m / 2}px), 0)` });
