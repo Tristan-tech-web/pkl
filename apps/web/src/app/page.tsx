@@ -160,8 +160,27 @@ export default async function Home({
 
         <section id="paket" className="border-y border-line bg-card">
           <div className="mx-auto w-full max-w-6xl px-4 py-16">
-            <h2 className="font-display text-3xl font-bold tracking-tight">Paket</h2>
-            <p className="mt-2 text-ink-soft">Nama dan batas paket masih sementara. Harga menyusul.</p>
+            <h2 className="station-title">Pilih <mark>bekalmu</mark>.</h2>
+            <p className="mt-3 text-ink-soft">Nama dan batas paket masih sementara. Harga menyusul.</p>
+            <ul className="mt-8 grid gap-5 md:grid-cols-3">
+              {plans.map((p, i) => (
+                <li key={p.code} className="sticker flex flex-col" style={{ rotate: `${[-0.8, 0.5, -0.4][i % 3]}deg` }}>
+                  <h3 className="font-display text-3xl font-extrabold">{p.name}</h3>
+                  <p className="mt-1 text-ink-soft">{p.description}</p>
+                  <ul className="mt-4 flex-1 space-y-1.5">
+                    {features.map((feature) => {
+                      const e = p.plan_entitlements.find((x) => x.feature === feature);
+                      return <li key={feature} className="flex justify-between gap-3 border-b border-line py-1.5 text-sm"><span className="text-ink-soft">{featureLabel(feature)}</span><span className="font-bold">{e ? formatEntitlement(e.enabled, e.limit_value) : "–"}</span></li>;
+                    })}
+                  </ul>
+                  <div className="mt-5">
+                    {p.is_enterprise ? <LinkButton href="#kontak" variant="ghost">Hubungi tim dev</LinkButton> : <LinkButton href="/daftar">Mulai dengan {p.name}</LinkButton>}
+                  </div>
+                </li>
+              ))}
+            </ul>
+            <details className="mt-8">
+              <summary className="inline-flex min-h-11 cursor-pointer items-center rounded-btn border-2 border-line bg-paper px-4 font-bold">Bandingkan semua fitur dan modul</summary>
             <div className="mt-8 overflow-x-auto" tabIndex={0} role="region" aria-label="Perbandingan paket">
               <table className="w-full min-w-[34rem] border-collapse text-left">
                 <thead>
@@ -224,12 +243,13 @@ export default async function Home({
                 </tbody>
               </table>
             </div>
+            </details>
           </div>
         </section>
 
         <section id="kontak" className="mx-auto grid w-full max-w-6xl gap-10 px-4 py-16 lg:grid-cols-[1fr_1.1fr]">
           <div>
-            <h2 className="font-display text-3xl font-bold tracking-tight">Butuh konfigurasi khusus?</h2>
+            <h2 className="station-title">Butuh konfigurasi <mark>khusus</mark>?</h2>
             <p className="mt-3 max-w-md text-ink-soft">
               Paket Enterprise untuk yayasan dengan banyak satuan pendidikan, kurikulum kustom, atau kebutuhan
               integrasi. Ceritakan kondisi sekolah Anda dan tim kami menghubungi lewat email.

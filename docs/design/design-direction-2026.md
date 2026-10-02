@@ -43,3 +43,12 @@ Landing menjadi **perjalanan turun**: dari langit (hero), menyusuri jalan setapa
 3. Jalur belajar murid: lanskap di balik simpul, jalan melintasi simpul, Pena berdiri di simpul aktif.
 4. Beranda murid dan guru: satu momen unggulan per layar, bukan deretan kartu.
 5. Peninjauan visual tiap langkah (400px dan 1280px), uji axe, uji gerak-berkurang.
+
+## 5. Status (2 Okt 2026)
+Selesai dan terdorong:
+- Landing "Pulau Belajar": adegan berlapis menurut jam WIB (`?tod=pagi|siang|sore|malam` untuk uji), paralaks gulir/penunjuk, judul raksasa dengan garis tangan, Pena di puncak jalan; perjalanan 6 pos dengan jalan setapak yang tergambar mengikuti gulir; kurva lupa; pemilih dunia langsung (tema dan gaya mengubah seluruh halaman); paket sebagai kartu stiker dengan tabel perbandingan dilipat.
+- Peta belajar murid: empat wilayah (padang, hutan, pantai, gunung) dengan dekorasi deterministik, jalan melintasi simpul (bagian ditempuh berwarna hijau), Pena di simpul aktif, keterangan simpul berlatar kartu agar terbaca.
+- Beranda murid: adegan pulau ringkas; beranda guru/pemilik: pita langit + ikon garis konsisten (menggantikan emoji); halaman masuk/daftar berlatar pulau.
+- Aksesibilitas: axe kontras bersih (landing 9 tema × jam, beranda murid/guru 4 jam, masuk/daftar), paralaks dan gambar-jalan mati pada `prefers-reduced-motion`/`data-motion=kurangi`.
+
+Belum: transisi layar antar-halaman bergaya "kamera", suara/haptik opsional, Pena bereaksi (state machine) pada hasil kuis, wilayah peta untuk mapel tertentu (bukan acak), uji performa pada HP Android lemah (lapisan SVG banyak + WebGL), halaman lain (nilai, jadwal, rapor) masih bergaya ringkas lama.
