@@ -1,4 +1,5 @@
 import { BackLink } from "@/components/role-views";
+import { Empty } from "@/components/empty";
 import { SchoolNav } from "@/components/school-nav";
 import { Button, ErrorNote, InfoNote, Input, Label, Select, Textarea } from "@/components/ui";
 import { requireModule } from "@/lib/modules";
@@ -54,7 +55,7 @@ export default async function PengumumanPage({ params, searchParams }: { params:
         </details>
       ) : null}
       {rows.length === 0 ? (
-        <p className="mt-6 rounded-box border border-dashed border-line p-6 text-ink-soft">Belum ada pengumuman.</p>
+        <Empty className="mt-6">Belum ada pengumuman.</Empty>
       ) : (
         <ul className="stagger mt-6 space-y-4">
           {rows.map((r) => (

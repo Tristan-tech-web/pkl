@@ -1,4 +1,5 @@
 import { BackLink } from "@/components/role-views";
+import { Empty } from "@/components/empty";
 import { SchoolNav } from "@/components/school-nav";
 import { Button, ErrorNote, InfoNote, Input, Label, Select } from "@/components/ui";
 import { rupiah } from "@/lib/format";
@@ -97,7 +98,7 @@ export default async function KeuanganPage({ params, searchParams }: { params: P
             ))}
           </nav>
         </div>
-        {shown.length === 0 ? <p className="mt-3 rounded-box border border-dashed border-line p-6 text-ink-soft">Tidak ada tagihan.</p> : (
+        {shown.length === 0 ? <Empty className="mt-3">Tidak ada tagihan.</Empty> : (
           <ul className="stagger mt-3 border-t border-line">
             {shown.map((i) => {
               const p = paidBy.get(i.id) ?? 0;

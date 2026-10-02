@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Empty } from "@/components/empty";
 import { BackLink } from "@/components/role-views";
 import { PathMap } from "@/components/path-map";
 import { StudentStats } from "@/components/student-stats";
@@ -40,7 +41,7 @@ export default async function BelajarPage({ params }: { params: Promise<{ id: st
       ) : isStudent && soon ? (
         <p className="surface mt-4 p-4 text-ink-soft">Belum ada yang terbuka sekarang. Berikutnya: <span className="font-bold text-ink">{soon.title}</span>, terbuka sebelum pelajaran {soon.subjectName}.</p>
       ) : null}
-      {nodes.length === 0 ? <p className="mt-8 rounded-box border border-dashed border-line p-6 text-ink-soft">Belum ada materi yang terbit.</p> : null}
+      {nodes.length === 0 ? <Empty className="mt-8">Belum ada materi yang terbit. Guru sedang menyiapkannya.</Empty> : null}
       {[...bySubject.entries()].map(([subject, list]) => (
         <section key={subject} className="mt-10">
           <h2 className="font-display text-2xl font-bold tracking-tight">{subject}</h2>

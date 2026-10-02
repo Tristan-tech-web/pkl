@@ -1,4 +1,5 @@
 import "@/components/island/island.css";
+import { Empty } from "@/components/empty";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BackLink } from "@/components/role-views";
@@ -85,7 +86,7 @@ export default async function NilaiPage({ params, searchParams }: { params: Prom
           <section className="mt-8">
             <h2 className="font-display text-2xl font-bold tracking-tight">Penilaian</h2>
             {assessments.length === 0 ? (
-              <p className="mt-3 rounded-box border border-dashed border-line p-5 text-ink-soft">Belum ada penilaian untuk pilihan ini.</p>
+              <Empty className="mt-3">Belum ada penilaian untuk pilihan ini.</Empty>
             ) : (
               <ul className="stagger mt-3 border-t border-line">
                 {assessments.map((a) => (
@@ -175,7 +176,7 @@ async function StudentGrades({ schoolId, memberId, terms, term }: { schoolId: st
         </form>
       </header>
       {bySubject.size === 0 ? (
-        <p className="rounded-box border border-dashed border-line p-6 text-ink-soft">Belum ada nilai di semester ini.</p>
+        <Empty className="">Belum ada nilai di semester ini.</Empty>
       ) : (
         [...bySubject.entries()].map(([subject, items]) => {
           const g = finalGrade(items.map((i) => ({ weight: i.weight, maxScore: i.max, score: i.score })));

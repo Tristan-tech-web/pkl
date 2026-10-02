@@ -1,4 +1,5 @@
 import { BackLink } from "@/components/role-views";
+import { Empty } from "@/components/empty";
 import { SchoolNav } from "@/components/school-nav";
 import { Button, ErrorNote, InfoNote, Input, Label, Select } from "@/components/ui";
 import { requireModule } from "@/lib/modules";
@@ -94,7 +95,7 @@ export default async function JadwalPage({ params, searchParams }: { params: Pro
       ) : null}
 
       {slots.length === 0 ? (
-        <p className="mt-6 rounded-box border border-dashed border-line p-6 text-ink-soft">Belum ada jadwal.</p>
+        <Empty className="mt-6">Belum ada jadwal.</Empty>
       ) : (
         <div className="stagger mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3, 4, 5, 6, 7].filter((d) => byDay.has(d)).map((d) => (

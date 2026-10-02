@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { Empty } from "@/components/empty";
 import { SchoolNav } from "@/components/school-nav";
 import { BackLink } from "@/components/role-views";
 import { Button, ErrorNote, InfoNote, Input, Label, Select, Textarea } from "@/components/ui";
@@ -105,7 +106,7 @@ export default async function PantauPage({
       <section className="mt-10">
         <h2 className="font-display text-2xl font-bold tracking-tight">Progres siswa</h2>
         {rows.length === 0 ? (
-          <p className="mt-4 rounded-box border border-dashed border-line p-6 text-ink-soft">Belum ada siswa di rombel yang Anda pantau.</p>
+          <Empty className="mt-4">Belum ada siswa di rombel yang Anda pantau.</Empty>
         ) : (
           <ul className="stagger mt-4 border-t border-line">
             {rows.map((r) => (
@@ -152,7 +153,7 @@ export default async function PantauPage({
       <section className="mt-10">
         <h2 className="font-display text-2xl font-bold tracking-tight">Tindak lanjut</h2>
         {(ivs.data ?? []).length === 0 ? (
-          <p className="mt-4 rounded-box border border-dashed border-line p-6 text-ink-soft">Belum ada tindak lanjut.</p>
+          <Empty className="mt-4">Belum ada tindak lanjut.</Empty>
         ) : (
           <ul className="mt-4 border-t border-line">
             {(ivs.data ?? []).map((i) => (

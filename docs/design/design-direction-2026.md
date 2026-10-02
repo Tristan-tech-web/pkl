@@ -71,3 +71,4 @@ Penilaian jujur:
 - Halaman guru yang sibuk: Pantau belajar membuka dengan vonis satu kalimat ("Semua siswa sesuai jalur..." hijau, atau "3 dari 28 siswa perlu perhatian. Mulai dari ..." kuning), aturan penandaan dilipat; Absensi berwarna per status (hadir hijau, terlambat kuning, izin biru, sakit aksen, alpa merah). Kontras bersih di 9 tema.
 - Regresi teks sangat besar di 360px untuk guru, pemilik, orang tua, dan murid pada 27 halaman: satu luapan ditemukan (administrasi murid, baris data diri) dan diperbaiki; sisanya bersih.
 - Profil: Pena dipajang di panggung kecil (langit, bukit, bayangan) saat didandani.
+- Keadaan kosong: komponen `Empty` (Pena kecil + kalimat mengajak) menggantikan kotak putus-putus di 13 halaman; kalimat notifikasi menjadi "Sepi dulu. ...".

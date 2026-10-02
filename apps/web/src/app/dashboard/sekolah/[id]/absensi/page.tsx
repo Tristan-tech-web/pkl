@@ -1,4 +1,5 @@
 import "@/components/island/island.css";
+import { Empty } from "@/components/empty";
 import { notFound } from "next/navigation";
 import { BackLink } from "@/components/role-views";
 import { SchoolNav } from "@/components/school-nav";
@@ -73,7 +74,7 @@ export default async function AbsensiPage({ params, searchParams }: { params: Pr
       </header>
       <div className="space-y-3"><ErrorNote message={sp.error} /><InfoNote message={sp.info} /></div>
       {classes.length === 0 ? (
-        <p className="mt-6 rounded-box border border-dashed border-line p-6 text-ink-soft">Anda belum ditugaskan di rombel mana pun.</p>
+        <Empty className="mt-6">Anda belum ditugaskan di rombel mana pun.</Empty>
       ) : (
         <>
           <form method="get" className="mt-4 flex flex-wrap items-end gap-3">
@@ -85,7 +86,7 @@ export default async function AbsensiPage({ params, searchParams }: { params: Pr
           {cls ? (
             <form action={saveAttendance.bind(null, id, cls.id, date)} className="mt-6">
               {students.length === 0 ? (
-                <p className="rounded-box border border-dashed border-line p-6 text-ink-soft">Belum ada siswa di rombel ini.</p>
+                <Empty className="">Belum ada siswa di rombel ini.</Empty>
               ) : (
                 <ul className="border-t border-line">
                   {students.map((s) => {
@@ -162,7 +163,7 @@ async function StudentAttendance({ schoolId, memberId }: { schoolId: string; mem
         <p className="text-sm font-semibold">Kehadiran</p>
       </div>
       {rows.length === 0 ? (
-        <p className="mt-6 rounded-box border border-dashed border-line p-6 text-ink-soft">Belum ada catatan absensi.</p>
+        <Empty className="mt-6">Belum ada catatan absensi.</Empty>
       ) : (
         <ul className="stagger mt-6 border-t border-line">
           {rows.map((r) => (

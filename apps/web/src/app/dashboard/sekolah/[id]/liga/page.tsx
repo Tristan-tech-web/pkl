@@ -1,4 +1,5 @@
 import { BackLink } from "@/components/role-views";
+import { Empty } from "@/components/empty";
 import { Podium } from "@/components/podium";
 import { SchoolNav } from "@/components/school-nav";
 import { Button, Label, Select } from "@/components/ui";
@@ -38,7 +39,7 @@ export default async function LigaPage({ params, searchParams }: { params: Promi
         </form>
       ) : null}
       {league.length === 0 ? (
-        <p className="rounded-box border border-dashed border-line p-6 text-ink-soft">Belum ada peserta liga.</p>
+        <Empty className="">Belum ada peserta liga.</Empty>
       ) : (
         <>
         <Podium rows={league} staff={staff} />

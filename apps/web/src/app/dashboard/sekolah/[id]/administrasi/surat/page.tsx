@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Empty } from "@/components/empty";
 import { SchoolNav } from "@/components/school-nav";
 import { Button, ErrorNote, InfoNote, Label, Select } from "@/components/ui";
 import { requireModule } from "@/lib/modules";
@@ -30,7 +31,7 @@ export default async function SuratPage({ params, searchParams }: { params: Prom
       </form>
       <p className="mt-3"><a href={`/dashboard/sekolah/${id}/administrasi/surat/templat`} className="inline-flex min-h-11 items-center text-sm font-semibold text-pen underline">Kelola templat surat sekolah</a></p>
       <h2 className="mt-10 font-display text-2xl font-bold tracking-tight">Arsip</h2>
-      {(letters.data ?? []).length === 0 ? <p className="mt-3 rounded-box border border-dashed border-line p-5 text-ink-soft">Belum ada surat diterbitkan.</p> : (
+      {(letters.data ?? []).length === 0 ? <Empty className="mt-3">Belum ada surat diterbitkan.</Empty> : (
         <ul className="stagger mt-3 border-t border-line">
           {(letters.data ?? []).map((l) => {
             const sm = l.school_members as { display_name: string | null } | { display_name: string | null }[] | null;

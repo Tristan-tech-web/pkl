@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Empty } from "@/components/empty";
 import { SchoolNav } from "@/components/school-nav";
 import { Button, ErrorNote, InfoNote, Input, Select } from "@/components/ui";
 import { requireModule } from "@/lib/modules";
@@ -53,7 +54,7 @@ export default async function RosterPage({ params, searchParams }: { params: Pro
         <Input name="q" defaultValue={term} placeholder="Cari nama, NIS, NISN" aria-label="Cari" className="w-52" />
         <Button type="submit" variant="ghost">Saring</Button>
       </form>
-      {rows.length === 0 ? <p className="mt-4 rounded-box border border-dashed border-line p-6 text-ink-soft">Roster kosong. Unggah berkas daftar siswa atau guru di menu Berkas.</p> : (
+      {rows.length === 0 ? <Empty className="mt-4">Roster kosong. Unggah berkas daftar siswa atau guru di menu Berkas.</Empty> : (
         <div className="mt-4 overflow-x-auto" tabIndex={0} role="region" aria-label="Daftar roster">
           <table className="w-full min-w-[44rem] text-left">
             <thead><tr className="border-b-2 border-ink text-sm"><th className="py-2 pr-3">Nama</th><th className="pr-3">Jenis</th><th className="pr-3">Rombel</th><th className="pr-3">NIS / NISN / NIP</th><th className="pr-3">Status</th><th><span className="sr-only">Aksi</span></th></tr></thead>

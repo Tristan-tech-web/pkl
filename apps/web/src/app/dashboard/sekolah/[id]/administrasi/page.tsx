@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Empty } from "@/components/empty";
 import { notFound } from "next/navigation";
 import { BackLink } from "@/components/role-views";
 import { SchoolNav } from "@/components/school-nav";
@@ -39,7 +40,7 @@ export default async function AdministrasiPage({ params }: { params: Promise<{ i
         </div>
       </header>
       {rows.length === 0 ? (
-        <p className="rounded-box border border-dashed border-line p-6 text-ink-soft">Belum ada anggota.</p>
+        <Empty className="">Belum ada anggota.</Empty>
       ) : (
         <ul className="stagger border-t border-line">
           {rows.map((r, i) => (
@@ -75,7 +76,7 @@ async function MyRecords({ schoolId, memberId, role }: { schoolId: string; membe
         <dl className="grid gap-x-8 sm:grid-cols-2">
           {L.filter(([, k]) => p[k]).map(([l, k]) => <div key={k} className="flex gap-3 border-b border-line py-2"><dt className="w-28 shrink-0 text-ink-soft sm:w-32">{l}</dt><dd className="min-w-0 break-words font-semibold">{String(p[k])}</dd></div>)}
         </dl>
-      ) : <p className="rounded-box border border-dashed border-line p-6 text-ink-soft">Data induk belum diisi sekolah.</p>}
+      ) : <Empty className="">Data induk belum diisi sekolah.</Empty>}
       <h2 className="mt-10 font-display text-2xl font-bold tracking-tight">Surat untukku</h2>
       {(letters ?? []).length === 0 ? <p className="mt-3 text-ink-soft">Belum ada surat.</p> : (
         <ul className="mt-3 border-t border-line">
