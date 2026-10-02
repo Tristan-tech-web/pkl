@@ -89,7 +89,7 @@ export default async function ReportCard({ params, searchParams }: { params: Pro
         <div className="no-print mt-6 space-y-4">
           {config.sections.catatan ? (
             <form action={saveReportNote.bind(null, id, memberId, term.id)} className="surface p-4">
-              <label><Label>Catatan wali kelas</Label><Textarea name="note" rows={3} maxLength={1000} defaultValue={(note.data?.note as string | undefined) ?? ""} placeholder="Perkembangan, kekuatan, dan saran untuk semester berikutnya" /></label>
+              <label><Label>Catatan wali kelas</Label><Textarea name="note" rows={3} maxLength={1000} defaultValue={(note.data?.note as string | undefined) ?? ""} placeholder="Apa yang sudah bagus, apa yang perlu dilatih, dan satu saran untuk semester depan" /></label>
               <div className="mt-3"><Button type="submit">Simpan catatan</Button></div>
             </form>
           ) : null}

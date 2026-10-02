@@ -36,7 +36,7 @@ export default async function RaporIndex({ params, searchParams }: { params: Pro
       {management ? <SchoolNav schoolId={id} active="rapor" /> : <BackLink />}
       <header className="mt-3 mb-6">
         <h1 className="font-display text-4xl font-bold tracking-tight">Rapor</h1>
-        <p className="mt-1 text-ink-soft">Pilih rombel dan semester, lalu buka rapor siswa. Wali kelas mengisi catatan, sikap, ekstrakurikuler, dan lainnya di halaman rapor.</p>
+        <p className="mt-1 text-ink-soft">Pilih rombel dan semester, lalu buka rapor siswa. Catatan, sikap, dan ekstrakurikuler diisi wali kelas langsung di halaman rapor, lalu rapornya bisa dicetak.</p>
         {management ? <a href={`/dashboard/sekolah/${id}/rapor/templat`} className="mt-2 inline-flex min-h-11 items-center font-semibold text-pen underline">Atur templat rapor sekolah</a> : null}
       </header>
       <form method="get" className="flex flex-wrap items-end gap-3">
