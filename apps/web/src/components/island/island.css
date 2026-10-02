@@ -238,3 +238,29 @@ html[data-experience="ceria"] .qv-opt:not(:disabled):active { transform: transla
 @keyframes qv-shake { 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
 @keyframes qv-pop { 0% { transform: scale(0.96); } 60% { transform: scale(1.03); } 100% { transform: scale(1); } }
 @keyframes qv-rise { 0% { opacity: 0; transform: translateY(10px) scale(0.8); } 30% { opacity: 1; } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+
+/* ===== Podium liga ===== */
+.podium-wrap { margin: 2rem 0 1.2rem; }
+.podium { display: grid; grid-template-columns: 1fr 1.15fr 1fr; align-items: end; gap: 0.5rem; list-style: none; padding: 0; margin: 0; }
+.podium-col { display: flex; flex-direction: column; align-items: center; text-align: center; min-width: 0; }
+.podium-avatar { position: relative; display: grid; place-items: center; width: 3.4rem; height: 3.4rem; border-radius: 50%; font-family: var(--font-display); font-weight: 800; font-size: 1.5rem;
+  background: var(--card); color: var(--ink); border: 3px solid var(--line); }
+.podium-col.r1 .podium-avatar { width: 4.2rem; height: 4.2rem; border-color: var(--star); font-size: 1.8rem; }
+.podium-col.me .podium-avatar { background: var(--pen); color: var(--on-pen); border-color: var(--pen-strong); }
+.podium-col.empty .podium-avatar { border-style: dashed; color: var(--ink-soft); background: transparent; }
+.podium-crown { position: absolute; top: -1.35rem; font-style: normal; font-size: 1.5rem; }
+.podium-name { margin-top: 0.35rem; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 800; font-size: 0.95rem; }
+.podium-xp { font-size: 0.85rem; color: var(--ink-soft); font-weight: 700; }
+.podium-step { display: grid; place-items: start center; width: 100%; margin-top: 0.4rem; padding-top: 0.5rem; border-radius: var(--r-box) var(--r-box) 0 0; font-size: 1.6rem;
+  background: color-mix(in oklab, var(--star) 28%, var(--card)); border: var(--bw) solid color-mix(in oklab, var(--star) 50%, var(--line)); border-bottom: 0; }
+.podium-col.r1 .podium-step { height: 6.2rem; background: color-mix(in oklab, var(--star) 45%, var(--card)); }
+.podium-col.r2 .podium-step { height: 4.6rem; background: color-mix(in oklab, var(--ink-soft) 16%, var(--card)); border-color: var(--line); }
+.podium-col.r3 .podium-step { height: 3.4rem; background: color-mix(in oklab, #c07a3a 24%, var(--card)); }
+.podium-col.empty .podium-step { opacity: 0.55; }
+.podium-note { margin-top: 0.8rem; padding: 0.6rem 0.9rem; border-radius: var(--r-box); background: color-mix(in oklab, var(--pen) 10%, var(--card)); font-weight: 700; text-align: center; }
+@media (prefers-reduced-motion: no-preference) {
+  html:not([data-motion="kurangi"]) .podium-step { animation: podium-up 700ms var(--ease-out, ease-out) both; transform-origin: bottom; }
+  html:not([data-motion="kurangi"]) .podium-col.r2 .podium-step { animation-delay: 120ms; }
+  html:not([data-motion="kurangi"]) .podium-col.r3 .podium-step { animation-delay: 220ms; }
+}
+@keyframes podium-up { from { transform: scaleY(0.2); opacity: 0; } to { transform: scaleY(1); opacity: 1; } }

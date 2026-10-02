@@ -1,4 +1,5 @@
 import { BackLink } from "@/components/role-views";
+import { Podium } from "@/components/podium";
 import { SchoolNav } from "@/components/school-nav";
 import { Button, Label, Select } from "@/components/ui";
 import { requireModule } from "@/lib/modules";
@@ -28,7 +29,7 @@ export default async function LigaPage({ params, searchParams }: { params: Promi
       {MANAGEMENT_ROLES.has(me.roleCode) ? <SchoolNav schoolId={id} active="liga" /> : <BackLink />}
       <header className="mt-3 mb-6">
         <h1 className="font-display text-4xl font-bold tracking-tight">{staff ? "Liga mingguan" : "Liga dan lencana"}</h1>
-        <p className="mt-1 text-ink-soft">XP pekan ini (Senin–Minggu) di rombel. Nama disingkat demi privasi.</p>
+        <p className="mt-1 text-ink-soft">XP pekan ini, Senin sampai Minggu, di rombelmu. Nama disingkat demi privasi.</p>
       </header>
       {staff ? (
         <form method="get" className="mb-4 flex items-end gap-3">
@@ -39,6 +40,8 @@ export default async function LigaPage({ params, searchParams }: { params: Promi
       {league.length === 0 ? (
         <p className="rounded-box border border-dashed border-line p-6 text-ink-soft">Belum ada peserta liga.</p>
       ) : (
+        <>
+        <Podium rows={league} staff={staff} />
         <ol className="stagger border-t border-line">
           {league.map((r, i) => (
             <li key={`${r.rank}-${r.label}`} className={`grid grid-cols-[2.5rem_1fr_auto] items-center gap-3 border-b border-line py-2.5 ${r.is_me ? "bg-pen/10 px-2" : ""}`}>
@@ -51,6 +54,7 @@ export default async function LigaPage({ params, searchParams }: { params: Promi
             </li>
           ))}
         </ol>
+        </>
       )}
       {!staff ? (
         <section className="mt-10">
