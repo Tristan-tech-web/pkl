@@ -66,7 +66,7 @@ export default async function NilaiPage({ params, searchParams }: { params: Prom
       {management ? <SchoolNav schoolId={id} active="nilai" /> : <BackLink />}
       <header className="mt-3 mb-6">
         <h1 className="font-display text-4xl font-bold tracking-tight">Nilai</h1>
-        <p className="mt-1 text-ink-soft">Buat penilaian per rombel, mapel, dan semester. Nilai akhir = rata-rata berbobot dari nilai yang sudah terisi. Ambang ketuntasan sekolah: <span className="num font-semibold">{pass}</span>.</p>
+        <p className="mt-1 text-ink-soft">Buat penilaian per rombel, mapel, dan semester. Nilai akhir dihitung dari rata-rata berbobot nilai yang sudah terisi. Ambang ketuntasan sekolah: <span className="num font-semibold">{pass}</span>.</p>
       </header>
       <div className="space-y-3"><ErrorNote message={sp.error} /><InfoNote message={sp.info} /></div>
       {pairs.length === 0 || !term ? (

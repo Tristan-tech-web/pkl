@@ -31,6 +31,7 @@ export default async function ScoreGridPage({ params, searchParams }: { params: 
         <p className="text-sm font-semibold uppercase tracking-[0.08em] text-ink-soft">{cls} · {subj}</p>
         <h1 className="font-display text-3xl font-bold tracking-tight">{a.title as string}</h1>
         <p className="num text-ink-soft">{KIND_LABEL[a.kind as string]} · bobot {a.weight as number} · maks {Number(a.max_score)}</p>
+        <p className="mt-1 text-sm font-semibold">{students.filter((s) => have.get(s.id)?.score != null).length === students.length && students.length > 0 ? "Semua nilai sudah terisi." : `${students.filter((s) => have.get(s.id)?.score != null).length} dari ${students.length} siswa sudah punya nilai. Kosongkan kolom kalau belum ada.`}</p>
       </header>
       <div className="space-y-3"><ErrorNote message={sp.error} /><InfoNote message={sp.info} /></div>
       <form action={saveScores.bind(null, id, assessmentId)} className="mt-4">
@@ -43,7 +44,7 @@ export default async function ScoreGridPage({ params, searchParams }: { params: 
             </li>
           ))}
         </ul>
-        <div className="mt-4 flex gap-3"><Button type="submit">Simpan nilai</Button></div>
+        <div className="sticky bottom-0 mt-4 flex gap-3 border-t border-line bg-card py-3"><Button type="submit">Simpan nilai</Button></div>
       </form>
       <form action={deleteAssessment.bind(null, id, assessmentId)} className="mt-8">
         <Button type="submit" variant="ghost">Hapus penilaian ini</Button>
