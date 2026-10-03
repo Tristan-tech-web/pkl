@@ -30,7 +30,7 @@ export async function prepareUpload(schoolId: string, scope: Scope, fileName: st
   if (!(size > 0) || size > MAX_BYTES) return { ok: false, error: "Ukuran berkas maksimal 50 MB." };
   const path = `${schoolId}/${scope}/${randomUUID()}-${safeName(fileName)}`;
   const { data, error } = await supabase.storage.from("school-files").createSignedUploadUrl(path);
-  if (error || !data) return { ok: false, error: "Tidak berhak mengunggah ke ruang ini." };
+  if (error || !data) return { ok: false, error: "Anda belum punya izin mengunggah di ruang ini." };
   return { ok: true, path, token: data.token };
 }
 
