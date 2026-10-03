@@ -79,3 +79,4 @@ Penilaian jujur:
 - Halaman guru (nilai, form nilai, pantau, absensi, jadwal, pengumuman) kontras axe bersih di 9 tema. Form nilai di 400px dicek lewat tangkapan layar; bilah simpan memakai warna latar halaman supaya tidak terlihat seperti kotak putih.
 - Transisi halaman: `template.tsx` di area sekolah membuat tiap halaman masuk dengan geser ringan dari kanan (260 ms), seperti kamera berpindah. Mati pada gerak-berkurang. Belum memakai View Transitions bawaan peramban; itu langkah berikut bila perlu.
 - Gambar pratinjau tautan memakai font display yang sama dengan situs (Bricolage Grotesque ExtraBold, lisensi OFL, berkas lokal di `src/app/_og/`), bukan font bawaan generik.
+- Bunyi jawaban opsional: nada pendek (benar naik, salah turun lembut, selesai tiga nada) lewat WebAudio, tanpa berkas audio. Mati bawaan; sakelar "Nyalakan bunyi" ada di Profil murid, disimpan di peramban itu saja (`lib/sound.ts`, `components/sound-toggle.tsx`). Belum diuji di perangkat nyata.

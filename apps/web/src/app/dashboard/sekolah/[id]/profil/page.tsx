@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { signOut } from "@/app/auth-actions";
 import { AvatarPicker } from "@/components/avatar-picker";
+import { SoundToggle } from "@/components/sound-toggle";
 import { Mascot } from "@/components/three/mascot";
 import { sanitizeAvatar } from "@/lib/avatar";
 import { Button } from "@/components/ui";
@@ -40,6 +41,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ id: st
         </div>
       </section>
       <div className="mt-4"><AvatarPicker schoolId={id} initial={sanitizeAvatar(avRow?.avatar)} /></div>
+      <div className="mt-4"><SoundToggle /></div>
       <ul className="mt-4 grid gap-2">
         {items.filter((i) => i.show).map((i) => (
           <li key={i.href}>
