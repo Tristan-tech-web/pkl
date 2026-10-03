@@ -44,7 +44,7 @@ export default async function ScoreGridPage({ params, searchParams }: { params: 
             </li>
           ))}
         </ul>
-        <div className="sticky bottom-0 mt-4 flex gap-3 border-t border-line bg-card py-3"><Button type="submit">Simpan nilai</Button></div>
+        <div className="sticky bottom-0 mt-4 flex gap-3 border-t border-line bg-paper py-3"><Button type="submit">Simpan nilai</Button></div>
       </form>
       <form action={deleteAssessment.bind(null, id, assessmentId)} className="mt-8">
         <Button type="submit" variant="ghost">Hapus penilaian ini</Button>
