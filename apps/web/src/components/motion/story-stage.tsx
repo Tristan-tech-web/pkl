@@ -54,7 +54,7 @@ function codeText(s: State) {
 }
 
 const CAPS = [
-  { tab: "Matematika", title: "Mulai dari bentuknya", body: "Geser a, h, dan k — puncak dan arah buka parabola ikut bergerak. Ini modul yang sudah berjalan." },
+  { tab: "Matematika", title: "Mulai dari bentuknya", body: "Geser a, h, dan k, lalu lihat puncak dan arah buka parabola ikut bergerak. Ini modul yang sudah berjalan." },
   { tab: "Koding", title: "Lalu tulis sebagai kode", body: "Rumus yang sama menjadi fungsi dan daftar titik. Rencana: editor dengan eksekusi di peramban." },
   { tab: "Fisika", title: "Akhirnya benda bergerak", body: "Bola mengikuti kurva yang sama sebagai lintasan. Rencana: simulasi gerak parabola." },
 ];

@@ -102,13 +102,13 @@ export default async function NewSchoolPage({
             <Select name="pack" defaultValue="kurmer">
               {packs.map((p) => (
                 <option key={`${p.code}-${p.version}`} value={p.code}>
-                  {p.name} ({p.version}){p.verified ? "" : " — draf"}
+                  {p.name} ({p.version}){p.verified ? "" : " · draf"}
                 </option>
               ))}
             </Select>
           </label>
           <p className="text-sm text-ink-soft">
-            Paket bertanda “draf” belum dicek dengan sumber resmi. Silakan sesuaikan dengan sekolah Anda nanti.
+            Paket bertanda “draf” belum dicek dengan sumber resmi. Sesuaikan dengan sekolah Anda nanti.
           </p>
         </Card>
 
