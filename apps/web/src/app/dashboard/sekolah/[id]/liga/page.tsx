@@ -60,6 +60,7 @@ export default async function LigaPage({ params, searchParams }: { params: Promi
       {!staff ? (
         <section className="mt-10">
           <h2 className="font-display text-2xl font-bold tracking-tight">Lencana <span className="num text-ink-soft">({earned.size}/{all?.data?.length ?? 0})</span></h2>
+          <p className="mt-1 text-ink-soft">{earned.size === 0 ? "Belum ada yang kamu dapat. Selesaikan satu materi untuk lencana pertama." : earned.size >= (all?.data?.length ?? 0) && earned.size > 0 ? "Lengkap! Semua lencana sudah kamu kumpulkan." : "Yang buram belum kamu dapat. Terus belajar, nanti terbuka satu per satu."}</p>
           <ul className="stagger mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
             {(all?.data ?? []).map((a) => {
               const got = earned.has(a.code as string);
@@ -68,7 +69,7 @@ export default async function LigaPage({ params, searchParams }: { params: Promi
                   <p className={`text-3xl ${got ? "" : "grayscale"}`} aria-hidden="true">{ICON[a.icon as string] ?? "🏅"}</p>
                   <p className="mt-1 font-bold">{a.name as string}</p>
                   <p className="text-sm text-ink-soft">{a.description as string}</p>
-                  <p className="mt-1 text-xs font-semibold">{got ? "Diraih" : "Terkunci"}</p>
+                  <p className="mt-1 text-xs font-semibold">{got ? "Sudah kamu dapat" : "Belum didapat"}</p>
                 </li>
               );
             })}
