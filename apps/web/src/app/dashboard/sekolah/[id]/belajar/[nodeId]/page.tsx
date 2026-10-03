@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { Empty } from "@/components/empty";
 import { BackLink } from "@/components/role-views";
 import { LinkButton } from "@/components/ui";
 import { ParabolaDemo } from "@/components/parabola-demo";
@@ -40,11 +41,11 @@ export default async function LessonPage({ params }: { params: Promise<{ id: str
         ) : null}
       </header>
       {locked ? (
-        <p className="rounded-box border border-dashed border-line p-6 text-ink-soft">
+        <Empty>
           {node.state === "dijadwalkan" && node.opensAt ? (
             <>Materi ini terbuka <span className="font-semibold text-ink">{new Intl.DateTimeFormat("id-ID", { timeZone: "Asia/Jakarta", weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" }).format(new Date(node.opensAt))} WIB</span>, supaya kamu belajarnya pas sebelum pelajaran di kelas.</>
-          ) : "Materi ini masih terkunci. Selesaikan prasyaratnya di peta belajar dulu."}
-        </p>
+          ) : "Materi ini masih terkunci. Selesaikan dulu materi sebelumnya di peta belajar, nanti terbuka sendiri."}
+        </Empty>
       ) : (
         <div className="grid gap-8 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
           <div>
@@ -68,6 +69,7 @@ export default async function LessonPage({ params }: { params: Promise<{ id: str
       )}
       {!locked ? (
         <div className="mt-10 flex flex-wrap items-center gap-4 border-t border-line pt-6">
+          {(count ?? 0) > 0 && node.state !== "selesai" ? <p className="w-full font-display text-xl font-bold">Sudah paham? Buktikan lewat kuis.</p> : null}
           {(count ?? 0) > 0 ? (
             <>
               <LinkButton href={`${back}/${nodeId}/kuis`}>{node.state === "selesai" ? "Ulangi kuis" : "Mulai kuis"}</LinkButton>
