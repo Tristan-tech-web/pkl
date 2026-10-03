@@ -8,7 +8,8 @@
   --p: 0; --mx: 0; --my: 0;
   /* skala viewBox 1440x600 → piksel (preserveAspectRatio slice): dipakai menempatkan Pena persis di puncak jalan */
   --ih: max(62svh, 380px);
-  --s: max(calc(100vw / 1440), calc(var(--ih) / 600));
+  --bleed: 48px;
+  --s: max(calc((100vw + 2 * var(--bleed)) / 1440), calc(var(--ih) / 600));
   position: relative; isolation: isolate; overflow: hidden; min-height: 100svh; display: flex; flex-direction: column;
   background: linear-gradient(180deg, var(--is-sky-a) 0%, var(--is-sky-b) 62%);
   color: var(--is-ink);
@@ -29,7 +30,7 @@
   --is-tree: #0f2a4a; --is-tree2: #1a3b66; --is-trunk: #2a2347; --is-cloud: #8c83c9;
   --is-ink: #f6f3ff; --is-ink-soft: #d3ccf5; --is-flower: #ffb4e0; --is-star: 1;
 }
-.island-layer { position: absolute; inset-inline: 0; bottom: 0; height: var(--ih); pointer-events: none; will-change: transform; }
+.island-layer { position: absolute; inset-inline: calc(-1 * var(--bleed)); bottom: 0; height: var(--ih); pointer-events: none; will-change: transform; }
 .island-layer svg { width: 100%; height: 100%; display: block; }
 .island-sun { position: absolute; width: clamp(110px, 16vw, 220px); aspect-ratio: 1; border-radius: 50%; background: var(--is-sun);
   box-shadow: 0 0 0 clamp(14px, 3vw, 40px) var(--is-glow), 0 0 120px 40px var(--is-glow); pointer-events: none; }
