@@ -66,7 +66,7 @@ export default async function AnggotaPage({
         <Card className="mb-8 border-pen">
           <p className="text-sm font-semibold uppercase tracking-[0.08em] text-ink-soft">Kode undangan baru</p>
           <p className="num mt-2 font-display text-4xl font-bold tracking-[0.12em]">{baru}</p>
-          <p className="mt-2 text-ink-soft">Bagikan kode ini. Penerima membukanya di halaman Gabung setelah masuk atau mendaftar.</p>
+          <p className="mt-2 text-ink-soft">Bagikan kode ini. Penerima memasukkannya di halaman Gabung setelah masuk atau mendaftar.</p>
           <div className="mt-3 flex flex-wrap gap-2">
             <CopyButton text={baru} label="Salin kode" />
             <CopyButton path={`/gabung?kode=${baru}`} label="Salin tautan" />

@@ -8,7 +8,7 @@ import { addExamQuestion, deleteExamQuestion, setExamStatus, unfreezeSession } f
 export const metadata = { title: "Kelola ujian · EduSmart" };
 const wib = new Intl.DateTimeFormat("id-ID", { timeZone: "Asia/Jakarta", dateStyle: "medium", timeStyle: "short" });
 const KIND: Record<string, string> = { mcq: "Pilihan ganda", multi: "Banyak jawaban", short: "Isian singkat", essay: "Uraian" };
-const SESS: Record<string, string> = { menunggu: "Belum mulai", berjalan: "Mengerjakan", dibekukan: "DIBEKUKAN", selesai: "Selesai" };
+const SESS: Record<string, string> = { menunggu: "Belum mulai", berjalan: "Mengerjakan", dibekukan: "Dibekukan", selesai: "Selesai" };
 
 export default async function ExamDetail({ params, searchParams }: { params: Promise<{ id: string; examId: string }>; searchParams: Promise<{ error?: string; info?: string }> }) {
   const { id, examId } = await params;

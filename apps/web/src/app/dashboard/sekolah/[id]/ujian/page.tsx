@@ -1,3 +1,4 @@
+import { Empty } from "@/components/empty";
 import Link from "next/link";
 import { BackLink } from "@/components/role-views";
 import { SchoolNav } from "@/components/school-nav";
@@ -34,7 +35,7 @@ export default async function ExamsPage({ params, searchParams }: { params: Prom
       </header>
       <div className="space-y-3"><ErrorNote message={sp.error} /><InfoNote message={sp.info} /></div>
       <ul className="mt-4 divide-y divide-line surface">
-        {(exams ?? []).length === 0 ? <li className="p-4 text-ink-soft">Belum ada ujian.</li> : null}
+        {(exams ?? []).length === 0 ? <li className="py-2"><Empty>{author ? "Belum ada ujian. Buat satu, tambahkan soal, lalu terbitkan." : "Belum ada ujian untuk kelasmu. Santai dulu, nanti muncul di sini."}</Empty></li> : null}
         {(exams ?? []).map((e) => {
           const s = sess.get(e.id as string);
           const now = new Date(); // dirender di server per permintaan
