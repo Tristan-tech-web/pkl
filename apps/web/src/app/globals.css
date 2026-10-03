@@ -245,7 +245,13 @@ h1, h2, h3 {
   to { opacity: 1; transform: none; }
 }
 
+@keyframes page-in {
+  from { opacity: 0; transform: translateX(18px); }
+  to { opacity: 1; transform: none; }
+}
+
 @media (prefers-reduced-motion: no-preference) {
+  .page-in { animation: page-in 260ms var(--ease-out) both; }
   .anim-rise {
     animation: rise var(--dur-slow) var(--ease-out) both;
     animation-delay: var(--d, 0ms);
