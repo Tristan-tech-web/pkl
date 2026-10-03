@@ -1,3 +1,5 @@
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 import { ImageResponse } from "next/og";
 
 export const alt = "EduSmart: belajar jadi petualangan, sekolah jadi mudah";
@@ -5,10 +7,11 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 // Gambar pratinjau saat tautan dibagikan: pulau senja, Pena, dan satu kalimat. Dibuat dari bentuk sederhana, tanpa berkas gambar.
-export default function Image() {
+export default async function Image() {
+  const font = await readFile(join(process.cwd(), "src/app/_og/bricolage-800.ttf"));
   return new ImageResponse(
     (
-      <div style={{ width: "100%", height: "100%", display: "flex", position: "relative", background: "linear-gradient(180deg,#4ab4ff 0%,#d6f1ff 62%)", fontFamily: "sans-serif" }}>
+      <div style={{ width: "100%", height: "100%", display: "flex", position: "relative", background: "linear-gradient(180deg,#4ab4ff 0%,#d6f1ff 62%)", fontFamily: "Bricolage" }}>
         <div style={{ position: "absolute", right: 120, top: 70, width: 150, height: 150, borderRadius: 75, background: "#fff7c2", boxShadow: "0 0 0 26px rgba(255,244,180,0.55)" }} />
         <div style={{ position: "absolute", left: -120, bottom: -150, width: 900, height: 420, borderRadius: 450, background: "#4cbf72" }} />
         <div style={{ position: "absolute", right: -160, bottom: -170, width: 900, height: 420, borderRadius: 450, background: "#2fa466" }} />
@@ -31,6 +34,6 @@ export default function Image() {
         </svg>
       </div>
     ),
-    size,
+    { ...size, fonts: [{ name: "Bricolage", data: font, weight: 800, style: "normal" }] },
   );
 }
