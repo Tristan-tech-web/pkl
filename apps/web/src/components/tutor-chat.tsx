@@ -39,10 +39,10 @@ export function TutorChat({ schoolId, nodeId }: { schoolId: string; nodeId: stri
   };
 
   return (
-    <section aria-label="Tanya tutor" className="surface">
+    <section aria-label="Tanya Pena" className="surface">
       <div className="border-b border-line px-4 py-3">
-        <h2 className="font-display text-lg font-bold">Tanya tutor</h2>
-        <p className="text-sm text-ink-soft">Tutor kasih petunjuk dulu, jawaban kuis tidak. Jangan tulis data pribadi ya.</p>
+        <h2 className="font-display text-lg font-bold">Tanya Pena</h2>
+        <p className="text-sm text-ink-soft">Pena kasih petunjuk dulu, jawaban kuis tidak. Jangan tulis data pribadi ya.</p>
       </div>
       <ol ref={list} aria-live="polite" className="max-h-80 space-y-3 overflow-y-auto px-4 py-3">
         {msgs.length === 0 ? (
@@ -56,11 +56,11 @@ export function TutorChat({ schoolId, nodeId }: { schoolId: string; nodeId: stri
         ) : null}
         {msgs.map((m, i) => (
           <li key={i} className={m.role === "user" ? "ml-8 rounded-box bg-pen/10 px-3 py-2" : "mr-8 rounded-box border border-line px-3 py-2"}>
-            <span className="sr-only">{m.role === "user" ? "Kamu: " : "Tutor: "}</span>
+            <span className="sr-only">{m.role === "user" ? "Kamu: " : "Pena: "}</span>
             <span>{m.role === "assistant" ? <InlineMd text={m.content} /> : m.content}</span>
           </li>
         ))}
-        {pending ? <li className="mr-8 text-ink-soft">Tutor lagi berpikir…</li> : null}
+        {pending ? <li className="mr-8 text-ink-soft">Pena lagi berpikir…</li> : null}
       </ol>
       <div className="px-4 pb-1">
         <ErrorNote message={error} />
