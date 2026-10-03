@@ -27,7 +27,8 @@ export default async function NewSchoolPage({
 
   return (
     <>
-      <h1 className="mb-6 font-display text-3xl font-bold tracking-tight">Buat sekolah</h1>
+      <h1 className="font-display text-3xl font-bold tracking-tight">Daftarkan sekolah</h1>
+      <p className="mb-6 mt-1 max-w-2xl text-ink-soft">Isi yang penting dulu. Mapel, rombel, dan anggota bisa diatur setelah sekolahnya jadi, jadi tidak perlu lengkap sekarang.</p>
       <form action={createSchool} className="flex max-w-2xl flex-col gap-6">
         <ErrorNote message={error} />
         <Card className="flex flex-col gap-4">
@@ -107,7 +108,7 @@ export default async function NewSchoolPage({
             </Select>
           </label>
           <p className="text-sm text-ink-soft">
-            Paket bertanda “draf” masih perlu diverifikasi dan bisa Anda sesuaikan nanti.
+            Paket bertanda “draf” belum dicek dengan sumber resmi. Silakan sesuaikan dengan sekolah Anda nanti.
           </p>
         </Card>
 
