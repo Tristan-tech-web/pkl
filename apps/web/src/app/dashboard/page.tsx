@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Empty } from "@/components/empty";
 import { Card, LinkButton } from "@/components/ui";
 import { authorityLabel } from "@/lib/format";
 import { createClient } from "@/lib/supabase/server";
@@ -28,19 +29,16 @@ export default async function DashboardPage() {
     <>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <h1 className="font-display text-3xl font-bold tracking-tight">Sekolah Anda</h1>
-        <LinkButton href="/dashboard/sekolah-baru">Buat sekolah</LinkButton>
+        <LinkButton href="/dashboard/sekolah-baru">Daftarkan sekolah</LinkButton>
       </div>
       {schools.length === 0 ? (
-        <Card>
-          <h2 className="text-lg font-semibold">Belum ada sekolah</h2>
-          <p className="mt-2 text-ink-soft">
-            Buat sekolah pertama Anda. Anda cukup memilih bentuk pendidikan dan paket kurikulum;
-            sisanya bisa diatur nanti.
-          </p>
-          <div className="mt-4">
-            <LinkButton href="/dashboard/sekolah-baru">Buat sekolah</LinkButton>
+        <div>
+          <Empty>Akun ini belum terhubung ke sekolah mana pun. Punya kode undangan? Gabung dulu. Mengurus sekolah baru? Daftarkan sekolahnya, sisanya bisa diatur nanti.</Empty>
+          <div className="mt-4 flex flex-wrap gap-3">
+            <LinkButton href="/dashboard/sekolah-baru">Daftarkan sekolah</LinkButton>
+            <LinkButton href="/gabung" variant="ghost">Gabung dengan kode</LinkButton>
           </div>
-        </Card>
+        </div>
       ) : (
         <ul className="stagger grid gap-4 sm:grid-cols-2">
           {schools.map((s) => (
