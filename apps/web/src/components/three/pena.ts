@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { COLOR_HEX, DEFAULT_AVATAR, type Avatar } from "@/lib/avatar";
 import type { Palette } from "./kit";
 
@@ -22,9 +23,9 @@ function shadowTexture(): THREE.CanvasTexture {
 }
 
 export function createPena(canvas: HTMLCanvasElement, opts: { still: boolean; quality: 1 | 2; palette: Palette; avatar?: Avatar }): Mascot {
-  // Layar padat (dpr ≥ 1,5) tidak butuh antialias: tepi sudah halus, dan piksel yang digambar jauh lebih sedikit.
-  const dpr = Math.min(window.devicePixelRatio || 1, opts.quality === 2 ? 1.75 : 1.5);
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: dpr < 1.5, alpha: true, powerPreference: "low-power" });
+  // Kualitas penuh dulu (antialias + resolusi layar sampai 2×). Penjaga di loop menurunkan resolusi hanya bila perangkat terasa berat.
+  const dpr = Math.min(window.devicePixelRatio || 1, opts.quality === 2 ? 2 : 1.5);
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: "low-power" });
   renderer.setPixelRatio(dpr);
   const cam = new THREE.PerspectiveCamera(30, 1, 0.1, 40); cam.position.set(0, 0.2, 7.3); cam.lookAt(0, 0.3, 0);
   const scene = new THREE.Scene();
@@ -43,8 +44,12 @@ export function createPena(canvas: HTMLCanvasElement, opts: { still: boolean; qu
   const root = new THREE.Group(); scene.add(root);
   const rig = new THREE.Group(); root.add(rig); // dipeluk saat melompat
   const geos: THREE.BufferGeometry[] = [];
+  // Bagian badan yang tidak pernah bergerak sendiri ("statis") dikumpulkan lalu digabung per bahan menjadi beberapa mesh saja.
+  // Sebelumnya ada puluhan mesh (masing-masing dengan garis tepi) dan tiap mesh = satu panggilan gambar yang membebani CPU HP.
+  const statics: THREE.Mesh[] = [];
+  let collect = false;
   const mesh = (geo: THREE.BufferGeometry, m: THREE.Material, parent: THREE.Object3D, outline = 0): THREE.Mesh => {
-    geos.push(geo); const o = new THREE.Mesh(geo, m); parent.add(o);
+    geos.push(geo); const o = new THREE.Mesh(geo, m); parent.add(o); if (collect && parent === rig) statics.push(o);
     if (outline > 0) { const h = new THREE.Mesh(geo, outlineMat); h.scale.setScalar(1 + outline); o.add(h); }
     return o;
   };
@@ -52,6 +57,7 @@ export function createPena(canvas: HTMLCanvasElement, opts: { still: boolean; qu
   // --- badan: telur lembut (lebih lebar di bawah)
   const bodyGeo = new THREE.SphereGeometry(1, 56, 40);
   { const p = bodyGeo.attributes.position; for (let i = 0; i < p.count; i++) { const y = p.getY(i), k = 1 - 0.1 * y; p.setX(i, p.getX(i) * k); p.setZ(i, p.getZ(i) * k * 0.96); p.setY(i, y * 1.05); } bodyGeo.computeVertexNormals(); }
+  collect = true;
   mesh(bodyGeo, mats.body, rig, 0.035);
 
   // --- perut krem + pola bulu
@@ -67,8 +73,9 @@ export function createPena(canvas: HTMLCanvasElement, opts: { still: boolean; qu
     const f = mesh(new THREE.SphereGeometry(1, 16, 10), scale, rig); f.position.set(X, y, Z); f.scale.set(0.15, 0.08, 0.04); f.rotation.set(0.35, -X * 1.1, -X * 0.6);
   }
 
+  collect = false;
   // --- wajah: cakram krem + mata besar mengkilap
-  const faceDisc = mesh(new THREE.SphereGeometry(1, 36, 24), cream, rig); faceDisc.position.set(0, 0.33, 0.58); faceDisc.scale.set(0.9, 0.5, 0.34);
+  collect = true; const faceDisc = mesh(new THREE.SphereGeometry(1, 36, 24), cream, rig); collect = false; faceDisc.position.set(0, 0.33, 0.58); faceDisc.scale.set(0.9, 0.5, 0.34);
   const eyes: THREE.Group[] = [], irises: THREE.Group[] = [], glassParts: THREE.Object3D[] = [];
   for (const sx of [-1, 1]) {
     const eye = new THREE.Group(); eye.position.set(sx * 0.4, 0.37, 0.82); eye.rotation.y = sx * 0.2; rig.add(eye); eyes.push(eye);
@@ -82,8 +89,8 @@ export function createPena(canvas: HTMLCanvasElement, opts: { still: boolean; qu
   const bridge = mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.14, 8), mats.hi, rig); bridge.position.set(0, 0.37, 0.9); bridge.rotation.z = Math.PI / 2; glassParts.push(bridge); // jembatan kacamata
 
   // --- paruh kecil + pipi merona
-  const beak = mesh(new THREE.ConeGeometry(0.12, 0.26, 20), mats.hi, rig, 0.1); beak.position.set(0, 0.12, 0.965); beak.rotation.x = Math.PI / 2 + 0.3; beak.scale.set(1.25, 1, 0.9);
-  for (const sx of [-1, 1]) { const c = new THREE.Mesh(new THREE.SphereGeometry(0.12, 14, 10), blush); geos.push(c.geometry); c.position.set(sx * 0.62, 0.1, 0.78); c.scale.set(1.2, 0.8, 0.3); c.rotation.y = sx * 0.5; rig.add(c); }
+  collect = true; const beak = mesh(new THREE.ConeGeometry(0.12, 0.26, 20), mats.hi, rig, 0.1); collect = false; beak.position.set(0, 0.12, 0.965); beak.rotation.x = Math.PI / 2 + 0.3; beak.scale.set(1.25, 1, 0.9);
+  for (const sx of [-1, 1]) { const c = new THREE.Mesh(new THREE.SphereGeometry(0.12, 14, 10), blush); geos.push(c.geometry); c.position.set(sx * 0.62, 0.1, 0.78); c.scale.set(1.2, 0.8, 0.3); c.rotation.y = sx * 0.5; rig.add(c); statics.push(c); }
 
   // --- sayap (berporos di bahu agar bisa melambai)
   const wings: THREE.Group[] = [];
@@ -93,9 +100,27 @@ export function createPena(canvas: HTMLCanvasElement, opts: { still: boolean; qu
   }
 
   // --- kaki
+  collect = true;
   for (const sx of [-1, 1]) {
     const f = mesh(new THREE.SphereGeometry(1, 18, 12), mats.hi, rig, 0.1); f.scale.set(0.2, 0.09, 0.26); f.position.set(sx * 0.32, -1.04, 0.4);
     for (const t of [-1, 0, 1]) { const toe = mesh(new THREE.SphereGeometry(0.06, 10, 8), mats.hi, rig, 0.1); toe.position.set(sx * 0.32 + t * 0.1, -1.04, 0.64); }
+  }
+  collect = false;
+  {
+    const bucket = new Map<THREE.Material, THREE.BufferGeometry[]>();
+    const add = (m: THREE.Material, g: THREE.BufferGeometry) => { const l = bucket.get(m); if (l) l.push(g); else bucket.set(m, [g]); };
+    for (const o of statics) {
+      o.updateMatrix();
+      add(o.material as THREE.Material, o.geometry.clone().applyMatrix4(o.matrix));
+      const h = o.children[0] as THREE.Mesh | undefined;
+      if (h) { h.updateMatrix(); add(h.material as THREE.Material, h.geometry.clone().applyMatrix4(o.matrix.clone().multiply(h.matrix))); }
+      rig.remove(o);
+    }
+    for (const [m, gs] of bucket) {
+      const merged = mergeGeometries(gs, false);
+      gs.forEach((g) => g.dispose());
+      if (merged) { geos.push(merged); rig.add(new THREE.Mesh(merged, m)); }
+    }
   }
 
   // --- jambul telinga + topi toga
@@ -170,17 +195,29 @@ export function createPena(canvas: HTMLCanvasElement, opts: { still: boolean; qu
     cap.rotation.z = 0.1 + Math.sin(t * 1.5) * 0.01;
     renderer.render(scene, cam);
   };
-  // Perangkat lambat: bila banyak bingkai terlalu lama, berhenti beranimasi dan tampilkan satu gambar diam (hemat baterai/CPU).
-  let slowFrames = 0;
-  // Saat halaman sedang digulir, Pena digambar lebih jarang (sekitar 10 fps): gerakannya pelan sehingga tidak terlihat,
-  // tetapi gulir jadi jauh lebih ringan di HP. Begitu gulir berhenti, kembali ke ~25 fps.
+  // Penjaga kualitas: Pena digambar sepenuh kecepatan layar. Hanya bila rata-rata bingkai terlalu lambat, resolusi kanvas
+  // diturunkan bertahap (sampai 1×); bila masih lambat, Pena berhenti bergerak dan tampil sebagai satu gambar diam.
+  let ratio = dpr, avg = 16.7, slowRun = 0, lastTick = 0;
+  // Saat halaman sedang digulir, Pena cukup digambar ~30 fps agar gulir tetap ringan.
   let scrolling = false, scrollTimer = 0;
   const onScroll = () => { scrolling = true; clearTimeout(scrollTimer); scrollTimer = window.setTimeout(() => { scrolling = false; }, 140); };
   window.addEventListener("scroll", onScroll, { passive: true });
   const loop = (ms: number) => {
-    raf = requestAnimationFrame(loop); if (!visible || document.hidden || ms - last < (scrolling ? 100 : 40)) return;
-    if (last && ms - last > (scrolling ? 100 : 40) + 70 && ++slowFrames > 25) { cancelAnimationFrame(raf); draw(0.7); return; }
-    last = ms; draw(ms / 1000);
+    raf = requestAnimationFrame(loop);
+    if (!visible || document.hidden) { lastTick = 0; return; }
+    if (scrolling && ms - last < 30) return;
+    if (lastTick) {
+      const dt = Math.min(ms - lastTick, 200);
+      avg += (dt - avg) * 0.08;
+      const want = scrolling ? 36 : 25; // batas "lambat": bingkai rata-rata lebih lama dari ini
+      if (avg > want) slowRun++; else slowRun = Math.max(0, slowRun - 2);
+      if (slowRun > 45) {
+        slowRun = 0; avg = 16.7;
+        if (ratio > 1) { ratio = Math.max(1, ratio - 0.25); renderer.setPixelRatio(ratio); resize(); }
+        else { cancelAnimationFrame(raf); draw(0.7); return; }
+      }
+    }
+    lastTick = ms; last = ms; draw(ms / 1000);
   };
   const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; }, { threshold: 0.01 }); io.observe(canvas);
   if (opts.still) draw(0.7); else raf = requestAnimationFrame(loop);
