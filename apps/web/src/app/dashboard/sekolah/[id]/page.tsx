@@ -1,3 +1,4 @@
+import { callName } from "@/lib/names";
 import { notFound } from "next/navigation";
 import { IslandScene } from "@/components/island/island-scene";
 import { BackLink, OwnerView, StudentView, TeacherView, type Membership } from "@/components/role-views";
@@ -39,7 +40,7 @@ export default async function SchoolPage({ params }: { params: Promise<{ id: str
     roleName: role?.name ?? "Anggota",
     displayName: (mine.display_name as string | null) ?? null,
   };
-  const first = (me.displayName ?? "").split(" ")[0] || "Anda";
+  const first = callName(me.displayName, "Anda");
   const where = [school.city, school.province].filter(Boolean).join(", ");
 
   return (

@@ -21,8 +21,8 @@ export default async function MasukPage({
           <ErrorNote message={error} />
           <InfoNote message={info} />
           <label>
-            <Label>Email</Label>
-            <Input name="email" type="email" autoComplete="email" required />
+            <Label hint="murid: pakai ID murid">Email atau ID murid</Label>
+            <Input name="email" type="text" inputMode="email" autoCapitalize="none" autoCorrect="off" spellCheck={false} autoComplete="username" placeholder="guru@sekolah.id atau bgb-2610001" required />
           </label>
           <label>
             <Label>Kata sandi</Label>

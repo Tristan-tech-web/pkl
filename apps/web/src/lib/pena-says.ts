@@ -1,9 +1,10 @@
+import { callName } from "./names";
 // Kalimat Pena di beranda murid: dipilih dari keadaan nyata (jam, streak, XP menuju level, misi), bukan acak.
 // Suara mengikuti docs/design/voice-guide.md: pendek, hangat, konkret, tanpa pujian berlebihan.
 export type PenaState = { hour: number; day: number; name: string; level: number; streak: number; into: number; need: number; missionsDone: boolean };
 
 export function penaLine(s: PenaState): string {
-  const first = s.name.trim().split(/\s+/)[0] || "kamu";
+  const first = callName(s.name, "kamu");
   const left = Math.max(0, s.need - s.into);
   if (s.hour >= 21 || s.hour < 4) return "Sudah malam. Satu simpul lagi, habis itu tidur ya.";
   if (s.streak >= 7) return `${s.streak} hari beruntun! Api unggunmu sudah besar.`;

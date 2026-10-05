@@ -141,3 +141,8 @@ Proyek dihentikan sementara atas permintaan pengguna; semua jadwal loop dihapus,
 
 ## Desain ulang "Pulau Belajar" (2 Okt 2026)
 Arah, riset (Awwwards SOTD Sep–Okt 2026, Apple Design Awards 2026), penilaian jujur, dan status: `docs/design/design-direction-2026.md`. Terdorong: landing, peta belajar, beranda murid/guru/pemilik, masuk/daftar. Uji gulir di HP berkecepatan CPU 1/4 (tanpa GPU): rata-rata 18,8 ms/bingkai, p95 33 ms.
+
+## 5 Okt 2026: data uji dan masuk murid
+- Sekolah uji sintetis "SMK TI Bali Global Badung" (5 rombel, 40 murid, 7 guru, admin, kepala sekolah, orang tua). Lihat `docs/design/login-and-demo-data.md`. Kata sandi tidak ada di repo.
+- Masuk murid memakai ID murid (`kode-nis`) tanpa email; staf dan orang tua tetap email. Nama panggilan sekarang melewati "I" dan "Ni" (`lib/names.ts`).
+- Desain: lapisan paralaks diberi "rok" di dasar dan lebih lebar di sisi supaya geser tidak membuka celah; tepi bawah hero berupa tanah melengkung (bukan pemudaran putih); pohon, cemara, semak, batu, pagar, rumah, kincir, lentera, api unggun, jamur, rumput, dan burung digambar ulang (`components/island/island-art.tsx`).

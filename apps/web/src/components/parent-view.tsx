@@ -1,3 +1,4 @@
+import { callName } from "@/lib/names";
 import Link from "next/link";
 import { LatestAnnouncements } from "@/components/module-links";
 import "./island/island.css";
@@ -63,7 +64,7 @@ export async function ParentView({ schoolId }: { schoolId: string }) {
               <div className="min-w-0">
                 <h2 className="font-display text-2xl font-extrabold leading-tight tracking-tight">{o.name}</h2>
                 <p className="text-sm text-ink-soft">{o.class ?? "Belum masuk rombel"}{o.term ? ` · ${o.term.name}` : ""}</p>
-                <p className="mt-2 text-lg font-medium leading-relaxed">{kabar(o, o.name.trim().split(/\s+/)[0])}</p>
+                <p className="mt-2 text-lg font-medium leading-relaxed">{kabar(o, callName(o.name))}</p>
               </div>
             </div>
             <div className="stagger mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">

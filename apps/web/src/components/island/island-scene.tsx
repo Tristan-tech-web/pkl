@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useId, useRef } from "react";
+import { Birds, Bush, Campfire, Fence, Flower, House, Lantern, Mushroom, Pine, Rock, Tree, Tuft, Windmill } from "./island-art";
 import "./island.css";
 
 type Tod = "pagi" | "siang" | "sore" | "malam";
@@ -15,64 +16,16 @@ function todNow(): Tod {
 
 const STARS = Array.from({ length: 36 }, (_, i) => ({ x: (i * 53 + 11) % 100, y: (i * 37 + 7) % 46, s: 1 + (i % 3) }));
 
-function Tree({ x, y, s = 1, c = "var(--is-tree)" }: { x: number; y: number; s?: number; c?: string }) {
-  return (
-    <g transform={`translate(${x} ${y}) scale(${s})`}>
-      <rect x="-3" y="-4" width="6" height="26" rx="2" fill="var(--is-trunk)" />
-      <circle cx="0" cy="-22" r="22" fill={c} />
-      <circle cx="-13" cy="-10" r="14" fill={c} />
-      <circle cx="13" cy="-9" r="14" fill={c} />
-      <circle cx="-7" cy="-30" r="8" fill="#fff" opacity=".1" />
-    </g>
-  );
-}
-function Windmill({ x, y }: { x: number; y: number }) {
-  return (
-    <g transform={`translate(${x} ${y})`}>
-      <path d="M-9 0 L-5 -46 H5 L9 0Z" fill="#fff6e6" /><path d="M-6 -46 L0 -58 L6 -46Z" fill="var(--is-flower)" />
-      <g className="is-blades" style={{ transformOrigin: "0px -50px", transformBox: "view-box" }}>
-        <g transform="translate(0 -50)" fill="#fff" stroke="var(--is-trunk)" strokeWidth="1.5">
-          <rect x="-3" y="-30" width="6" height="30" rx="2" /><rect x="-3" y="0" width="6" height="30" rx="2" /><rect x="-30" y="-3" width="30" height="6" rx="2" /><rect x="0" y="-3" width="30" height="6" rx="2" />
-        </g>
-      </g>
-      <circle cy="-50" r="4" fill="var(--is-trunk)" />
-    </g>
-  );
-}
-function Campfire({ x, y, size }: { x: number; y: number; size: number }) {
-  return (
-    <g transform={`translate(${x} ${y}) scale(${size})`}>
-      <ellipse cy="4" rx="22" ry="5" fill="#000" opacity=".16" />
-      <rect x="-17" y="-4" width="34" height="7" rx="3.5" fill="var(--is-trunk)" transform="rotate(-14)" /><rect x="-17" y="-4" width="34" height="7" rx="3.5" fill="#5e3a1f" transform="rotate(14)" />
-      <g className="is-flame" style={{ transformOrigin: "0px 0px", transformBox: "view-box" }}>
-        <path d="M0 -4 C-14 -14 -8 -30 0 -44 C8 -30 14 -14 0 -4Z" fill="#ff8a1f" /><path d="M0 -4 C-7 -10 -4 -20 0 -28 C4 -20 7 -10 0 -4Z" fill="#ffd34d" />
-      </g>
-    </g>
-  );
-}
-function Lantern({ x, y }: { x: number; y: number }) {
-  return (
-    <g transform={`translate(${x} ${y})`}>
-      <rect x="-2" y="-34" width="4" height="34" fill="#4a3a2a" /><circle cy="-38" r="9" fill="var(--is-glow)" /><rect x="-5" y="-44" width="10" height="12" rx="3" fill="#ffe27a" stroke="#4a3a2a" strokeWidth="2" />
-    </g>
-  );
-}
-function Flower({ x, y }: { x: number; y: number }) {
-  return (
-    <g transform={`translate(${x} ${y})`}>
-      <path d="M0 0v14" stroke="var(--is-tree)" strokeWidth="2.5" strokeLinecap="round" />
-      <circle cx="0" cy="-2" r="5.5" fill="var(--is-flower)" />
-      <circle cx="0" cy="-2" r="2.2" fill="#ffe27a" />
-    </g>
-  );
-}
-
 export type Growth = { level: number; streak: number };
 
 /** `growth` membuat pulau murid tumbuh: makin tinggi level, makin ramai; streak menyalakan api unggun. Tanpa `growth` (landing) semuanya tampil. */
 export function IslandScene({ children, pena, header, compact = false, strip = false, bare = false, growth, fixedTod }: { children: React.ReactNode; pena: React.ReactNode; header?: React.ReactNode; compact?: boolean; strip?: boolean; bare?: boolean; growth?: Growth; fixedTod?: Tod }) {
   const g = growth ?? { level: 99, streak: 3 };
   const root = useRef<HTMLElement>(null);
+  const uid = useId().replace(/:/g, "");
+  const grad = (name: string, v: string) => (
+    <linearGradient id={`${uid}-${name}`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" style={{ stopColor: `color-mix(in oklab, ${v} 84%, #fff)` }} /><stop offset="0.55" style={{ stopColor: v }} /><stop offset="1" style={{ stopColor: `color-mix(in oklab, ${v} 80%, #000)` }} /></linearGradient>
+  );
 
   useEffect(() => {
     const el = root.current;
@@ -116,43 +69,65 @@ export function IslandScene({ children, pena, header, compact = false, strip = f
       {header}
       <div className="island-text">{children}</div>
 
-      {/* Lapis jauh → dekat. Semuanya memakai viewBox sama sehingga skala dan posisi pohon selalu konsisten. */}
+      {/* Lapis jauh → dekat. Semuanya memakai viewBox sama sehingga skala dan posisi elemen selalu konsisten.
+          Setiap lapis punya "rok" di bawah viewBox (rect lebih panjang) agar geser paralaks tidak membuka celah di dasar adegan. */}
       <div className="island-layer" aria-hidden="true" style={layer(0.5, -6)}>
-        <svg viewBox="0 0 1440 600" preserveAspectRatio="xMidYMax slice">
-          <path d="M0 330 Q180 190 360 300 T700 270 T1060 300 T1440 230 V600 H0Z" fill="var(--is-far)" opacity=".85" />
+        <svg viewBox="0 0 1440 600" preserveAspectRatio="xMidYMax slice" overflow="visible">
+          <defs>{grad("far", "var(--is-far)")}</defs>
+          <Birds />
+          <path d="M0 330 Q180 190 360 300 T700 270 T1060 300 T1440 230 V600 H0Z" fill={`url(#${uid}-far)`} opacity=".9" />
+          <path d="M0 330 Q180 190 360 300 T700 270 T1060 300 T1440 230" fill="none" stroke="#fff" strokeOpacity=".35" strokeWidth="3" />
+          <rect x="-200" y="599" width="1840" height="240" fill="var(--is-far)" />
         </svg>
       </div>
       <div className="island-layer" aria-hidden="true" style={layer(0.32, -12)}>
-        <svg viewBox="0 0 1440 600" preserveAspectRatio="xMidYMax slice">
-          <path d="M0 380 Q240 270 480 350 T900 330 T1440 340 V600 H0Z" fill="var(--is-h1)" />
-          {g.level >= 3 ? <><Tree x={1250} y={330} s={1.1} c="var(--is-tree2)" /><Tree x={1330} y={345} s={0.7} c="var(--is-tree2)" /></> : null}
-          {g.level >= 6 ? <Windmill x={705} y={338} /> : null}
-          {/* pondok kecil */}
-          {g.level >= 4 ? <g transform="translate(1040 322)"><rect x="-22" y="-14" width="44" height="30" fill="#fff6e6" /><path d="M-28 -14 0 -40 28 -14Z" fill="var(--is-flower)" /><rect x="-6" y="-2" width="12" height="18" fill="var(--is-trunk)" /></g> : null}
+        <svg viewBox="0 0 1440 600" preserveAspectRatio="xMidYMax slice" overflow="visible">
+          <defs>{grad("h1", "var(--is-h1)")}</defs>
+          <path d="M0 380 Q240 270 480 350 T900 330 T1440 340 V600 H0Z" fill={`url(#${uid}-h1)`} />
+          <path d="M0 380 Q240 270 480 350 T900 330 T1440 340" fill="none" stroke="#fff" strokeOpacity=".4" strokeWidth="3" />
+          <rect x="-200" y="599" width="1840" height="240" fill="var(--is-h1)" />
+          {g.level >= 3 ? <><Pine x={150} y={372} s={0.9} /><Pine x={196} y={384} s={0.65} /><Tree x={1250} y={332} s={1.05} v={2} /><Tree x={1330} y={347} s={0.7} v={2} /></> : null}
+          {g.level >= 6 ? <Windmill x={700} y={340} s={1} /> : null}
+          {g.level >= 4 ? <House x={1040} y={330} s={1.1} /> : null}
         </svg>
       </div>
       <div className="island-layer" aria-hidden="true" style={layer(0.2, -20)}>
-        <svg viewBox="0 0 1440 600" preserveAspectRatio="xMidYMax slice">
-          <path d="M0 440 Q300 340 620 410 T1200 400 T1440 420 V600 H0Z" fill="var(--is-h2)" />
-          {g.level >= 3 ? <Tree x={560} y={398} s={0.8} c="var(--is-tree2)" /> : null}<Tree x={1180} y={405} s={1.3} />{g.level >= 3 ? <Tree x={1360} y={420} s={0.9} c="var(--is-tree2)" /> : null}
-          {g.level >= 2 ? <><Flower x={400} y={440} /><Flower x={440} y={446} /><Flower x={1020} y={420} /><Flower x={1060} y={428} /></> : null}
+        <svg viewBox="0 0 1440 600" preserveAspectRatio="xMidYMax slice" overflow="visible">
+          <defs>{grad("h2", "var(--is-h2)")}</defs>
+          <path d="M0 440 Q300 340 620 410 T1200 400 T1440 420 V600 H0Z" fill={`url(#${uid}-h2)`} />
+          <path d="M0 440 Q300 340 620 410 T1200 400 T1440 420" fill="none" stroke="#fff" strokeOpacity=".32" strokeWidth="3" />
+          <rect x="-200" y="599" width="1840" height="240" fill="var(--is-h2)" />
+          {g.level >= 3 ? <><Tree x={560} y={398} s={0.8} v={2} /><Bush x={470} y={418} s={0.9} /></> : null}
+          <Tree x={1180} y={405} s={1.3} />{g.level >= 3 ? <Tree x={1360} y={420} s={0.9} v={2} /> : null}
+          {g.level >= 2 ? <><Flower x={400} y={440} /><Flower x={440} y={446} c="#fff" /><Flower x={1020} y={420} /><Flower x={1060} y={428} c="#ffe27a" /><Tuft x={350} y={448} /><Tuft x={1100} y={432} s={1.2} /></> : null}
         </svg>
       </div>
       <div className="island-layer" aria-hidden="true" style={layer(0.1, -32)}>
-        <svg viewBox="0 0 1440 600" preserveAspectRatio="xMidYMax slice">
-          <path d="M0 500 Q360 410 760 470 T1440 450 V600 H0Z" fill="var(--is-h3)" />
-          {/* jalan setapak melebar ke arah penonton */}
+        <svg viewBox="0 0 1440 600" preserveAspectRatio="xMidYMax slice" overflow="visible">
+          <defs>{grad("h3", "var(--is-h3)")}</defs>
+          <path d="M0 500 Q360 410 760 470 T1440 450 V600 H0Z" fill={`url(#${uid}-h3)`} />
+          <path d="M0 500 Q360 410 760 470 T1440 450" fill="none" stroke="#fff" strokeOpacity=".28" strokeWidth="3" />
+          <rect x="-200" y="599" width="1840" height="240" fill="var(--is-h3)" />
+          {/* jalan setapak melebar ke arah penonton: tepi gelap, badan terang, garis putus-putus */}
+          <path d="M790 446 C760 470 690 480 640 515 C595 548 560 578 500 600 L730 600 C760 574 800 552 845 532 C895 508 920 485 858 448Z" fill="#000" opacity=".12" transform="translate(2 4)" />
           <path d="M790 446 C760 470 690 480 640 515 C595 548 560 578 500 600 L730 600 C760 574 800 552 845 532 C895 508 920 485 858 448Z" fill="var(--is-path)" />
-          <path d="M822 452 C800 478 720 492 672 524 C640 546 610 575 590 600" stroke="#fff" strokeOpacity=".55" strokeWidth="4" strokeLinecap="round" strokeDasharray="2 14" fill="none" />
-          {g.level >= 2 ? <><Flower x={300} y={515} /><Flower x={340} y={522} /><Flower x={1130} y={500} /><Flower x={1180} y={508} /><Flower x={1230} y={500} /></> : null}
+          <path d="M790 446 C760 470 690 480 640 515 C595 548 560 578 500 600 L520 600 C570 578 610 548 650 518 C700 484 770 470 800 448Z" fill="#000" opacity=".06" />
+          <path d="M822 452 C800 478 720 492 672 524 C640 546 610 575 590 600" stroke="#fff" strokeOpacity=".6" strokeWidth="4" strokeLinecap="round" strokeDasharray="2 14" fill="none" />
+          {g.level >= 2 ? <><Flower x={300} y={515} /><Flower x={340} y={522} c="#fff" /><Flower x={1130} y={500} /><Flower x={1180} y={508} c="#ffe27a" /><Flower x={1230} y={500} /><Tuft x={250} y={530} s={1.3} /><Tuft x={1000} y={490} /><Mushroom x={880} y={520} s={1.1} /></> : null}
+          {g.level >= 2 ? <Fence x={870} y={452} n={3} s={0.85} /> : null}
+          {g.level >= 3 ? <><Bush x={180} y={505} s={1.3} v={1} /><Rock x={940} y={480} s={1} /></> : null}
           {g.level >= 5 ? <><Lantern x={690} y={500} /><Lantern x={600} y={548} /></> : null}
           {g.streak >= 1 ? <Campfire x={985} y={520} size={0.75 + Math.min(g.streak, 10) * 0.06} /> : null}
-          {g.level >= 3 ? <Tree x={1330} y={480} s={1.6} c="var(--is-tree)" /> : null}
+          {g.level >= 3 ? <Tree x={1330} y={480} s={1.6} /> : null}
         </svg>
       </div>
       <div className="island-layer" aria-hidden="true" style={{ ...layer(0.04, -40) }}>
-        <svg viewBox="0 0 1440 600" preserveAspectRatio="xMidYMax slice">
-          <path d="M0 565 Q420 520 840 560 T1440 540 V600 H0Z" fill="var(--is-h4)" />
+        <svg viewBox="0 0 1440 600" preserveAspectRatio="xMidYMax slice" overflow="visible">
+          <defs>{grad("h4", "var(--is-h4)")}</defs>
+          <path d="M0 565 Q420 520 840 560 T1440 540 V600 H0Z" fill={`url(#${uid}-h4)`} />
+          <path d="M0 565 Q420 520 840 560 T1440 540" fill="none" stroke="#fff" strokeOpacity=".22" strokeWidth="3" />
+          <rect x="-200" y="599" width="1840" height="240" fill="var(--is-h4)" />
+          {g.level >= 2 ? <><Tuft x={120} y={585} s={1.6} /><Tuft x={1280} y={578} s={1.5} /><Tuft x={760} y={590} s={1.4} /></> : null}
         </svg>
       </div>
 

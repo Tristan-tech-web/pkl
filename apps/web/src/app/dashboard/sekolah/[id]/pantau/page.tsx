@@ -1,3 +1,4 @@
+import { callName } from "@/lib/names";
 import { notFound } from "next/navigation";
 import { Empty } from "@/components/empty";
 import { SchoolNav } from "@/components/school-nav";
@@ -98,7 +99,7 @@ export default async function PantauPage({
           <p className="font-display text-xl font-extrabold leading-tight">
             {rows.length === 0 ? "Belum ada siswa yang bisa dipantau." : atRisk === 0 ? "Semua siswa sesuai jalur. Tidak ada yang perlu dikejar hari ini." : `${atRisk} dari ${rows.length} siswa perlu perhatian.`}
           </p>
-          {atRisk > 0 ? <p className="mt-1">Mulai dari {rows.filter((r) => r.reasons.length > 0).slice(0, 3).map((r) => r.name.split(" ")[0]).join(", ")}.</p> : null}
+          {atRisk > 0 ? <p className="mt-1">Mulai dari {rows.filter((r) => r.reasons.length > 0).slice(0, 3).map((r) => callName(r.name)).join(", ")}.</p> : null}
           <p className="num mt-1 text-sm text-ink-soft">{rows.length} siswa · {open.length} tindak lanjut terbuka</p>
         </div>
       </section>

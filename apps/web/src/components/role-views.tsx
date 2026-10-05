@@ -1,3 +1,4 @@
+import { callName } from "@/lib/names";
 import { BackLink } from "@/components/back-link";
 import { StaffHome } from "@/components/staff-home";
 import { StudentHome } from "@/components/student-home";
@@ -31,7 +32,7 @@ export async function OwnerView({ supabase, schoolId, me }: { supabase: Supa; sc
   const count = (codes: string[]) => rows.filter((r) => codes.includes(one(r.roles)?.code ?? "")).length;
   return (
     <>
-      <StaffHome supabase={supabase} schoolId={schoolId} memberId={me.memberId} name={(me.displayName ?? "").split(" ")[0] || "Bapak/Ibu"} kind="owner" />
+      <StaffHome supabase={supabase} schoolId={schoolId} memberId={me.memberId} name={callName(me.displayName, "Bapak/Ibu")} kind="owner" />
       <section aria-label="Ringkasan" className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
         {[["🎒", "Siswa", count(["student"])], ["🧑‍🏫", "Guru dan staf", count(["teacher", "homeroom", "counselor", "curriculum_lead", "admin"])], ["🏫", "Rombel", classes.count ?? 0], ["📚", "Mata pelajaran", subjects.count ?? 0]].map(([icon, label, n]) => (
           <div key={String(label)} className="rounded-box border-2 border-line bg-card p-3"><span aria-hidden="true" className="text-2xl">{icon}</span><p className="num font-display text-3xl font-extrabold leading-none">{n}</p><p className="text-sm font-semibold text-ink-soft">{label}</p></div>
@@ -90,7 +91,7 @@ export async function TeacherView({ supabase, schoolId, me }: { supabase: Supa; 
 
   return (
     <>
-      <StaffHome supabase={supabase} schoolId={schoolId} memberId={me.memberId} name={(me.displayName ?? "").split(" ")[0] || "Bapak/Ibu"} kind="teacher" />
+      <StaffHome supabase={supabase} schoolId={schoolId} memberId={me.memberId} name={callName(me.displayName, "Bapak/Ibu")} kind="teacher" />
       <h2 className="mt-8 font-display text-xl font-bold">Kelas saya</h2>
       {byClass.size === 0 ? (
         <div className="mt-6">
@@ -146,7 +147,7 @@ export async function StudentView({ supabase, schoolId, me }: { supabase: Supa; 
 
   if (!cg) return <Empty title="Kamu belum masuk rombel" body="Minta guru atau admin sekolah memasukkanmu ke rombel. Setelah itu mata pelajaranmu muncul di sini." />;
   return (
-    <StudentHome supabase={supabase} schoolId={schoolId} memberId={me.memberId} name={(me.displayName ?? "teman").split(" ")[0]} classId={cg.id}
+    <StudentHome supabase={supabase} schoolId={schoolId} memberId={me.memberId} name={callName(me.displayName, "teman")} classId={cg.id}
       subjects={subjects.map((s) => ({ id: s.id, name: s.subject.name, hours: s.hours }))} />
   );
 }

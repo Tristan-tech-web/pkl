@@ -31,7 +31,7 @@
   --is-ink: #f6f3ff; --is-ink-soft: #d3ccf5; --is-flower: #ffb4e0; --is-star: 1;
 }
 .island-layer { position: absolute; inset-inline: calc(-1 * var(--bleed)); bottom: 0; height: var(--ih); pointer-events: none; will-change: transform; }
-.island-layer svg { width: 100%; height: 100%; display: block; }
+.island-layer svg { width: 100%; height: 100%; display: block; overflow: visible; }
 .island-sun { position: absolute; width: clamp(110px, 16vw, 220px); aspect-ratio: 1; border-radius: 50%; background: var(--is-sun);
   box-shadow: 0 0 0 clamp(14px, 3vw, 40px) var(--is-glow), 0 0 120px 40px var(--is-glow); pointer-events: none; }
 .island-stars { position: absolute; inset: 0; opacity: var(--is-star); transition: opacity 600ms; pointer-events: none; }
@@ -47,7 +47,7 @@
 .island-lede { color: var(--is-ink-soft); max-width: 34rem; font-size: clamp(1.05rem, 2.2vw, 1.3rem); }
 .island-eyebrow { display: inline-flex; gap: 0.5rem; align-items: center; padding: 0.3rem 0.85rem; border-radius: 999px; font-weight: 800; font-size: 0.85rem;
   letter-spacing: 0.06em; text-transform: uppercase; background: color-mix(in oklab, var(--is-ink) 10%, transparent); color: var(--is-ink); border: 2px solid var(--is-ink); }
-.island-cue { white-space: nowrap; position: absolute; z-index: 6; left: 50%; bottom: 1rem; translate: -50% 0; display: grid; justify-items: center; gap: 0.2rem; color: var(--is-ink);
+.island-cue { white-space: nowrap; position: absolute; z-index: 6; left: 50%; bottom: 2.1rem; translate: -50% 0; display: grid; justify-items: center; gap: 0.2rem; color: var(--is-ink);
   font-weight: 800; font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none;
   background: color-mix(in oklab, var(--is-sky-b) 70%, transparent); padding: 0.4rem 0.9rem; border-radius: 999px; }
 .island-pena { position: absolute; z-index: 4; left: calc(50% + 100 * var(--s) - 100px); bottom: calc(138 * var(--s)); }
@@ -80,7 +80,10 @@ html[data-motion="kurangi"] .island-title .em path, .island-title .em path[data-
 }
 
 /* ===== Perjalanan: jalan setapak tergambar, pos-pos editorial ===== */
-.island::after { content: ""; position: absolute; inset-inline: 0; bottom: 0; height: 70px; z-index: 3; pointer-events: none; background: linear-gradient(to bottom, transparent, var(--paper)); }
+/* tepi bawah: tanah melengkung ke warna halaman (bukan pemudaran putih yang terlihat terpotong) */
+.island::after { content: ""; position: absolute; inset-inline: 0; bottom: -1px; height: 64px; z-index: 3; pointer-events: none; background: var(--paper);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 64' preserveAspectRatio='none'%3E%3Cpath d='M0 40 Q200 6 420 30 T860 24 T1240 34 T1440 14 V64 H0Z'/%3E%3C/svg%3E") bottom / 100% 100% no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 64' preserveAspectRatio='none'%3E%3Cpath d='M0 40 Q200 6 420 30 T860 24 T1240 34 T1440 14 V64 H0Z'/%3E%3C/svg%3E") bottom / 100% 100% no-repeat; }
 .journey { position: relative; isolation: isolate; }
 .journey-svg { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: visible; }
 .journey-base { fill: none; stroke: var(--line); stroke-width: 6; stroke-linecap: round; stroke-dasharray: 2 14; }
@@ -289,3 +292,12 @@ input:checked + .att-opt[data-s="alpa"] { background: var(--bad); border-color: 
     radial-gradient(70% 38% at 50% 80%, #bfe8f6 0 60%, transparent 61%),
     linear-gradient(180deg, #6ec2ff, #d6f1ff 70%); border: var(--bw) solid var(--line); }
 .pena-stage::after { content: ""; position: absolute; left: 50%; bottom: 0.7rem; width: 55%; height: 0.9rem; translate: -50% 0; border-radius: 50%; background: rgb(0 0 0 / 0.18); filter: blur(3px); z-index: -1; }
+
+/* burung dan asap cerobong */
+@keyframes is-fly { from { translate: -120px 6px; } to { translate: 160px -12px; } }
+@keyframes is-smoke { 0% { transform: translateY(4px); opacity: .0; } 30% { opacity: .7; } 100% { transform: translateY(-18px); opacity: 0; } }
+@media (prefers-reduced-motion: no-preference) {
+  html:not([data-motion="kurangi"]) .is-bird { animation: is-fly 22s linear infinite; }
+  html:not([data-motion="kurangi"]) .is-smoke { animation: is-smoke 4s ease-out infinite; }
+}
+.island[data-tod="malam"] .is-bird { opacity: 0; }
