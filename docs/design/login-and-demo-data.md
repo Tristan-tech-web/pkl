@@ -11,7 +11,12 @@ Kolom masuk bernama "Email atau ID murid". Bila isinya mengandung `@`, dipakai s
 
 Kode undangan (8 huruf/angka) hanya untuk **bergabung ke sekolah** sekali, bukan untuk masuk tiap hari.
 
-Belum ada: pembuatan akun murid massal dari impor Excel (butuh fungsi berhak khusus di server; dirancang terpisah), masuk dengan Google/SSO, dan pemulihan kata sandi murid oleh guru.
+## Akun murid massal dan atur ulang sandi
+Halaman `Anggota → Buat akun murid tanpa email` (`/dashboard/sekolah/[id]/anggota/murid`): pengelola menempel daftar nama (boleh dari Excel, dengan NIS), memilih rombel, lalu mendapat kartu ID murid + kata sandi acak yang bisa dicetak atau disalin sebagai CSV. Kata sandi hanya tampil sekali. Pengelola atau wali kelas juga bisa menekan "Atur ulang sandi" di daftar anggota.
+
+Di database ini dua fungsi `SECURITY DEFINER` (`create_student_accounts`, `reset_student_password`) dengan pemeriksaan izin sendiri, tanpa service-role. Berkas: `supabase/pending/20261005010000_student_accounts.sql` beserta tesnya `student_accounts.test.sql`. **Belum diterapkan**: alat migrasi menolak otomatis SQL yang menulis ke `auth.users`. Jalankan lewat SQL editor Supabase, lalu pindahkan kedua berkas ke `supabase/migrations/` dan `supabase/tests/`, jalankan tesnya, dan cek `get_advisors`. Kolom `schools.login_code` sudah diterapkan.
+
+Belum ada: masuk dengan Google/SSO (butuh client ID dari pemilik).
 
 ## Data uji "SMK TI Bali Global Badung"
 Sekolah sintetis di proyek dev. Nama orang, NIS, nilai, kehadiran, dan tagihan karangan. Dari situs publik hanya dipakai: nama sekolah, kabupaten (Badung), dan tiga kompetensi keahlian (Rekayasa Perangkat Lunak, Teknik Komputer dan Jaringan, Multimedia). Sumbernya sekunder dan belum diverifikasi ⚠, jadi jangan dijadikan preset.

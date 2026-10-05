@@ -4,11 +4,12 @@ import { Button, Card, ErrorNote, InfoNote, Input, Label, Select } from "@/compo
 import { first, getSchoolContext } from "@/lib/school";
 import Link from "next/link";
 import { createInvite, revokeInvite } from "../actions";
+import { ResetPassword } from "./murid/reset-password";
 
 export const metadata = { title: "Anggota · EduSmart" };
 
 type Role = { id: string; code: string; name: string };
-type Member = { id: string; display_name: string | null; status: string; roles: { name: string } | { name: string }[] | null };
+type Member = { id: string; display_name: string | null; status: string; roles: { name: string; code: string } | { name: string; code: string }[] | null };
 type Invite = {
   id: string;
   code: string;
@@ -37,7 +38,7 @@ export default async function AnggotaPage({
   const { error, info, baru } = await searchParams;
   const { supabase, school } = await getSchoolContext(id, { management: true });
   const [members, roles, classes, invites] = await Promise.all([
-    supabase.from("school_members").select("id,display_name,status,roles(name)").eq("school_id", id).order("created_at"),
+    supabase.from("school_members").select("id,display_name,status,roles(name,code)").eq("school_id", id).order("created_at"),
     supabase.from("roles").select("id,code,name").eq("school_id", id).neq("code", "owner").order("name"),
     supabase.from("class_groups").select("id,name").eq("school_id", id).order("name"),
     supabase
@@ -79,9 +80,10 @@ export default async function AnggotaPage({
           <h2 className="font-display text-2xl font-bold tracking-tight">Anggota</h2>
           <ul className="stagger mt-4 border-t border-line">
             {memberRows.map((m) => (
-              <li key={m.id} className="flex items-baseline justify-between gap-4 border-b border-line py-3">
+              <li key={m.id} className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-line py-3">
                 <span className="font-semibold">{m.display_name ?? "Tanpa nama"}</span>
                 <span className="text-sm text-ink-soft">{first(m.roles)?.name}</span>
+                {first(m.roles)?.code === "student" ? <div className="basis-full"><ResetPassword memberId={m.id} /></div> : null}
               </li>
             ))}
           </ul>
@@ -121,6 +123,9 @@ export default async function AnggotaPage({
           <h2 className="text-lg font-bold">Buat undangan</h2>
           <Link href={`/dashboard/sekolah/${id}/anggota/impor`} className="mt-1 inline-flex min-h-11 items-center text-sm font-semibold text-pen underline">
             Atau impor banyak orang dari CSV
+          </Link>
+          <Link href={`/dashboard/sekolah/${id}/anggota/murid`} className="inline-flex min-h-11 items-center text-sm font-semibold text-pen underline">
+            Atau buat akun murid tanpa email
           </Link>
           <form action={add} className="mt-3 flex flex-col gap-4">
             <label>
