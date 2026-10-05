@@ -20,20 +20,35 @@ export function Journey({ children }: { children: React.ReactNode }) {
     if (!el || !sv || !b || !p || !d) return;
     const calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches || document.documentElement.dataset.motion === "kurangi";
     let pts: { x: number; y: number; n: HTMLElement }[] = [];
-    let len = 0, H = 0, raf = 0;
+    let len = 0, H = 0, raf = 0, lastOff = -1;
 
+    // Tabel titik sepanjang jalan, dibuat sekali saat ukuran berubah. getPointAtLength mahal bila dipanggil
+    // belasan kali tiap frame gulir, jadi posisi dicari dari tabel ini dengan interpolasi.
+    let tab: { l: number; x: number; y: number }[] = [];
+    const sample = () => {
+      const n = Math.min(700, Math.max(80, Math.round(len / 8)));
+      tab = Array.from({ length: n + 1 }, (_, i) => { const l = (len * i) / n; const q = p.getPointAtLength(l); return { l, x: q.x, y: q.y }; });
+    };
+    const pointAt = (L: number) => {
+      const f = Math.min(Math.max(L / len, 0), 1) * (tab.length - 1);
+      const i = Math.min(Math.floor(f), tab.length - 2), t = f - i;
+      return { x: tab[i].x + (tab[i + 1].x - tab[i].x) * t, y: tab[i].y + (tab[i + 1].y - tab[i].y) * t };
+    };
     const lenAtY = (y: number) => {
-      let lo = 0, hi = len;
-      for (let i = 0; i < 16; i++) { const mid = (lo + hi) / 2; if (p.getPointAtLength(mid).y < y) lo = mid; else hi = mid; }
-      return hi;
+      let lo = 0, hi = tab.length - 1;
+      while (lo < hi) { const mid = (lo + hi) >> 1; if (tab[mid].y < y) lo = mid + 1; else hi = mid; }
+      if (lo === 0) return 0;
+      const a = tab[lo - 1], c = tab[lo], t = c.y === a.y ? 0 : (y - a.y) / (c.y - a.y);
+      return a.l + (c.l - a.l) * Math.min(Math.max(t, 0), 1);
     };
     const update = () => {
       raf = 0;
       const r = el.getBoundingClientRect();
       const reach = calm ? H : Math.min(H, Math.max(0, window.innerHeight * 0.6 - r.top));
       const L = calm ? len : lenAtY(reach);
-      p.style.strokeDashoffset = String(len - L);
-      const pt = p.getPointAtLength(L);
+      const off = Math.round((len - L) * 2) / 2;
+      if (off !== lastOff) { lastOff = off; p.style.strokeDashoffset = String(off); }
+      const pt = pointAt(L);
       d.setAttribute("transform", `translate(${pt.x} ${pt.y})`);
       d.style.opacity = !calm && reach > 4 && reach < H - 4 ? "1" : "0";
       for (const s of pts) s.n.classList.toggle("on", calm || s.y <= reach);
@@ -59,6 +74,7 @@ export function Journey({ children }: { children: React.ReactNode }) {
       sv.setAttribute("height", String(H));
       b.setAttribute("d", dd); p.setAttribute("d", dd);
       len = p.getTotalLength();
+      sample();
       p.style.strokeDasharray = String(len);
       update();
     };

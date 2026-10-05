@@ -251,13 +251,13 @@ h1, h2, h3 {
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .page-in { animation: page-in 260ms var(--ease-out) both; }
+  .page-in { animation: page-in 260ms var(--ease-out) backwards; }
   .anim-rise {
-    animation: rise var(--dur-slow) var(--ease-out) both;
+    animation: rise var(--dur-slow) var(--ease-out) backwards;
     animation-delay: var(--d, 0ms);
   }
   .anim-pop {
-    animation: pop var(--dur-base) var(--ease-spring) both;
+    animation: pop var(--dur-base) var(--ease-spring) backwards;
     animation-delay: var(--d, 0ms);
   }
   .draw-in {
@@ -269,7 +269,7 @@ h1, h2, h3 {
     animation: draw 420ms var(--ease-out) 150ms both;
   }
   .stagger > * {
-    animation: rise var(--dur-base) var(--ease-out) both;
+    animation: rise var(--dur-base) var(--ease-out) backwards;
     animation-delay: calc(var(--i, 0) * 45ms);
   }
   .stagger > :nth-child(1) { --i: 0; }

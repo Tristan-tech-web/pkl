@@ -114,7 +114,6 @@ export function House({ x, y, s = 1 }: { x: number; y: number; s?: number }) {
       <rect x="10" y="-14" width="16" height="30" fill="#000" opacity=".07" />
       <rect x="10" y="-44" width="9" height="20" fill="var(--is-trunk)" />
       <rect x="8" y="-47" width="13" height="5" rx="1.5" fill={dark("var(--is-trunk)", 75)} />
-      <g className="is-smoke" fill="#fff" opacity=".7"><circle cx="14.5" cy="-54" r="4" /><circle cx="18" cy="-64" r="5" opacity=".6" /><circle cx="23" cy="-75" r="6" opacity=".4" /></g>
       <path d="M-34 -13 L0 -46 L34 -13Z" fill="var(--is-flower)" />
       <path d="M0 -46 L34 -13 H14Z" fill="#000" opacity=".14" />
       <path d="M-34 -13 L0 -46 L-6 -46 L-40 -13Z" fill="#fff" opacity=".2" />
@@ -123,6 +122,15 @@ export function House({ x, y, s = 1 }: { x: number; y: number; s?: number }) {
       <rect x="-21" y="-8" width="11" height="11" rx="1.5" fill="#ffe27a" stroke="var(--is-trunk)" strokeWidth="2" />
       <path d="M-15.5 -8 V3 M-21 -2.5 H-10" stroke="var(--is-trunk)" strokeWidth="1.4" />
       <rect x="14" y="-6" width="8" height="9" rx="1.5" fill="#ffe27a" stroke="var(--is-trunk)" strokeWidth="2" />
+    </g>
+  );
+}
+
+/** Asap cerobong (bagian yang bergerak). Digambar di lapisan terpisah supaya lapisan statis tidak digambar ulang tiap frame. */
+export function HouseSmoke({ x, y, s = 1 }: { x: number; y: number; s?: number }) {
+  return (
+    <g transform={`translate(${x} ${y}) scale(${s})`}>
+      <g className="is-smoke" fill="#fff" opacity=".7"><circle cx="14.5" cy="-54" r="4" /><circle cx="18" cy="-64" r="5" opacity=".6" /><circle cx="23" cy="-75" r="6" opacity=".4" /></g>
     </g>
   );
 }
@@ -137,6 +145,14 @@ export function Windmill({ x, y, s = 1 }: { x: number; y: number; s?: number }) 
       <path d="M-11 -14 H11 M-9.5 -28 H9.5 M-8 -42 H8" stroke="var(--is-trunk)" strokeOpacity=".28" strokeWidth="1.5" />
       <path d="M-7 -52 L0 -66 L7 -52Z" fill="var(--is-flower)" />
       <rect x="-4" y="-12" width="8" height="12" rx="4" fill="var(--is-trunk)" />
+    </g>
+  );
+}
+
+/** Baling-baling kincir (bagian yang berputar), lapisan terpisah. */
+export function WindmillBlades({ x, y, s = 1 }: { x: number; y: number; s?: number }) {
+  return (
+    <g transform={`translate(${x} ${y}) scale(${s})`}>
       <g className="is-blades" style={{ transformOrigin: "0px -56px", transformBox: "view-box" }}>
         <g transform="translate(0 -56)">
           {[0, 90, 180, 270].map((r) => (
@@ -175,6 +191,14 @@ export function Campfire({ x, y, size }: { x: number; y: number; size: number })
       {[-20, -10, 0, 10, 20].map((dx, i) => <ellipse key={dx} cx={dx} cy={3 + (i % 2)} rx="5.5" ry="4" fill={i % 2 ? "#8b8794" : "#a29eab"} />)}
       <rect x="-17" y="-5" width="34" height="7" rx="3.5" fill="var(--is-trunk)" transform="rotate(-14)" />
       <rect x="-17" y="-5" width="34" height="7" rx="3.5" fill="#5e3a1f" transform="rotate(14)" />
+    </g>
+  );
+}
+
+/** Lidah api (bagian yang bergerak), lapisan terpisah. */
+export function CampfireFlame({ x, y, size }: { x: number; y: number; size: number }) {
+  return (
+    <g transform={`translate(${x} ${y}) scale(${size})`}>
       <g className="is-flame" style={{ transformOrigin: "0px 0px", transformBox: "view-box" }}>
         <path d="M0 -4 C-16 -14 -10 -32 0 -48 C10 -32 16 -14 0 -4Z" fill="#ff7a1f" />
         <path d="M0 -4 C-10 -11 -6 -22 0 -32 C6 -22 10 -11 0 -4Z" fill="#ffb02e" />

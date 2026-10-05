@@ -22,8 +22,10 @@ function shadowTexture(): THREE.CanvasTexture {
 }
 
 export function createPena(canvas: HTMLCanvasElement, opts: { still: boolean; quality: 1 | 2; palette: Palette; avatar?: Avatar }): Mascot {
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: "low-power" });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, opts.quality === 2 ? 2 : 1.5));
+  // Layar padat (dpr ≥ 1,5) tidak butuh antialias: tepi sudah halus, dan piksel yang digambar jauh lebih sedikit.
+  const dpr = Math.min(window.devicePixelRatio || 1, opts.quality === 2 ? 1.75 : 1.5);
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: dpr < 1.5, alpha: true, powerPreference: "low-power" });
+  renderer.setPixelRatio(dpr);
   const cam = new THREE.PerspectiveCamera(30, 1, 0.1, 40); cam.position.set(0, 0.2, 7.3); cam.lookAt(0, 0.3, 0);
   const scene = new THREE.Scene();
   scene.add(new THREE.HemisphereLight(0xffffff, 0x8a90b8, 1.15));
@@ -170,9 +172,14 @@ export function createPena(canvas: HTMLCanvasElement, opts: { still: boolean; qu
   };
   // Perangkat lambat: bila banyak bingkai terlalu lama, berhenti beranimasi dan tampilkan satu gambar diam (hemat baterai/CPU).
   let slowFrames = 0;
+  // Saat halaman sedang digulir, Pena digambar lebih jarang (sekitar 10 fps): gerakannya pelan sehingga tidak terlihat,
+  // tetapi gulir jadi jauh lebih ringan di HP. Begitu gulir berhenti, kembali ke ~25 fps.
+  let scrolling = false, scrollTimer = 0;
+  const onScroll = () => { scrolling = true; clearTimeout(scrollTimer); scrollTimer = window.setTimeout(() => { scrolling = false; }, 140); };
+  window.addEventListener("scroll", onScroll, { passive: true });
   const loop = (ms: number) => {
-    raf = requestAnimationFrame(loop); if (!visible || document.hidden || ms - last < 30) return;
-    if (last && ms - last > 90 && ++slowFrames > 25) { cancelAnimationFrame(raf); draw(0.7); return; }
+    raf = requestAnimationFrame(loop); if (!visible || document.hidden || ms - last < (scrolling ? 100 : 40)) return;
+    if (last && ms - last > (scrolling ? 100 : 40) + 70 && ++slowFrames > 25) { cancelAnimationFrame(raf); draw(0.7); return; }
     last = ms; draw(ms / 1000);
   };
   const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; }, { threshold: 0.01 }); io.observe(canvas);
@@ -192,7 +199,7 @@ export function createPena(canvas: HTMLCanvasElement, opts: { still: boolean; qu
   const setAvatar = (a: Avatar) => { avatar = a; apply(); };
   apply();
   const dispose = () => {
-    if (disposed) return; disposed = true; cancelAnimationFrame(raf); window.removeEventListener("pointermove", onMove); canvas.removeEventListener("pointerdown", onTap);
+    if (disposed) return; disposed = true; cancelAnimationFrame(raf); window.removeEventListener("pointermove", onMove); window.removeEventListener("scroll", onScroll); clearTimeout(scrollTimer); canvas.removeEventListener("pointerdown", onTap);
     ro.disconnect(); io.disconnect(); geos.forEach((g) => g.dispose()); [grad, shTex].forEach((t) => t.dispose());
     [...Object.values(mats), cream, creamDark, white, ink, flat, blush, outlineMat, shadow.material as THREE.Material].forEach((m) => m.dispose()); renderer.dispose();
   };
