@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { haptic } from "@/lib/haptic";
 import { useEffect, useRef, useState } from "react";
 import { appealCase, practiceAnswer, practiceNext, reportItem, type Answered, type Integrity, type Next, type PracticeItem } from "@/app/dashboard/sekolah/[id]/latihan/actions";
@@ -25,6 +26,7 @@ export function PracticeRunner({ schoolId, sessionId, backHref, initial, camera 
   const [picked, setPicked] = useState<number | null>(null);
   const [res, setRes] = useState<Extract<Answered, { ok: true }> | null>(null);
   const [finished, setFinished] = useState(first?.done ?? false);
+  const router = useRouter();
   const [error, setError] = useState<string | null>(initial.ok ? null : initial.error);
   const [busy, setBusy] = useState(false);
   const [reported, setReported] = useState(false);
@@ -48,7 +50,7 @@ export function PracticeRunner({ schoolId, sessionId, backHref, initial, camera 
     if (!r.ok) { setError(r.error); return; }
     setTotal(r.total); setXp(r.xp);
     if (r.integrity) setIntegrity(r.integrity);
-    if (r.done) { setFinished(true); setItem(null); return; }
+    if (r.done) { setFinished(true); setItem(null); router.refresh(); return; }
     setItem(r.item ?? null); setIndex(r.index ?? 1);
   }
 

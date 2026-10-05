@@ -8,6 +8,7 @@ import { brandTokens } from "@/lib/color";
 import { themeById } from "@/lib/themes";
 import { lookFor } from "@/lib/look";
 import { createClient } from "@/lib/supabase/server";
+import { getAuthUser } from "@/lib/supabase/user";
 import { resetPrefs, savePrefs } from "./actions";
 
 export const metadata = { title: "Tampilan · EduSmart" };
@@ -15,7 +16,7 @@ export const metadata = { title: "Tampilan · EduSmart" };
 export default async function LookPage({ searchParams }: { searchParams: Promise<{ info?: string; sekolah?: string }> }) {
   const sp = await searchParams;
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getAuthUser(supabase);
   if (!user) redirect("/masuk");
   const { data: schools } = await supabase.from("school_members").select("school_id,schools(name)").eq("user_id", user.id).eq("status", "active");
   const list = (schools ?? []).map((s) => ({ id: s.school_id as string, name: ((Array.isArray(s.schools) ? s.schools[0] : s.schools) as { name: string } | null)?.name ?? "Sekolah" }));

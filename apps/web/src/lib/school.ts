@@ -1,5 +1,7 @@
 import { notFound } from "next/navigation";
+import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
+import { getAuthUser } from "@/lib/supabase/user";
 
 export const MANAGEMENT_ROLES = new Set(["owner", "admin", "curriculum_lead"]);
 
@@ -13,11 +15,15 @@ export type SchoolContext = {
   me: { memberId: string; roleCode: string; roleName: string; displayName: string | null };
 };
 
-export async function getSchoolContext(schoolId: string, opts: { management?: boolean } = {}): Promise<SchoolContext> {
+// Satu konteks per permintaan untuk (sekolah, mode pengelola): halaman dan komponen di dalamnya berbagi hasilnya.
+export function getSchoolContext(schoolId: string, opts: { management?: boolean } = {}): Promise<SchoolContext> {
+  return schoolContext(schoolId, !!opts.management);
+}
+
+const schoolContext = cache(async (schoolId: string, management: boolean): Promise<SchoolContext> => {
+  const opts = { management };
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getAuthUser(supabase);
   if (!user) notFound();
   const [{ data: school }, { data: mine }] = await Promise.all([
     supabase.from("schools").select("id,name").eq("id", schoolId).maybeSingle(),
@@ -43,6 +49,6 @@ export async function getSchoolContext(schoolId: string, opts: { management?: bo
       displayName: (mine.display_name as string | null) ?? null,
     },
   };
-}
+});
 
 export const first = one;

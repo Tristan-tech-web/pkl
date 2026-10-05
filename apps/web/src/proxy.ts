@@ -25,9 +25,9 @@ export async function proxy(request: NextRequest) {
     },
   });
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // getClaims memeriksa JWT secara lokal (tanpa jaringan) dan menyegarkan sesi bila kedaluwarsa.
+  const { data: claimsData } = await supabase.auth.getClaims();
+  const user = claimsData?.claims?.sub ? claimsData.claims : null;
 
   const path = request.nextUrl.pathname;
   if (!user && (path.startsWith("/dashboard") || path.startsWith("/gabung") || path.startsWith("/oauth/authorize"))) {

@@ -6,6 +6,7 @@ import { ParentView } from "@/components/parent-view";
 import { LatestAnnouncements, ModuleLinks } from "@/components/module-links";
 import { authorityLabel } from "@/lib/format";
 import { createClient } from "@/lib/supabase/server";
+import { getAuthUser } from "@/lib/supabase/user";
 
 const MANAGEMENT = new Set(["owner", "admin", "curriculum_lead"]);
 const TEACHING = new Set(["teacher", "homeroom", "counselor"]);
@@ -16,9 +17,7 @@ const one = <T,>(v: T | T[] | null): T | null => (Array.isArray(v) ? (v[0] ?? nu
 export default async function SchoolPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getAuthUser(supabase);
   if (!user) notFound();
 
   const [{ data: school }, { data: mine }, { count: schoolCount }] = await Promise.all([

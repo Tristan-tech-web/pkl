@@ -6,27 +6,29 @@ import { sanitizeAvatar } from "@/lib/avatar";
 import { loadStats } from "@/lib/learning";
 import { lookFor } from "@/lib/look";
 import { createClient } from "@/lib/supabase/server";
+import { getSchoolContext } from "@/lib/school";
+import { getAuthUser } from "@/lib/supabase/user";
 
 // Lonceng notifikasi di semua halaman sekolah. Jumlah belum dibaca dihitung di server (RLS: hanya milik sendiri).
 export default async function SchoolLayout({ children, params }: { children: React.ReactNode; params: Promise<{ id: string }> }) {
   const { id } = await params;
   const supabase = await createClient();
-  const { count } = await supabase.from("notifications").select("id", { count: "exact", head: true }).eq("school_id", id).is("read_at", null);
+  const user = await getAuthUser(supabase);
+  // Semua pencarian berdiri sendiri, jadi dijalankan bersamaan (bukan berurutan).
+  const [{ count }, ctx, sc] = await Promise.all([
+    supabase.from("notifications").select("id", { count: "exact", head: true }).eq("school_id", id).is("read_at", null),
+    user ? lookFor(supabase, user.id, id) : Promise.resolve(null),
+    getSchoolContext(id), // hasilnya dipakai bersama oleh halaman di bawahnya (satu kali per permintaan)
+  ]);
   const n = count ?? 0;
-  const { data: { user } } = await supabase.auth.getUser();
-  const ctx = user ? await lookFor(supabase, user.id, id) : null;
-  const { data: avRow } = user ? await supabase.from("user_preferences").select("avatar").eq("user_id", user.id).maybeSingle() : { data: null };
-  const avatar = sanitizeAvatar(avRow?.avatar);
-  const { data: mine } = user ? await supabase.from("school_members").select("id,roles(code),schools(name)").eq("school_id", id).eq("user_id", user.id).maybeSingle() : { data: null };
-  const role = Array.isArray(mine?.roles) ? mine?.roles[0] : mine?.roles;
-  if (mine && (role as { code?: string } | null)?.code === "student") {
-    const sc = Array.isArray(mine.schools) ? mine.schools[0] : mine.schools;
-    const stats = await loadStats(supabase, id, mine.id as string);
+  const avatar = sanitizeAvatar(ctx?.avatar);
+  if (sc.me.roleCode === "student") {
+    const stats = await loadStats(supabase, id, sc.me.memberId);
     return (
       <>
         {ctx ? <AppearanceApply look={ctx.look} /> : null}
         <AvatarApply avatar={avatar} />
-        <StudentShell schoolId={id} schoolName={(sc as { name?: string } | null)?.name ?? ""} stats={stats} unread={n}>{children}</StudentShell>
+        <StudentShell schoolId={id} schoolName={sc.school.name} stats={stats} unread={n}>{children}</StudentShell>
       </>
     );
   }

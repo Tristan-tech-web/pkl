@@ -13,10 +13,10 @@ export const metadata = { title: "Profil · EduSmart" };
 
 export default async function ProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { supabase, me, school } = await getSchoolContext(id);
+  const { supabase, me, school, userId } = await getSchoolContext(id);
   if (me.roleCode !== "student") redirect(`/dashboard/sekolah/${id}`);
   const on = await enabledModuleCodes(supabase, id);
-  const { data: avRow } = await supabase.from("user_preferences").select("avatar").eq("user_id", (await supabase.auth.getUser()).data.user?.id ?? "").maybeSingle();
+  const { data: avRow } = await supabase.from("user_preferences").select("avatar").eq("user_id", userId).maybeSingle();
   const base = `/dashboard/sekolah/${id}`;
   const items: { href: string; icon: string; title: string; hint: string; show: boolean }[] = [
     { href: "/dashboard/tampilan", icon: "🎨", title: "Tampilan", hint: "Pilih tema, ukuran huruf, dan gaya yang kamu suka", show: true },

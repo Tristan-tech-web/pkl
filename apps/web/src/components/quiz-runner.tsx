@@ -3,6 +3,7 @@
 import { Mascot } from "@/components/three/mascot";
 import { haptic } from "@/lib/haptic";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { submitQuizAction, type QuizResult } from "@/app/dashboard/sekolah/[id]/belajar/[nodeId]/kuis/actions";
 import { gsap, NO_REDUCE, useGSAP } from "@/lib/motion";
@@ -34,6 +35,7 @@ export function QuizRunner({
   const [result, setResult] = useState<QuizResult | null>(null);
   const [error, setError] = useState<string>();
   const [pending, start] = useTransition();
+  const router = useRouter(); // setelah hasil kuis, kosongkan cache halaman agar XP dan peta belajar langsung baru
   const stage = useRef<HTMLDivElement>(null);
   const blurs = useRef(0);
   useEffect(() => {
@@ -81,7 +83,7 @@ export function QuizRunner({
     start(async () => {
       setError(undefined);
       const res = await submitQuizAction(schoolId, nodeId, answers, blurs.current);
-      if (res.ok) setResult(res.data);
+      if (res.ok) { setResult(res.data); router.refresh(); }
       else setError(res.error);
     });
   const restart = () => {

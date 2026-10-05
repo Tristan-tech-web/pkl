@@ -1,5 +1,6 @@
 import { Button, ErrorNote, InfoNote, Input, Label, Select } from "@/components/ui";
 import { createClient } from "@/lib/supabase/server";
+import { getAuthUser } from "@/lib/supabase/user";
 import { redirect } from "next/navigation";
 import { McpConnect } from "@/components/mcp-connect";
 import { headers } from "next/headers";
@@ -10,7 +11,7 @@ export const metadata = { title: "AI saya · EduSmart" };
 export default async function MyAiPage({ searchParams }: { searchParams: Promise<{ error?: string; info?: string }> }) {
   const { error, info } = await searchParams;
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getAuthUser(supabase);
   if (!user) redirect("/masuk");
   const h = await headers();
   const host = h.get("x-forwarded-host") ?? h.get("host") ?? "localhost:3000";

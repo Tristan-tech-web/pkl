@@ -1,12 +1,11 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { getAuthUser } from "@/lib/supabase/user";
 import { LinkButton, Wordmark } from "@/components/ui";
 
 export async function SiteHeader({ overlay = false }: { overlay?: boolean } = {}) {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getAuthUser(supabase);
   return (
     <header className={overlay ? "relative z-20" : "border-b border-line bg-paper"}>
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4">

@@ -1,3 +1,4 @@
+import { cache } from "react";
 import type { createClient } from "@/lib/supabase/server";
 
 type Supa = Awaited<ReturnType<typeof createClient>>;
@@ -81,7 +82,8 @@ export async function loadMap(supabase: Supa, schoolId: string, memberId: string
   });
 }
 
-export async function loadStats(supabase: Supa, schoolId: string, memberId: string) {
+// Dibagi per permintaan: layout dan halaman sama-sama membutuhkannya.
+export const loadStats = cache(async function loadStats(supabase: Supa, schoolId: string, memberId: string) {
   const { data } = await supabase
     .from("student_stats")
     .select("xp,level,streak,best_streak,last_activity_date")
@@ -101,4 +103,4 @@ export async function loadStats(supabase: Supa, schoolId: string, memberId: stri
     into: xp - spent,
     need,
   };
-}
+});
