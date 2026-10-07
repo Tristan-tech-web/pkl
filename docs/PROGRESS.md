@@ -1,5 +1,9 @@
 # Progres
 
+## PIVOT (2026-10-07): dari sekolah ke manajemen perusahaan
+Pengguna: web sekolah ditolak; diminta platform manajemen perusahaan yang super fleksibel. Riset selesai (`docs/research/company/R2`-`R6`), rancangan selesai (`docs/design/company/01`-`05`). **Belum ada kode produk baru.** Kode sekolah di bawah ini tetap ada dan jangan dihapus sebelum arsip ke repo lain terverifikasi (pembuatan repo lewat integrasi ditolak 403; butuh repo kosong/fork dari pemilik).
+Berikutnya: (1) keputusan 5 butir di `05-roadmap.md` (arsip, nama, proyek Supabase, pasar awal, wawancara); (2) F0 fondasi; (3) F1 multi-tenant + ledger. Bagian "Status milestone" dan seterusnya di bawah adalah catatan produk sekolah (sejarah).
+
 Cara melanjutkan di sesi baru: baca `CLAUDE.md`, berkas ini, lalu kerjakan "Berikutnya". Perbarui berkas ini di setiap commit penting.
 
 ## Keputusan
