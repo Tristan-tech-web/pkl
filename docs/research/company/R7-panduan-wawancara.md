@@ -1,6 +1,6 @@
 # R7. Panduan wawancara (versi 2, setelah riset meja R8)
 
-Versi 1 bertanya banyak hal yang sudah terdokumentasi dan melanggar aturan R7 sendiri di bagian harga. Versi ini memangkas yang sudah ada jawabannya di publik (R8a, R8c, R8d) dan memusatkan waktu pada hal spesifik per narasumber. R8b (keluhan aplikasi Indonesia) belum masuk; bila selesai, pertanyaan bagian "alat dan aplikasi" disesuaikan.
+Versi 1 bertanya banyak hal yang sudah terdokumentasi dan melanggar aturan R7 sendiri di bagian harga. Versi ini memangkas yang sudah ada jawabannya di publik (R8a, R8c, R8d) dan memusatkan waktu pada hal spesifik per narasumber. R8b (2.959 ulasan bintang 1 dan 2 dari Google Play dan App Store Indonesia, 12 aplikasi) sudah masuk.
 
 ## Yang jangan ditanyakan lagi (sudah ada di publik)
 | Topik | Yang sudah diketahui | Sumber | Dipakai untuk |
@@ -13,6 +13,7 @@ Versi 1 bertanya banyak hal yang sudah terdokumentasi dan melanggar aturan R7 se
 | Kursi tambahan | Murah di aplikasi akuntansi Indonesia; yang dibatasi adalah user, cabang, gudang, outlet, faktur | R8d | Hipotesis 5 diubah jadi "unit apa yang menahan akses" |
 | Aturan pajak yang berubah | PP 20/2026 (22 Apr 2026): PPh final 0,5% hanya orang pribadi, perseroan perorangan, koperasi; PT/CV/firma lama sampai jangkanya habis | R8c | Pemicu pertanyaan, bukan pertanyaan |
 | Keluhan Coretax umum | Data hilang, simpan gagal, prepopulated tidak cocok, lambat | R8c | Tanya biaya, bukan daftar keluhan |
+| Keluhan terbesar di ulasan aplikasi | Error, lambat, dan gangguan jam kerja (11 dari 12 aplikasi, 18 sampai 48% ulasan rendah); update yang merusak (8 aplikasi); dukungan lambat. Janji sales, aktivasi tertunda setelah bayar, kontrak tahunan, dan refund pada kasir/POS | R8b | Tanya kejadian, jangan daftar keluhan |
 | Daftar kesalahan data klien | Bukti tidak lengkap, rekening tercampur, NIK/NPWP tidak valid, kode salah, faktur telat | R8c | Tanya satu kasus terakhir |
 | Tarif jasa akuntan | Kisaran vendor Rp500 ribu sampai jutaan per bulan, tidak seragam | R8c | Tanya angka nyata dan yang tidak termasuk |
 | Siapa memutuskan membeli | Pemilik memutuskan, akuntan dan teman memengaruhi, uji coba gratis lazim | R8d | Satu baris verifikasi saja |
@@ -66,6 +67,8 @@ Tanyakan lima ini dulu. Sisanya "kalau sempat".
 - Siapa yang membuatnya, kapan terakhir diubah, siapa yang berani mengubahnya, kolom mana yang "tidak boleh disentuh".
 - Terakhir kali butuh ubah hal kecil (kolom baru, status baru, langkah persetujuan): siapa yang mengerjakan, berapa lama, berapa biayanya?
 - Bulan ini, laporan apa yang kamu butuhkan dan dibuat di mana? Diekspor ke Excel atau dipakai langsung?
+- Kalau sekarang pakai aplikasi: terakhir kali aplikasinya lambat, error, atau berubah setelah update, kapan, jam berapa, apa yang kamu lakukan? Terakhir kali minta bantuan ke penyedia: berapa lama dijawab?
+- Kalau pernah beli kasir atau aplikasi lewat sales: apa yang dijanjikan, apa yang akhirnya didapat, berapa hari sampai bisa dipakai?
 
 **Wajib 5. Orang dan akses.**
 - "Siapa saja yang menyentuh uang atau stok dalam seminggu? Mereka mencatat di mana?"
@@ -130,10 +133,18 @@ Pakai kerangka Switch: kronologi dari kejadian pemicu, bukan alasan.
 | 2 | Satu proses dulu | Menyebut satu proses sebagai pemicu beli terakhir | Ingin semuanya sekaligus | Dukungan lemah |
 | 3 | Ubah status/kolom sendiri penting | Pernah minta ubah hal kecil, lama atau mahal | Tidak pernah perlu | Penawaran sudah ada (add-on berbayar), permintaan belum |
 | 5 | Unit harga yang menahan akses | Pernah menahan akses satu orang karena batas | Tidak pernah | Diubah: kursi murah, batas lain yang mengikat |
-| 6 | Offline penting | Sinyal buruk menunda pencatatan | Tidak terjadi | Belum terjawab |
+| 6 | Offline penting | Sinyal buruk menunda pencatatan | Tidak terjadi | Lemah: kata "offline" 0 sampai 4% ulasan; yang sering justru "sinyal bagus tapi loading terus". Bukti kuat hanya dari pegawai lapangan (HRIS) |
 | 8 | Laporan lari ke Excel | Ekspor tiap bulan | Puas laporan bawaan | Belum terjawab |
 | 9 | Izin per cabang/nilai | Ada angka disembunyikan, persetujuan dilewati | Cukup pemilik dan kasir | Penawaran ada, permintaan belum |
 | 11 | Takut sulit pindah | Menunda karena data, bukan karena harga | Tidak peduli | Teori kuat, data Indonesia belum |
+
+## Temuan baru dari ulasan aplikasi (R8b) yang mengubah prioritas
+- Masalah terbesar pemakai aplikasi sekarang bukan fitur kurang, tapi **keandalan**: lambat, error, dan update yang merusak. Untuk Rangka ini berarti kecepatan dan stabilitas adalah fitur, dan perubahan konfigurasi harus aman (sandbox, rollback). Jadi wawancara menanyakan kejadian gangguan terakhir, bukan "fitur apa yang kurang".
+- Keluhan "per kursi" hanya 1 dari 2.959 ulasan, Coretax/pajak 0 sampai 2%. Itu keluhan pengguna HP pendamping (sebagian besar pegawai, bukan akuntan), jadi jangan disimpulkan tidak ada masalah pajak. Akuntan ditanya langsung (bagian C).
+- Fitur dasar, hak akses, dan custom field ditagih terpisah di halaman harga resmi: sinyal pasokan kuat, sinyal permintaan belum.
+- Pindah dengan nama tujuan jarang (sekitar 6 ulasan): Jurnal ke Kledo karena harga, Accurate Lite ke Odoo karena lemot. BukuKas ditutup 26 Mei 2023 (CNBC Indonesia). Keluhan tidak sama dengan niat pindah.
+- Peringatan sumber: ulasan bintang 5 Jurnal 2025-2026 dan Majoo Lite menumpuk di tanggal yang sama (tampak diatur), sampel Jurnal dan Zahir sudah tua, angka persen dihitung dengan kata kunci (kasar). Reddit, G2, Capterra, Kaskus, Facebook tidak terjangkau.
+- Hampir tidak ada bukti untuk bengkel, kontraktor, klinik, dan produksi kecil. Industri itu perlu wawancara, bukan asumsi.
 
 ## Setelah wawancara (satu halaman per wawancara)
 Kolom: profil singkat, kutipan persis, 3 kejadian dengan jam/rupiah, alat, **dasar bukti** (dilihat langsung / hanya cerita), kekuatan keputusan (dorongan, tarikan, kecemasan, kebiasaan; dikode setelah wawancara, jangan ditanyakan), komitmen tertinggi yang diberikan, hipotesis didukung atau dibantah. Hipotesis yang hanya didukung cerita diberi bobot kecil. Simpan di `docs/research/company/wawancara/` dengan nama samaran.
